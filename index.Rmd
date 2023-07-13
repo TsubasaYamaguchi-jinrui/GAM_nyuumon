@@ -1,0 +1,44 @@
+--- 
+title: "Introduction to GAM using R"
+author: "Tsubasa Yamaguchi"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::gitbook:
+    split_by: rmd  
+    split_bib: yes  
+    number_sections: true   
+    toc_depth: 4 
+    css: custom_style.css   
+site: bookdown::bookdown_site  
+output_dir: "docs"  
+documentclass: book  
+header-includes:
+   - \usepackage{amsmath}
+   - \usepackage{nccmath}
+biblio-style: jecon    
+bibliography: GAM.bib   
+link-citations: yes
+csl: apa.csl
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE,
+                      warning = FALSE, fig.align = "center",
+                      cache = TRUE)
+
+Sys.setenv("plotly_username"="Tsubasa_Yamaguchi")
+Sys.setenv("plotly_api_key"="xJmE2md8qaw6XcEkXhmg")
+```
+
+# 本稿の目的 {-}   
+
+
+本稿で扱うのは、以下の内容である。  
+
+- 
+<br/>  
+
+参考にしたのは主に以下の文献である。  
+なお、本稿の作成に使用したファイルとRのコードは筆者の[Github](https://github.com/TsubasaYamaguchi-jinrui/Network_Analysis_Using_R)ですべて閲覧できる。  
+
+- 
