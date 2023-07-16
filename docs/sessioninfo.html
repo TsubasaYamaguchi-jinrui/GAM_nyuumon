@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>実行環境 | Introduction to GAM using R</title>
   <meta name="description" content="実行環境 | Introduction to GAM using R" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="実行環境 | Introduction to GAM using R" />
   <meta property="og:type" content="book" />
@@ -23,14 +23,14 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-13" />
+<meta name="date" content="2023-07-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="Chapter1.html"/>
+<link rel="prev" href="Chapter2.html"/>
 
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -52,7 +52,7 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
 <script src="libs/datatables-binding-0.27/datatables.js"></script>
 <link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
@@ -64,6 +64,10 @@
 <script src="libs/selectize-0.12.0/selectize.min.js"></script>
 <link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <style type="text/css">
@@ -132,6 +136,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 <style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
 div.csl-entry {
@@ -193,8 +201,31 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="1.6" data-path="Chapter1.html"><a href="Chapter1.html#finding-the-optimal-model"><i class="fa fa-check"></i><b>1.6</b> Finding the optimal model</a></li>
 <li class="chapter" data-level="1.7" data-path="Chapter1.html"><a href="Chapter1.html#degree-of-freedom"><i class="fa fa-check"></i><b>1.7</b> Degree of freedom</a></li>
-<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#model-validation"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
+<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#c1-8"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
 <li class="chapter" data-level="1.9" data-path="Chapter1.html"><a href="Chapter1.html#model-interpretation"><i class="fa fa-check"></i><b>1.9</b> Model interpretation</a></li>
+<li class="chapter" data-level="1.10" data-path="Chapter1.html"><a href="Chapter1.html#what-to-do-if-things-go-wrong"><i class="fa fa-check"></i><b>1.10</b> What to do if things go wrong</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chapter2.html"><a href="Chapter2.html"><i class="fa fa-check"></i><b>2</b> Introduction to additive models using deep-sea fisheries data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="Chapter2.html"><a href="Chapter2.html#impact-of-deep-sea-fisheries"><i class="fa fa-check"></i><b>2.1</b> Impact of deep-sea fisheries</a></li>
+<li class="chapter" data-level="2.2" data-path="Chapter2.html"><a href="Chapter2.html#first-encounter-with-smoothers"><i class="fa fa-check"></i><b>2.2</b> First encounter with smoothers</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="Chapter2.html"><a href="Chapter2.html#applying-linear-regression"><i class="fa fa-check"></i><b>2.2.1</b> Applying linear regression</a>
+<ul>
+<li class="chapter" data-level="2.2.1.1" data-path="Chapter2.html"><a href="Chapter2.html#当てはめるモデル"><i class="fa fa-check"></i><b>2.2.1.1</b> 当てはめるモデル</a></li>
+<li class="chapter" data-level="2.2.1.2" data-path="Chapter2.html"><a href="Chapter2.html#data-exploration-1"><i class="fa fa-check"></i><b>2.2.1.2</b> data exploration</a></li>
+<li class="chapter" data-level="2.2.1.3" data-path="Chapter2.html"><a href="Chapter2.html#model-diagnosis"><i class="fa fa-check"></i><b>2.2.1.3</b> model diagnosis</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.2" data-path="Chapter2.html"><a href="Chapter2.html#applying-cubic-polynomials"><i class="fa fa-check"></i><b>2.2.2</b> Applying cubic polynomials</a></li>
+<li class="chapter" data-level="2.2.3" data-path="Chapter2.html"><a href="Chapter2.html#a-simple-gam"><i class="fa fa-check"></i><b>2.2.3</b> A simple GAM</a></li>
+<li class="chapter" data-level="2.2.4" data-path="Chapter2.html"><a href="Chapter2.html#moving-average-and-loess-smoother"><i class="fa fa-check"></i><b>2.2.4</b> Moving average and LOESS smoother</a>
+<ul>
+<li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> 2.2.5 Packages for smoothing</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> 2.3 Allpying GAM in R using the mgcv package</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -216,7 +247,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="実行環境" class="section level1 unnumbered hasAnchor">
 <h1>実行環境<a href="sessioninfo.html#実行環境" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="sessioninfo.html#cb50-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="sessioninfo.html#cb66-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.2.2 (2022-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 22621)
@@ -232,60 +263,53 @@ div.csl-indent {
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] GGally_2.1.2         mgcv_1.8-41          nlme_3.1-160        
-##  [4] fontregisterer_0.3   systemfonts_1.0.4    extrafont_0.18      
-##  [7] lemon_0.4.6          ggsci_2.9            concaveman_1.1.0    
-## [10] ggforce_0.4.1        ggdag_0.2.7          dagitty_0.3-1       
-## [13] kableExtra_1.3.4     knitr_1.42           DT_0.27             
-## [16] patchwork_1.1.2      data.table_1.14.6    see_0.7.5.5         
-## [19] report_0.5.7.4       parameters_0.20.3    performance_0.10.3  
-## [22] modelbased_0.8.6.3   insight_0.19.1.4     effectsize_0.8.3.6  
-## [25] datawizard_0.7.1.1   correlation_0.8.4    bayestestR_0.13.1   
-## [28] easystats_0.6.0.8    forcats_1.0.0        stringr_1.5.0       
-## [31] dplyr_1.1.2          purrr_1.0.0          readr_2.1.3         
-## [34] tidyr_1.2.1          tibble_3.2.1         tidyverse_1.3.2     
-## [37] hwig_0.0.2           assortnet_0.12       clValid_0.7         
-## [40] cluster_2.1.4        igraph_1.3.5         ANTs_0.0.1          
-## [43] sna_2.7              network_1.18.0       statnet.common_4.7.0
-## [46] asnipe_1.1.16        ggraph_2.1.0         ggplot2_3.4.2       
-## [49] tidygraph_1.2.2     
+##  [1] mgcv_1.8-41        nlme_3.1-160       fontregisterer_0.3 systemfonts_1.0.4 
+##  [5] extrafont_0.18     lemon_0.4.6        ggsci_2.9          concaveman_1.1.0  
+##  [9] ggforce_0.4.1      ggdag_0.2.7        dagitty_0.3-1      kableExtra_1.3.4  
+## [13] knitr_1.43         DT_0.27            patchwork_1.1.2    GGally_2.1.2      
+## [17] htmlwidgets_1.6.2  plotly_4.10.1      data.table_1.14.6  see_0.7.5.5       
+## [21] report_0.5.7.4     parameters_0.20.3  performance_0.10.3 modelbased_0.8.6.3
+## [25] insight_0.19.1.4   effectsize_0.8.3.6 datawizard_0.7.1.1 correlation_0.8.4 
+## [29] bayestestR_0.13.1  easystats_0.6.0.8  forcats_1.0.0      stringr_1.5.0     
+## [33] dplyr_1.1.2        purrr_1.0.0        readr_2.1.3        tidyr_1.2.1       
+## [37] tibble_3.2.1       ggplot2_3.4.2      tidyverse_1.3.2   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] readxl_1.4.1        backports_1.4.1     plyr_1.8.8         
-##  [4] splines_4.2.2       digest_0.6.31       htmltools_0.5.4    
-##  [7] viridis_0.6.2       fansi_1.0.3         magrittr_2.0.3     
-## [10] googlesheets4_1.0.1 tzdb_0.3.0          graphlayouts_0.8.4 
-## [13] modelr_0.1.10       Kendall_2.2.1       extrafontdb_1.0    
-## [16] svglite_2.1.1       timechange_0.1.1    colorspace_2.0-3   
-## [19] rvest_1.0.3         ggrepel_0.9.2       haven_2.5.1        
-## [22] xfun_0.36           tcltk_4.2.2         crayon_1.5.2       
-## [25] jsonlite_1.8.4      lme4_1.1-31         glue_1.6.2         
-## [28] polyclip_1.10-4     gtable_0.3.3        gargle_1.2.1       
-## [31] emmeans_1.8.3       webshot_0.5.4       V8_4.2.2           
-## [34] Rttf2pt1_1.3.8      scales_1.2.1        mvtnorm_1.1-3      
-## [37] DBI_1.1.3           Rcpp_1.0.9          viridisLite_0.4.1  
-## [40] xtable_1.8-4        htmlwidgets_1.6.1   httr_1.4.4         
-## [43] RColorBrewer_1.1-3  reshape_0.8.9       pkgconfig_2.0.3    
-## [46] farver_2.1.1        sass_0.4.5          dbplyr_2.2.1       
-## [49] utf8_1.2.2          tidyselect_1.2.0    rlang_1.1.1        
-## [52] munsell_0.5.0       cellranger_1.1.0    tools_4.2.2        
-## [55] visNetwork_2.1.2    cachem_1.0.6        cli_3.6.0          
-## [58] generics_0.1.3      broom_1.0.2         evaluate_0.20      
-## [61] fastmap_1.1.0       yaml_2.3.7          fs_1.5.2           
-## [64] xml2_1.3.3          compiler_4.2.2      rstudioapi_0.14    
-## [67] curl_4.3.3          reprex_2.0.2        tweenr_2.0.2       
-## [70] bslib_0.4.2         stringi_1.7.8       lattice_0.20-45    
-## [73] Matrix_1.5-1        nloptr_2.0.3        vctrs_0.6.2        
-## [76] pillar_1.9.0        lifecycle_1.0.3     jquerylib_0.1.4    
-## [79] estimability_1.4.1  R6_2.5.1            bookdown_0.31      
-## [82] gridExtra_2.3       codetools_0.2-18    boot_1.3-28        
-## [85] MASS_7.3-58.1       gtools_3.9.4        assertthat_0.2.1   
-## [88] withr_2.5.0         hms_1.1.3           grid_4.2.2         
-## [91] coda_0.19-4         class_7.3-20        minqa_1.2.5        
-## [94] rmarkdown_2.20      googledrive_2.0.0   lubridate_1.9.0</code></pre>
+##  [1] googledrive_2.0.0   colorspace_2.0-3    estimability_1.4.1 
+##  [4] fs_1.5.2            rstudioapi_0.14     farver_2.1.1       
+##  [7] fansi_1.0.3         mvtnorm_1.1-3       lubridate_1.9.0    
+## [10] xml2_1.3.3          codetools_0.2-18    splines_4.2.2      
+## [13] cachem_1.0.6        polyclip_1.10-4     jsonlite_1.8.4     
+## [16] Rttf2pt1_1.3.8      broom_1.0.2         dbplyr_2.2.1       
+## [19] compiler_4.2.2      httr_1.4.4          emmeans_1.8.3      
+## [22] backports_1.4.1     Matrix_1.5-1        assertthat_0.2.1   
+## [25] fastmap_1.1.0       lazyeval_0.2.2      gargle_1.2.1       
+## [28] cli_3.6.0           tweenr_2.0.2        htmltools_0.5.4    
+## [31] tools_4.2.2         igraph_1.3.5        coda_0.19-4        
+## [34] gtable_0.3.3        glue_1.6.2          V8_4.2.2           
+## [37] Rcpp_1.0.11         cellranger_1.1.0    jquerylib_0.1.4    
+## [40] vctrs_0.6.2         svglite_2.1.1       extrafontdb_1.0    
+## [43] xfun_0.39           rvest_1.0.3         timechange_0.1.1   
+## [46] lifecycle_1.0.3     googlesheets4_1.0.1 MASS_7.3-58.1      
+## [49] scales_1.2.1        tidygraph_1.2.2     hms_1.1.3          
+## [52] RColorBrewer_1.1-3  yaml_2.3.7          curl_4.3.3         
+## [55] gridExtra_2.3       sass_0.4.5          reshape_0.8.9      
+## [58] stringi_1.7.8       boot_1.3-28         rlang_1.1.1        
+## [61] pkgconfig_2.0.3     evaluate_0.20       lattice_0.20-45    
+## [64] tidyselect_1.2.0    plyr_1.8.8          magrittr_2.0.3     
+## [67] bookdown_0.34       R6_2.5.1            generics_0.1.3     
+## [70] DBI_1.1.3           pillar_1.9.0        haven_2.5.1        
+## [73] withr_2.5.0         modelr_0.1.10       crayon_1.5.2       
+## [76] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.23     
+## [79] grid_4.2.2          readxl_1.4.1        reprex_2.0.2       
+## [82] digest_0.6.31       webshot_0.5.4       xtable_1.8-4       
+## [85] munsell_0.5.0       viridisLite_0.4.1   bslib_0.4.2</code></pre>
 <p><strong>References</strong></p>
 
 <div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div class="csl-entry">
+Bailey, D. M., Collins, M. A., Gordon, J. D. M., Zuur, A. F., &amp; Priede, I. G. (2009). Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? <em>Proc. Biol. Sci.</em>, <em>276</em>(1664), 1965–1969.
+</div>
 <div class="csl-entry">
 Burnham, K. P., Anderson, D. R., &amp; Huyvaert, K. P. (2011). <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. <em>Behav. Ecol. Sociobiol.</em>, <em>65</em>(1), 23–35.
 </div>
@@ -305,13 +329,22 @@ Dunn, P. K., &amp; Smyth, G. K. (2018). <em>Generalized linear models with examp
 Farine, D. R. (2013). Animal social network inference and permutations for ecologists inRusingasnipe. <em>Methods Ecol. Evol.</em>, <em>4</em>(12), 1187–1194.
 </div>
 <div class="csl-entry">
+Hastie, T., &amp; Hastie, M. T. (2018). Package <span>“gam.”</span> <em>GAM Package CRAN, Cran. R-Project. Org/Web/Packages/Gam/Gam. Pdf</em>.
+</div>
+<div class="csl-entry">
 Pearce, E., &amp; Dunbar, R. (2012). Latitudinal variation in light levels drives human visual system size. <em>Biol. Lett.</em>, <em>8</em>(1), 90–93.
+</div>
+<div class="csl-entry">
+Rigby, R. A., Stasinopoulos, M. D., Heller, G. Z., &amp; De Bastiani, F. (2019). <em>Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span></em>. CRC Press.
 </div>
 <div class="csl-entry">
 Sosa, S., Puga-Gonzalez, I., Hu, F., Pansanel, J., Xie, X., &amp; Sueur, C. (2020). A multilevel statistical toolkit to study animal social networks: The animal network toolkit software (<span>ANTs</span>) <span>R</span> package. <em>Sci. Rep.</em>, <em>10</em>(1), 12507.
 </div>
 <div class="csl-entry">
 Wickham, H., &amp; Grolemund, G. (2016). <em><span>R</span> for data science: Import, tidy, transform, visualize, and model data</em>. <span>“O’Reilly Media, Inc.”</span>
+</div>
+<div class="csl-entry">
+Wood, S., &amp; EPSRC, P. funded by. (2007). <em><span>R</span> mgcv-package</em>.
 </div>
 <div class="csl-entry">
 Zuur, A. F., Ieno, E. N., &amp; Elphick, C. S. (2010). A protocol for data exploration to avoid common statistical problems. <em>Methods Ecol. Evol.</em>, <em>1</em>(1), 3–14.
@@ -333,7 +366,7 @@ Zuur, A. F., Ieno, E. N., &amp; Elphick, C. S. (2010). A protocol for data explo
           </div>
         </div>
       </div>
-<a href="Chapter1.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="Chapter2.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>

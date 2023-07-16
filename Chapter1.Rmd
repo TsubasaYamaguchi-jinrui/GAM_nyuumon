@@ -450,7 +450,7 @@ print(summary(M3), digits = 3, signif.stars = FALSE)
 ```
 
 ## Degree of freedom  
-モデルの自由度はサンプル数(55)からパラメータ数(今回は4)を引いた値なので51である。しかし、このような自由度の求め方はGAMではできない。一般に、パラメータ数は$\mathbf{H}$の対角成分の和(= trace)で求めることができる。  
+重回帰分析では、　モデルの自由度は回帰式のパラメータ数なので4である。しかし、このような自由度の求め方はGAMではできない。一般に、パラメータ数は$\mathbf{H}$の対角成分の和(= trace)で求めることができる。  
 
 $$
 p = \sum_{i =1} ^{55} \mathbf{H_{ii}}
@@ -464,7 +464,7 @@ H <- X %*% solve(t(X) %*% X) %*% t(X)
 sum(diag(H))
 ```
 
-## Model validation  
+## Model validation {#c1-8}   
 最後に、作成したモデルが前提を満たしているかをチェックする。残差には普通の残差のほかに、標準化残差、スチューデント化残差などがあるが、ここでは標準化残差を用いる。    
 
 1. 等分散性が成り立つか (→ モデルに基づく予測値と残差をプロットする)  
@@ -557,7 +557,7 @@ $$
 
 モデルに基づく回帰平面を描くと以下のようになる(図\@ref(fig:fig-3dplot))。
 
-```{r}
+```{r fig-3dplot, fig.dim = c(5,5), fig.cap = "3d plot of the fitted surface"}
 data_M3 <- crossing(LatAbs = seq(0.02,65, length.out = 100),
                     CC = seq(1100,1700, length.out = 100))
 
@@ -578,10 +578,8 @@ plot_ly(hvs_b,
             x = seq(0.02,65, length.out = 100),
             y = seq(1100,1700, length.out =100),
             type = "surface") -> p
-```
 
-```{r fig-3dplot, fig.cap = "Regression surface from the result of the model", out.width = "85%"}
-knitr::include_graphics("image/newplot.png") 
+p
 ```
 
 ## What to do if things go wrong  

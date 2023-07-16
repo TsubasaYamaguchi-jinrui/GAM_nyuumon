@@ -27,7 +27,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE,
                       cache = TRUE)
 
 Sys.setenv("plotly_username"="Tsubasa_Yamaguchi")
-Sys.setenv("plotly_api_key"="xJmE2md8qaw6XcEkXhmg")
+Sys.setenv("plotly_api_key"="FyXiPMTRDyqnDETur1lG")
 ```
 
 # 本稿の目的 {-}   

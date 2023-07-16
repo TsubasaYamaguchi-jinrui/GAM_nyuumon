@@ -11,23 +11,15 @@
 - [sna](https://rdrr.io/cran/sna/)[@Butts2008]   
 
 ```{r}
-## GAM
+## gam
 library(mgcv)
-library(tidygraph)
-library(ggraph)
-library(asnipe)  
-library(sna)
-library(ANTs)
-library(igraph)
-library(clValid)
-library(assortnet)
-library(hwig)
 ## データハンドリング
 library(tidyverse)
 library(easystats)
 library(data.table)
 ## グラフや表関連
 library(plotly)
+library(htmlwidgets)
 library(GGally)
 library(patchwork)
 library(DT)

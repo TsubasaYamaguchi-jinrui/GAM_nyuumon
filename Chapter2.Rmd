@@ -1,1 +1,325 @@
 # Introduction to additive models using deep-sea fisheries data  
+本章では、正規分布に従う一般化加法モデル(GAM)の導入を行う。  
+
+## Impact of deep-sea fisheries  
+本章では、商業的な漁業が深海(水深800~4865m)の魚の密度に及ぼす影響を調べた @Bailey2009 のデータを用いる。データは2つの期間に分かれており、1979~1989年は商業的な漁業がおこなわれる前(深い水深での漁業が発展している段階)で、1997~2002年は商業的漁業がおこなわれている時期である。商業的漁業は技術的または商業的な理由により水深約1600mまでに限られている。
+
+```{r}
+fish <- read_delim("data/BaileyDensity.txt")
+
+datatable(fish,
+          options = list(scrollX = 20),
+          filter = "top")
+```
+
+@Bailey2009 では、魚の密度を以下のように定義している。  
+
+$$
+場所iにおける魚の密度 = \frac{場所iの魚の総量}{場所iで探索を行った面積}
+$$
+
+密度のような割り算データを目的変数にして正規分布に当てはめると、等分散性の問題が生じることが多い。通常、このような分子が整数値の割り算データに対してはポワソン分布や負の二項分布でオフセット項を用いる(第4章を参照)。もし分母が試行数、分子が成功数などのカウントデータの場合は二項分布を当てはめた方がよい。密度が0より大きい値しかとらないのであれば、ガンマ分布を当てはめることもできる。  
+
+## First encounter with smoothers  
+### Applying linear regression  
+
+#### 当てはめるモデル  
+全種を含めた魚の密度は以下のように表せる。なお$i$は場所を、$j$は魚の種類を表す。また、$SA_i$は場所$i$における探索面積を、$Y_{ij}$は場所$i$における種$j$の捕獲個体数を表す。
+$$
+Dens_i = \frac{\sum_j Y_{ij}}{SA_i}
+$$
+
+まずは、各探索場所の深さのみが魚の密度に影響するとする線形なモデルを考える。モデル式は以下のようになる。  
+
+$$
+\begin{aligned}
+Dens_i &= \alpha + \beta \times Depth_i + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+#### data exploration  
+いかなるモデルを作ろうとも、まずはデータ探索を行う。まずは、水深と魚の密度の関連をプロットする(図\@ref(fig:fig-depth-density))。図から明らかに水深と魚の密度の関係は線形ではない。しかし、ここではこうしたデータが線形モデルの前提を満たさないことを示すため、まずは通常の線形モデルを適用する。  
+
+```{r fig-depth-density, fig.dim = c(4.5, 4.5), fig.cap = "Relationship between fish density and mean sampling depth. Filled circles are observations from the second period and open circles from the first period."}
+fish %>% 
+  filter(MeanDepth > 800) %>% 
+  mutate(year01 = ifelse(Year > 1990, "commercial","non-commercial")) %>% 
+  ggplot(aes(x = MeanDepth, y = Dens))+
+  geom_point(aes(shape = year01))+
+  scale_shape_manual(values = c(19,1)) +
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        legend.position = "none")+
+  labs(x = "Mean sampling depth (m)",
+       y = expression(paste("Fish density"," ", (m^2))))
+```
+
+モデルは以下のように実行できる。モデルは、目的変数のばらつきの33.7%が水深で説明できると推定している(`Adjusted R-squared`より)。    
+```{r}
+M2_1 <- lm(Dens ~ MeanDepth, data = fish)
+
+print(summary(M2_1), digits = 3)
+```
+
+#### model diagnosis  
+それでは、モデル診断を行おう。
+
+まずは標準化残差とモデルの予測値の関係を見る(図\@ref(fig:fig-diafnosisM2-1)のA)。明らかにパターンが見て取れ、モデルが等分散性の仮定を満たしていないことが分かる。また、水深と標準化残差にもパターンがあるように見え(図\@ref(fig:fig-diafnosisM2-1)のB)、このモデルでは水深でうまく目的変数を説明できていないことが分かる。  
+
+```{r fig-diafnosisM2-1, gig.dim = c(12, 5), fig.cap = "A. Standardized residuals versus fitted values to assess homogeneity. B. Residuals versus mean depth."}
+data.frame(resstd = rstandard(M2_1),
+           fitted = fitted(M2_1)) %>% 
+  ggplot(aes(x = fitted, y = resstd))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Fitted values", y = "Standardized residuals",
+       title = "A") -> p_diag_M2_1_a
+
+data.frame(resstd = rstandard(M2_1),
+           depth = fish$MeanDepth) %>% 
+  ggplot(aes(x = depth, y = resstd))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = "Standardized residuals",
+       title = "B") -> p_diag_M2_1_b
+
+p_diag_M2_1_a + p_diag_M2_1_b
+```
+<br/>  
+
+QQプロットでも標準化残差が標準正規分布に従っていないことが示唆される。  
+```{r fig-qqplot-M2-1, fig.dim = c(4.5,4.5), fig.cap = "QQplot for M2_1"}
+qqnorm(rstandard(M2_1))
+qqline(rstandard(M2_1))
+```
+
+
+残差に見られたパターンは、明らかに非線形なデータに直線的なモデルを当てはめているために生じている。図\@ref(fig:fig-fitted-M2-1)からわかるように、水深2000m以上ではモデルに基づく回帰直線がほとんどデータの上に来てしまっている。また、水深約4000m以上では予測値がマイナスになってしまっている。  
+
+```{r fig-fitted-M2-1, fig.dim = c(4.5,4.5), fig.cap = "Fidh density plotted versus depth, with fitted values obtained by linear model."}
+dataM2_1 <- data.frame(MeanDepth = seq(800,5000,length.out = 100))
+
+pred_M2_1 <- predict(M2_1,
+                    newdata = dataM2_1) %>% 
+  data.frame() %>% 
+  rename(pred = 1) %>% 
+  bind_cols(dataM2_1)
+
+pred_M2_1 %>% 
+  ggplot(aes(x = MeanDepth, y = pred))+
+  geom_line()+
+  geom_point(data = fish,
+             aes(y = Dens))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+### Applying cubic polynomials  
+モデルを改善するため、説明変数に水深の二乗、三乗、四乗項を入れるモデルを考える(= 多項式回帰)。このようにすることで非線形な関係をとらえられるかもしれない。  
+
+$$
+\begin{aligned}
+Dens_i &= \alpha + \beta_1 \times Depth_i + \beta_2 \times Depth^2_i + \beta_3 \times Depth^3_i +  \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+そのようなモデルは以下で実行できる。  
+```{r}
+M2_2 <- lm(Dens ~ poly(MeanDepth, 3), data = fish)
+```
+
+モデルの診断を行ったのが図\@ref(fig:fig-diafnosisM2-2)である。明確なパターンがあるように見え(A. 予測値が大きいほどばらつきが大きくなる、B. 水深が浅くなるほどばらつきが大きくなる)、モデルが十分に改善できていないことが分かる。  
+
+```{r fig-diafnosisM2-2, gig.dim = c(11, 5), fig.cap = "A. Standardized residuals versus fitted values to assess homogeneity. B. Residuals versus mean depth."}
+data.frame(resstd = rstandard(M2_2),
+           fitted = fitted(M2_2)) %>% 
+  ggplot(aes(x = fitted, y = resstd))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Fitted values", y = "Standardized residuals",
+       title = "A") -> p_diag_M2_2_a
+
+data.frame(resstd = rstandard(M2_2),
+           depth = fish$MeanDepth) %>% 
+  ggplot(aes(x = depth, y = resstd))+
+  geom_point()+
+  geom_hline(yintercept = 0)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = "Standardized residuals",
+       title = "B") -> p_diag_M2_2_b
+
+p_diag_M2_2_a + p_diag_M2_2_b
+```
+
+QQプロットからも標準化残差が標準正規分布に従っていないことが分かる(図\@ref(fig:fig-qqplot-M2-2))。  
+```{r fig-qqplot-M2-2, fig.dim = c(4.5,4.5), fig.cap = "QQplot for M2_2"}
+qqnorm(rstandard(M2_2))
+qqline(rstandard(M2_2))
+```
+
+実測値にモデルに基づく予測値を描いたのが図\@ref(fig:fig-fitted-M2-2)である。水深4000mあたりで予測値がほとんどの実測値よりも低くなってしまっている。  
+```{r fig-fitted-M2-2, fig.dim = c(4.5,4.5), fig.cap = "Fidh density plotted versus depth, with fitted values obtained by linear model."}
+dataM2_2 <- data.frame(MeanDepth = seq(800,5000,length.out = 100))
+
+pred_M2_2 <- predict(M2_2,
+                    newdata = dataM2_2) %>% 
+  data.frame() %>% 
+  rename(pred = 1) %>% 
+  bind_cols(dataM2_2)
+
+pred_M2_2 %>% 
+  ggplot(aes(x = MeanDepth, y = pred))+
+  geom_line()+
+  geom_point(data = fish,
+             aes(y = Dens))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+### A simple GAM  
+モデルを改善するほかの選択肢は、一般化加法モデル(GAM)を用いることである。シンプルなGAMは以下のように書ける。$f(Depth_i)$は平滑化関数であり、予測値がデータに合うような曲線を描くように推定される。以下では、GAMではどのようにしてこの関数を推定するのかを説明していく。    
+
+$$
+\begin{aligned}
+Dens_i &= \alpha + f(Depth_i) +  \epsilon_i (\#eq:gam) \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+### Moving average and LOESS smoother  
+データに合うように平滑化を行う方法は複数存在するが、比較的単純なものが移動平均とLOESS(局所回帰)である。より複雑な手法については第3方で解説する。  
+
+#### 移動平均  
+移動平均は、推定値を求めたいポイントの前後にある特定の範囲(あるいは個数?)のデータの平均値を推定値とするような方法である。例えば、水深2500mのときの推定値として、その前後500m(2000m ~ 3000m)にあるデータの平均値を用いると、0.00286になる(図\@ref(fig:fig-movave1))。    
+
+```{r fig-movave1, fig.dim = c(4.5,4.5), fig.cap = "Visualization of the process of the moving average. A target value of depth = 2500 was chosen."}
+fish %>% 
+  filter(MeanDepth >= 2000 & MeanDepth <= 3000) %>% 
+  summarise(mean = mean(Dens)) -> mean
+
+fish %>% 
+  ggplot(aes(x = MeanDepth, y = Dens))+
+  geom_point(shape = 1)+
+  geom_vline(xintercept = 2000,
+             linetype = "dashed")+
+  geom_vline(xintercept = 3000,
+             linetype = "dashed")+
+  geom_point(aes(x = 2500, y = mean$mean),
+             size = 5, shape = 18, color = "black")+
+  annotate(geom = "text",
+           x = 3000, y = mean$mean + 0.002,
+           label = sprintf("%.5f",mean$mean))+
+  geom_segment(aes(x = 2550, xend = 2900, y = mean$mean, yend = mean$mean + 0.0015))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+<br/>  
+
+これを一定間隔のデータで行ってつなげると、移動平均に基づいて平滑化曲線を描くことができる(図\@ref(fig:fig-movave2))。  
+```{r fig-movave2, fig.dim = c(4.5,4.5), fig.cap = "Estimated moving average smoother"}
+Depth_n <- seq(810, 4800, by = 10)
+Mean_n <- data.frame(MeanDepth = Depth_n,
+                     Est = NA)
+
+for(i in seq_along(Depth_n)){
+  fish %>% 
+    filter(MeanDepth >= Depth_n[i] - 500 & MeanDepth <= Depth_n[i] + 500) %>% 
+    summarise(mean = mean(Dens)) -> mean_i
+  
+  Mean_n[i,2] <- mean_i$mean
+}
+
+fish %>% 
+  ggplot(aes(x = MeanDepth, y = Dens))+
+  geom_point(shape = 1)+
+  geom_line(data = Mean_n,
+            aes(y = Est),
+            linewidth = 1)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+#### 局所回帰(LOESS)  
+移動平均ではギザギラのラインが推定されるが、LOESSではよりスムーズなラインを引くことができる。局所回帰は推定値を求めたいポイントの前後にある特定の範囲(あるいは個数?)のデータだけを用いて多項式回帰を行い(多くのソフトでデフォルトでは2次の項までを含む)、その予測値を推定値とする方法である。移動平均と同様に一定間隔のポイントに対してこれを行うことで、平滑化した曲線を描く。  
+
+Rでは、`loess`関数で推定を行うことができる。`span =`で各ポイントでの推定に用いるデータの割合を指定できる(デフォルトは0.75)。図\@ref(fig:fig-fit-loess)はspanを0.1, 0.5, 1にした場合に描けるモデルから推定された平滑化曲線である。1のときは、全データを使用した多項式回帰と同じ結果である。移動平均でもLOESSでも、推定を行う際に使用するデータの範囲を変えると結果も大きく変わるので注意が必要である。    
+
+```{r fig-fit-loess, fig.dim = c(12,5), fig.cap = "LOESS smoother using a span of 0.1, 0.5, and 1."}
+M2_3_a <- loess(Dens ~ MeanDepth, data = fish, span = 0.1)
+M2_3_b <- loess(Dens ~ MeanDepth, data = fish, span = 0.5)
+M2_3_c <- loess(Dens ~ MeanDepth, data = fish, span = 1)
+
+pred_M2_3_a <- predict(M2_3_a, se = TRUE,
+                       newdata = data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  data.frame() %>% 
+  bind_cols(data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  mutate(upper = fit + qt(0.975, df = df)*se.fit,
+         lower = fit - qt(0.975, df = df)*se.fit,
+         span = 0.1)
+
+pred_M2_3_b <- predict(M2_3_b, se = TRUE,
+                       newdata = data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  data.frame() %>% 
+  bind_cols(data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  mutate(upper = fit + qt(0.975, df = df)*se.fit,
+         lower = fit - qt(0.975, df = df)*se.fit,
+         span = 0.5)
+
+pred_M2_3_c <- predict(M2_3_c, se = TRUE,
+                       newdata = data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  data.frame() %>% 
+  bind_cols(data.frame(MeanDepth = seq(800, 4865, length.out = 100))) %>% 
+  mutate(upper = fit + qt(0.975, df = df)*se.fit,
+         lower = fit - qt(0.975, df = df)*se.fit,
+         span = 1) 
+
+bind_rows(pred_M2_3_a, pred_M2_3_b, pred_M2_3_c) %>% 
+  mutate(span = str_c("span = ", span)) %>% 
+  ggplot(aes(x = MeanDepth, y = fit))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              alpha = 0.3)+
+  geom_point(data = fish,
+             aes(y = Dens),
+             shape = 1)+
+  facet_rep_wrap(~ span)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+### 2.2.5 Packages for smoothing  
+Rには、平滑化を行うことができるパッケージが複数存在する。例えば、`gam`パッケージ[@Hastie2018]、`mgcv`パッケージ[@Wood2007]、`gamlss`パッケージ[@Rigby2019]などがある。それぞれのパッケージに長所と短所があり、`gam`はLOESSを用いる際に使いやすく、`mgvc`はより発展的な手法に対して使いやすい。`gamlss`はより広い分布に対して用いることができる。本稿では主に`mgcv`パッケージを用いる。
+
+`mgvc`パッケージでは様々な手法を用いた平滑化を行うことができるが、自身のデータに対してどの方法を用いるかを決めるためにはこうした手法について知っていなければならない。こうした手法については、第(\@ref(c3))章で詳しく学ぶ。  
+
+## 2.3 Allpying GAM in R using the mgcv package  
+本節では、`mgvc`パッケージを用いてGAMを適用する方法を学ぶ。まず、`gam`関数を用いて式\@ref(eq:gam)を以下のように適用する。なお、`fx = TRUE`、`k = 5`というのは有効自由度4の平滑化関数が用いられていることを示しているが、詳しくは次章で説明する。
+
+```{r}
+M2_4 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 5),
+            data = fish)
+```
+
+`gam`関数はthin plate regression splineといわれる方法を用いている。有効自由度は曲線の形を決める値であり(calibration value)、1だと直線になり大きくなるほどより非線形な形になる。自由度4は古典的なパッケージでデフォルトとしてよく使われている値であり、推定された曲線は3次の項までを含む多項式回帰によるものと似ている。次節(\@ref(s2-4))ではcross validationを用いてどの自由度が最も適切か決める方法を学ぶ。  
+
+`summary`関数でモデルの結果の概要を得ることができる。  
+```{r}
+summary(M2_4)
+```
+
+切片の推定値は`r coef(M2_4)[[1]]`
+

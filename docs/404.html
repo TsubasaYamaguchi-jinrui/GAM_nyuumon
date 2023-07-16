@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Page not found | Introduction to GAM using R</title>
   <meta name="description" content="Page not found | Introduction to GAM using R" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Page not found | Introduction to GAM using R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-13" />
+<meta name="date" content="2023-07-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,7 +52,7 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
 <script src="libs/datatables-binding-0.27/datatables.js"></script>
 <link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
@@ -64,6 +64,10 @@
 <script src="libs/selectize-0.12.0/selectize.min.js"></script>
 <link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <style type="text/css">
@@ -132,6 +136,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 <style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
 div.csl-entry {
@@ -193,8 +201,31 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="1.6" data-path="Chapter1.html"><a href="Chapter1.html#finding-the-optimal-model"><i class="fa fa-check"></i><b>1.6</b> Finding the optimal model</a></li>
 <li class="chapter" data-level="1.7" data-path="Chapter1.html"><a href="Chapter1.html#degree-of-freedom"><i class="fa fa-check"></i><b>1.7</b> Degree of freedom</a></li>
-<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#model-validation"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
+<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#c1-8"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
 <li class="chapter" data-level="1.9" data-path="Chapter1.html"><a href="Chapter1.html#model-interpretation"><i class="fa fa-check"></i><b>1.9</b> Model interpretation</a></li>
+<li class="chapter" data-level="1.10" data-path="Chapter1.html"><a href="Chapter1.html#what-to-do-if-things-go-wrong"><i class="fa fa-check"></i><b>1.10</b> What to do if things go wrong</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chapter2.html"><a href="Chapter2.html"><i class="fa fa-check"></i><b>2</b> Introduction to additive models using deep-sea fisheries data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="Chapter2.html"><a href="Chapter2.html#impact-of-deep-sea-fisheries"><i class="fa fa-check"></i><b>2.1</b> Impact of deep-sea fisheries</a></li>
+<li class="chapter" data-level="2.2" data-path="Chapter2.html"><a href="Chapter2.html#first-encounter-with-smoothers"><i class="fa fa-check"></i><b>2.2</b> First encounter with smoothers</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="Chapter2.html"><a href="Chapter2.html#applying-linear-regression"><i class="fa fa-check"></i><b>2.2.1</b> Applying linear regression</a>
+<ul>
+<li class="chapter" data-level="2.2.1.1" data-path="Chapter2.html"><a href="Chapter2.html#当てはめるモデル"><i class="fa fa-check"></i><b>2.2.1.1</b> 当てはめるモデル</a></li>
+<li class="chapter" data-level="2.2.1.2" data-path="Chapter2.html"><a href="Chapter2.html#data-exploration-1"><i class="fa fa-check"></i><b>2.2.1.2</b> data exploration</a></li>
+<li class="chapter" data-level="2.2.1.3" data-path="Chapter2.html"><a href="Chapter2.html#model-diagnosis"><i class="fa fa-check"></i><b>2.2.1.3</b> model diagnosis</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.2" data-path="Chapter2.html"><a href="Chapter2.html#applying-cubic-polynomials"><i class="fa fa-check"></i><b>2.2.2</b> Applying cubic polynomials</a></li>
+<li class="chapter" data-level="2.2.3" data-path="Chapter2.html"><a href="Chapter2.html#a-simple-gam"><i class="fa fa-check"></i><b>2.2.3</b> A simple GAM</a></li>
+<li class="chapter" data-level="2.2.4" data-path="Chapter2.html"><a href="Chapter2.html#moving-average-and-loess-smoother"><i class="fa fa-check"></i><b>2.2.4</b> Moving average and LOESS smoother</a>
+<ul>
+<li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> 2.2.5 Packages for smoothing</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> 2.3 Allpying GAM in R using the mgcv package</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
