@@ -1,23 +1,17 @@
 # 0.  パッケージの読み込み {-}  
-本稿では、基本的にネットワークデータのハンドリングには`tidygraph`パッケージを用いる。このパッケージを使うことで、データフレームとしてネットワークデータを扱うことができるので非常に便利である。ネットワークグラフの描画には`ggraph`パッケージを用いる。このパッケージでは、基本的に`ggplot2`と同じ文法でネットワークグラフを描くことができる。  
-
-各指標の算出や統計分析には、主に`asnipe`パッケージ、`ANTs`パッケージ、`igraph`パッケージ、`sna`パッケージを用いる。  
-
-- [tidygraph](https://tidygraph.data-imaginist.com/index.html)  
-- [ggraph](https://ggraph.data-imaginist.com/)  
-- [asnipe](https://rdrr.io/cran/asnipe/man/asnipe-package.html)[@Farine2013]   
-- [ANTS](http://www.s-sosa.com/ants)[@Sosa2020]  
-- [igraph](https://igraph.org/)[@Csardi2006]  
-- [sna](https://rdrr.io/cran/sna/)[@Butts2008]   
+本稿では、
 
 ```{r}
-## gam
+## GAM
 library(mgcv)
+library(gratia)
+library(gstat)
 ## データハンドリング
 library(tidyverse)
 library(easystats)
 library(data.table)
 ## グラフや表関連
+library(sp)
 library(plotly)
 library(htmlwidgets)
 library(GGally)

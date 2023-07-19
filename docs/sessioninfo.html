@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-16" />
+<meta name="date" content="2023-07-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -223,9 +223,21 @@ div.csl-indent {
 <li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
 <li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> 2.2.5 Packages for smoothing</a></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> 2.3 Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#cross-validation"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chapter2.html"><a href="Chapter2.html#independence"><i class="fa fa-check"></i><b>2.5.2</b> Independence</a></li>
+<li class="chapter" data-level="2.5.3" data-path="Chapter2.html"><a href="Chapter2.html#influential-observations"><i class="fa fa-check"></i><b>2.5.3</b> Influential observations</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="Chapter2.html"><a href="Chapter2.html#extending-the-gam-with-more-covariates"><i class="fa fa-check"></i><b>2.6</b> Extending the GAM with more covariates</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
+<li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -247,7 +259,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="実行環境" class="section level1 unnumbered hasAnchor">
 <h1>実行環境<a href="sessioninfo.html#実行環境" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="sessioninfo.html#cb66-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="sessioninfo.html#cb82-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.2.2 (2022-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 22621)
@@ -263,47 +275,52 @@ div.csl-indent {
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] mgcv_1.8-41        nlme_3.1-160       fontregisterer_0.3 systemfonts_1.0.4 
-##  [5] extrafont_0.18     lemon_0.4.6        ggsci_2.9          concaveman_1.1.0  
-##  [9] ggforce_0.4.1      ggdag_0.2.7        dagitty_0.3-1      kableExtra_1.3.4  
-## [13] knitr_1.43         DT_0.27            patchwork_1.1.2    GGally_2.1.2      
-## [17] htmlwidgets_1.6.2  plotly_4.10.1      data.table_1.14.6  see_0.7.5.5       
-## [21] report_0.5.7.4     parameters_0.20.3  performance_0.10.3 modelbased_0.8.6.3
-## [25] insight_0.19.1.4   effectsize_0.8.3.6 datawizard_0.7.1.1 correlation_0.8.4 
-## [29] bayestestR_0.13.1  easystats_0.6.0.8  forcats_1.0.0      stringr_1.5.0     
-## [33] dplyr_1.1.2        purrr_1.0.0        readr_2.1.3        tidyr_1.2.1       
-## [37] tibble_3.2.1       ggplot2_3.4.2      tidyverse_1.3.2   
+##  [1] sp_1.5-1           gstat_2.1-1        gratia_0.8.1.34    mgcv_1.8-41       
+##  [5] nlme_3.1-160       fontregisterer_0.3 systemfonts_1.0.4  extrafont_0.18    
+##  [9] lemon_0.4.6        ggsci_2.9          concaveman_1.1.0   ggforce_0.4.1     
+## [13] ggdag_0.2.7        dagitty_0.3-1      kableExtra_1.3.4   knitr_1.43        
+## [17] DT_0.27            patchwork_1.1.2    GGally_2.1.2       htmlwidgets_1.6.2 
+## [21] plotly_4.10.1      data.table_1.14.6  see_0.7.5.5        report_0.5.7.4    
+## [25] parameters_0.20.3  performance_0.10.3 modelbased_0.8.6.3 insight_0.19.1.4  
+## [29] effectsize_0.8.3.6 datawizard_0.7.1.1 correlation_0.8.4  bayestestR_0.13.1 
+## [33] easystats_0.6.0.8  forcats_1.0.0      stringr_1.5.0      dplyr_1.1.2       
+## [37] purrr_1.0.0        readr_2.1.3        tidyr_1.2.1        tibble_3.2.1      
+## [41] ggplot2_3.4.2      tidyverse_1.3.2   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] googledrive_2.0.0   colorspace_2.0-3    estimability_1.4.1 
-##  [4] fs_1.5.2            rstudioapi_0.14     farver_2.1.1       
-##  [7] fansi_1.0.3         mvtnorm_1.1-3       lubridate_1.9.0    
-## [10] xml2_1.3.3          codetools_0.2-18    splines_4.2.2      
-## [13] cachem_1.0.6        polyclip_1.10-4     jsonlite_1.8.4     
-## [16] Rttf2pt1_1.3.8      broom_1.0.2         dbplyr_2.2.1       
-## [19] compiler_4.2.2      httr_1.4.4          emmeans_1.8.3      
-## [22] backports_1.4.1     Matrix_1.5-1        assertthat_0.2.1   
-## [25] fastmap_1.1.0       lazyeval_0.2.2      gargle_1.2.1       
-## [28] cli_3.6.0           tweenr_2.0.2        htmltools_0.5.4    
-## [31] tools_4.2.2         igraph_1.3.5        coda_0.19-4        
-## [34] gtable_0.3.3        glue_1.6.2          V8_4.2.2           
-## [37] Rcpp_1.0.11         cellranger_1.1.0    jquerylib_0.1.4    
-## [40] vctrs_0.6.2         svglite_2.1.1       extrafontdb_1.0    
-## [43] xfun_0.39           rvest_1.0.3         timechange_0.1.1   
-## [46] lifecycle_1.0.3     googlesheets4_1.0.1 MASS_7.3-58.1      
-## [49] scales_1.2.1        tidygraph_1.2.2     hms_1.1.3          
-## [52] RColorBrewer_1.1-3  yaml_2.3.7          curl_4.3.3         
-## [55] gridExtra_2.3       sass_0.4.5          reshape_0.8.9      
-## [58] stringi_1.7.8       boot_1.3-28         rlang_1.1.1        
-## [61] pkgconfig_2.0.3     evaluate_0.20       lattice_0.20-45    
-## [64] tidyselect_1.2.0    plyr_1.8.8          magrittr_2.0.3     
-## [67] bookdown_0.34       R6_2.5.1            generics_0.1.3     
-## [70] DBI_1.1.3           pillar_1.9.0        haven_2.5.1        
-## [73] withr_2.5.0         modelr_0.1.10       crayon_1.5.2       
-## [76] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.23     
-## [79] grid_4.2.2          readxl_1.4.1        reprex_2.0.2       
-## [82] digest_0.6.31       webshot_0.5.4       xtable_1.8-4       
-## [85] munsell_0.5.0       viridisLite_0.4.1   bslib_0.4.2</code></pre>
+##  [1] googledrive_2.0.0   colorspace_2.0-3    ellipsis_0.3.2     
+##  [4] estimability_1.4.1  fs_1.5.2            rstudioapi_0.15.0  
+##  [7] farver_2.1.1        fansi_1.0.3         mvtnorm_1.1-3      
+## [10] lubridate_1.9.0     xml2_1.3.3          codetools_0.2-18   
+## [13] splines_4.2.2       cachem_1.0.6        polyclip_1.10-4    
+## [16] jsonlite_1.8.4      Rttf2pt1_1.3.8      broom_1.0.2        
+## [19] dbplyr_2.2.1        compiler_4.2.2      httr_1.4.4         
+## [22] emmeans_1.8.3       backports_1.4.1     Matrix_1.5-1       
+## [25] assertthat_0.2.1    fastmap_1.1.0       lazyeval_0.2.2     
+## [28] gargle_1.2.1        cli_3.6.0           tweenr_2.0.2       
+## [31] htmltools_0.5.4     tools_4.2.2         igraph_1.3.5       
+## [34] coda_0.19-4         gtable_0.3.3        glue_1.6.2         
+## [37] V8_4.2.2            Rcpp_1.0.11         cellranger_1.1.0   
+## [40] jquerylib_0.1.4     vctrs_0.6.2         svglite_2.1.1      
+## [43] extrafontdb_1.0     xfun_0.39           rvest_1.0.3        
+## [46] timechange_0.1.1    lifecycle_1.0.3     googlesheets4_1.0.1
+## [49] zoo_1.8-11          MASS_7.3-58.1       scales_1.2.1       
+## [52] tidygraph_1.2.2     hms_1.1.3           RColorBrewer_1.1-3 
+## [55] mvnfast_0.2.8       yaml_2.3.7          curl_4.3.3         
+## [58] gridExtra_2.3       sass_0.4.5          reshape_0.8.9      
+## [61] stringi_1.7.8       highr_0.10          ggokabeito_0.1.0   
+## [64] boot_1.3-28         intervals_0.15.4    rlang_1.1.1        
+## [67] pkgconfig_2.0.3     evaluate_0.20       lattice_0.20-45    
+## [70] labeling_0.4.2      tidyselect_1.2.0    plyr_1.8.8         
+## [73] magrittr_2.0.3      bookdown_0.34       R6_2.5.1           
+## [76] generics_0.1.3      DBI_1.1.3           pillar_1.9.0       
+## [79] haven_2.5.1         withr_2.5.0         xts_0.12.2         
+## [82] spacetime_1.3-0     modelr_0.1.10       crayon_1.5.2       
+## [85] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.23     
+## [88] grid_4.2.2          readxl_1.4.1        FNN_1.1.3.2        
+## [91] reprex_2.0.2        digest_0.6.31       webshot_0.5.4      
+## [94] xtable_1.8-4        munsell_0.5.0       viridisLite_0.4.2  
+## [97] bslib_0.4.2</code></pre>
 <p><strong>References</strong></p>
 
 <div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
@@ -314,19 +331,10 @@ Bailey, D. M., Collins, M. A., Gordon, J. D. M., Zuur, A. F., &amp; Priede, I. G
 Burnham, K. P., Anderson, D. R., &amp; Huyvaert, K. P. (2011). <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. <em>Behav. Ecol. Sociobiol.</em>, <em>65</em>(1), 23–35.
 </div>
 <div class="csl-entry">
-Butts, C. T. (2008). Social network analysis with sna. <em>J. Stat. Softw.</em>, <em>24</em>, 1–51.
-</div>
-<div class="csl-entry">
 Chang, W. (2018). <em><span>R</span> graphics cookbook: Practical recipes for visualizing data</em>. <span>“O’Reilly Media, Inc.”</span>
 </div>
 <div class="csl-entry">
-Csardi, G., Nepusz, T., &amp; Others. (2006). The igraph software package for complex network research. <em>InterJournal, Complex Systems</em>, <em>1695</em>(5), 1–9.
-</div>
-<div class="csl-entry">
 Dunn, P. K., &amp; Smyth, G. K. (2018). <em>Generalized linear models with examples in <span>R</span></em>. Springer New York.
-</div>
-<div class="csl-entry">
-Farine, D. R. (2013). Animal social network inference and permutations for ecologists inRusingasnipe. <em>Methods Ecol. Evol.</em>, <em>4</em>(12), 1187–1194.
 </div>
 <div class="csl-entry">
 Hastie, T., &amp; Hastie, M. T. (2018). Package <span>“gam.”</span> <em>GAM Package CRAN, Cran. R-Project. Org/Web/Packages/Gam/Gam. Pdf</em>.
@@ -336,9 +344,6 @@ Pearce, E., &amp; Dunbar, R. (2012). Latitudinal variation in light levels drive
 </div>
 <div class="csl-entry">
 Rigby, R. A., Stasinopoulos, M. D., Heller, G. Z., &amp; De Bastiani, F. (2019). <em>Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span></em>. CRC Press.
-</div>
-<div class="csl-entry">
-Sosa, S., Puga-Gonzalez, I., Hu, F., Pansanel, J., Xie, X., &amp; Sueur, C. (2020). A multilevel statistical toolkit to study animal social networks: The animal network toolkit software (<span>ANTs</span>) <span>R</span> package. <em>Sci. Rep.</em>, <em>10</em>(1), 12507.
 </div>
 <div class="csl-entry">
 Wickham, H., &amp; Grolemund, G. (2016). <em><span>R</span> for data science: Import, tidy, transform, visualize, and model data</em>. <span>“O’Reilly Media, Inc.”</span>

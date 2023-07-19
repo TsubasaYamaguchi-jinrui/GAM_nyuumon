@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-16" />
+<meta name="date" content="2023-07-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -223,9 +223,21 @@ div.csl-indent {
 <li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
 <li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> 2.2.5 Packages for smoothing</a></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> 2.3 Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#cross-validation"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chapter2.html"><a href="Chapter2.html#independence"><i class="fa fa-check"></i><b>2.5.2</b> Independence</a></li>
+<li class="chapter" data-level="2.5.3" data-path="Chapter2.html"><a href="Chapter2.html#influential-observations"><i class="fa fa-check"></i><b>2.5.3</b> Influential observations</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="Chapter2.html"><a href="Chapter2.html#extending-the-gam-with-more-covariates"><i class="fa fa-check"></i><b>2.6</b> Extending the GAM with more covariates</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
+<li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -247,45 +259,34 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="パッケージの読み込み" class="section level1 unnumbered hasAnchor">
 <h1>0. パッケージの読み込み<a href="Chapter0.html#パッケージの読み込み" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>本稿では、基本的にネットワークデータのハンドリングには<code>tidygraph</code>パッケージを用いる。このパッケージを使うことで、データフレームとしてネットワークデータを扱うことができるので非常に便利である。ネットワークグラフの描画には<code>ggraph</code>パッケージを用いる。このパッケージでは、基本的に<code>ggplot2</code>と同じ文法でネットワークグラフを描くことができる。</p>
-<p>各指標の算出や統計分析には、主に<code>asnipe</code>パッケージ、<code>ANTs</code>パッケージ、<code>igraph</code>パッケージ、<code>sna</code>パッケージを用いる。</p>
-<ul>
-<li><a href="https://tidygraph.data-imaginist.com/index.html">tidygraph</a><br />
-</li>
-<li><a href="https://ggraph.data-imaginist.com/">ggraph</a><br />
-</li>
-<li><a href="https://rdrr.io/cran/asnipe/man/asnipe-package.html">asnipe</a><span class="citation">(<a href="#ref-Farine2013">Farine, 2013</a>)</span><br />
-</li>
-<li><a href="http://www.s-sosa.com/ants">ANTS</a><span class="citation">(<a href="#ref-Sosa2020">Sosa et al., 2020</a>)</span><br />
-</li>
-<li><a href="https://igraph.org/">igraph</a><span class="citation">(<a href="#ref-Csardi2006">Csardi et al., 2006</a>)</span><br />
-</li>
-<li><a href="https://rdrr.io/cran/sna/">sna</a><span class="citation">(<a href="#ref-Butts2008">Butts, 2008</a>)</span></li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="Chapter0.html#cb1-1" tabindex="-1"></a><span class="do">## gam</span></span>
+<p>本稿では、</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="Chapter0.html#cb1-1" tabindex="-1"></a><span class="do">## GAM</span></span>
 <span id="cb1-2"><a href="Chapter0.html#cb1-2" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
-<span id="cb1-3"><a href="Chapter0.html#cb1-3" tabindex="-1"></a><span class="do">## データハンドリング</span></span>
-<span id="cb1-4"><a href="Chapter0.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-5"><a href="Chapter0.html#cb1-5" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
-<span id="cb1-6"><a href="Chapter0.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb1-7"><a href="Chapter0.html#cb1-7" tabindex="-1"></a><span class="do">## グラフや表関連</span></span>
-<span id="cb1-8"><a href="Chapter0.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
-<span id="cb1-9"><a href="Chapter0.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
-<span id="cb1-10"><a href="Chapter0.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb1-11"><a href="Chapter0.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-12"><a href="Chapter0.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
-<span id="cb1-13"><a href="Chapter0.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb1-14"><a href="Chapter0.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-15"><a href="Chapter0.html#cb1-15" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
-<span id="cb1-16"><a href="Chapter0.html#cb1-16" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
-<span id="cb1-17"><a href="Chapter0.html#cb1-17" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
-<span id="cb1-18"><a href="Chapter0.html#cb1-18" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
-<span id="cb1-19"><a href="Chapter0.html#cb1-19" tabindex="-1"></a><span class="fu">library</span>(ggsci)</span>
-<span id="cb1-20"><a href="Chapter0.html#cb1-20" tabindex="-1"></a><span class="fu">library</span>(lemon)</span>
-<span id="cb1-21"><a href="Chapter0.html#cb1-21" tabindex="-1"></a><span class="do">## フォント関連</span></span>
-<span id="cb1-22"><a href="Chapter0.html#cb1-22" tabindex="-1"></a><span class="fu">library</span>(extrafont)</span>
-<span id="cb1-23"><a href="Chapter0.html#cb1-23" tabindex="-1"></a><span class="fu">require</span>(systemfonts)</span>
-<span id="cb1-24"><a href="Chapter0.html#cb1-24" tabindex="-1"></a><span class="fu">require</span>(fontregisterer)</span></code></pre></div>
+<span id="cb1-3"><a href="Chapter0.html#cb1-3" tabindex="-1"></a><span class="fu">library</span>(gratia)</span>
+<span id="cb1-4"><a href="Chapter0.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb1-5"><a href="Chapter0.html#cb1-5" tabindex="-1"></a><span class="do">## データハンドリング</span></span>
+<span id="cb1-6"><a href="Chapter0.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-7"><a href="Chapter0.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
+<span id="cb1-8"><a href="Chapter0.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-9"><a href="Chapter0.html#cb1-9" tabindex="-1"></a><span class="do">## グラフや表関連</span></span>
+<span id="cb1-10"><a href="Chapter0.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
+<span id="cb1-11"><a href="Chapter0.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-12"><a href="Chapter0.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb1-13"><a href="Chapter0.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-14"><a href="Chapter0.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-15"><a href="Chapter0.html#cb1-15" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb1-16"><a href="Chapter0.html#cb1-16" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-17"><a href="Chapter0.html#cb1-17" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-18"><a href="Chapter0.html#cb1-18" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb1-19"><a href="Chapter0.html#cb1-19" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb1-20"><a href="Chapter0.html#cb1-20" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
+<span id="cb1-21"><a href="Chapter0.html#cb1-21" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
+<span id="cb1-22"><a href="Chapter0.html#cb1-22" tabindex="-1"></a><span class="fu">library</span>(ggsci)</span>
+<span id="cb1-23"><a href="Chapter0.html#cb1-23" tabindex="-1"></a><span class="fu">library</span>(lemon)</span>
+<span id="cb1-24"><a href="Chapter0.html#cb1-24" tabindex="-1"></a><span class="do">## フォント関連</span></span>
+<span id="cb1-25"><a href="Chapter0.html#cb1-25" tabindex="-1"></a><span class="fu">library</span>(extrafont)</span>
+<span id="cb1-26"><a href="Chapter0.html#cb1-26" tabindex="-1"></a><span class="fu">require</span>(systemfonts)</span>
+<span id="cb1-27"><a href="Chapter0.html#cb1-27" tabindex="-1"></a><span class="fu">require</span>(fontregisterer)</span></code></pre></div>
 <p>なお、本稿はRの基本操作と<code>tidyverse</code>パッケージによるデータハンドリングができることを前提としている。<code>tidyverse</code>パッケージを用いたデータ処理については、以下の書籍などを参照。</p>
 <ul>
 <li><p>R for Data Science <span class="citation">(<a href="#ref-Wickham2016">Wickham &amp; Grolemund, 2016</a>)</span><br />
@@ -298,20 +299,8 @@ div.csl-indent {
 </div>
 <h3>References</h3>
 <div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
-<div id="ref-Butts2008" class="csl-entry">
-Butts, C. T. (2008). Social network analysis with sna. <em>J. Stat. Softw.</em>, <em>24</em>, 1–51.
-</div>
 <div id="ref-Chang2018" class="csl-entry">
 Chang, W. (2018). <em><span>R</span> graphics cookbook: Practical recipes for visualizing data</em>. <span>“O’Reilly Media, Inc.”</span>
-</div>
-<div id="ref-Csardi2006" class="csl-entry">
-Csardi, G., Nepusz, T., &amp; Others. (2006). The igraph software package for complex network research. <em>InterJournal, Complex Systems</em>, <em>1695</em>(5), 1–9.
-</div>
-<div id="ref-Farine2013" class="csl-entry">
-Farine, D. R. (2013). Animal social network inference and permutations for ecologists inRusingasnipe. <em>Methods Ecol. Evol.</em>, <em>4</em>(12), 1187–1194.
-</div>
-<div id="ref-Sosa2020" class="csl-entry">
-Sosa, S., Puga-Gonzalez, I., Hu, F., Pansanel, J., Xie, X., &amp; Sueur, C. (2020). A multilevel statistical toolkit to study animal social networks: The animal network toolkit software (<span>ANTs</span>) <span>R</span> package. <em>Sci. Rep.</em>, <em>10</em>(1), 12507.
 </div>
 <div id="ref-Wickham2016" class="csl-entry">
 Wickham, H., &amp; Grolemund, G. (2016). <em><span>R</span> for data science: Import, tidy, transform, visualize, and model data</em>. <span>“O’Reilly Media, Inc.”</span>

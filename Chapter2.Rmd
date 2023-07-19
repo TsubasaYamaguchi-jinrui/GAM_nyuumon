@@ -57,6 +57,10 @@ fish %>%
 
 モデルは以下のように実行できる。モデルは、目的変数のばらつきの33.7%が水深で説明できると推定している(`Adjusted R-squared`より)。    
 ```{r}
+fish %>% 
+  filter(MeanDepth > 800) %>% 
+  na.omit() -> fish
+
 M2_1 <- lm(Dens ~ MeanDepth, data = fish)
 
 print(summary(M2_1), digits = 3)
@@ -229,7 +233,7 @@ fish %>%
 
 これを一定間隔のデータで行ってつなげると、移動平均に基づいて平滑化曲線を描くことができる(図\@ref(fig:fig-movave2))。  
 ```{r fig-movave2, fig.dim = c(4.5,4.5), fig.cap = "Estimated moving average smoother"}
-Depth_n <- seq(810, 4800, by = 10)
+Depth_n <- seq(810, 4800, length.out = 150)
 Mean_n <- data.frame(MeanDepth = Depth_n,
                      Est = NA)
 
@@ -301,12 +305,12 @@ bind_rows(pred_M2_3_a, pred_M2_3_b, pred_M2_3_c) %>%
   labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
 ```
 
-### 2.2.5 Packages for smoothing  
+### Packages for smoothing  
 Rには、平滑化を行うことができるパッケージが複数存在する。例えば、`gam`パッケージ[@Hastie2018]、`mgcv`パッケージ[@Wood2007]、`gamlss`パッケージ[@Rigby2019]などがある。それぞれのパッケージに長所と短所があり、`gam`はLOESSを用いる際に使いやすく、`mgvc`はより発展的な手法に対して使いやすい。`gamlss`はより広い分布に対して用いることができる。本稿では主に`mgcv`パッケージを用いる。
 
 `mgvc`パッケージでは様々な手法を用いた平滑化を行うことができるが、自身のデータに対してどの方法を用いるかを決めるためにはこうした手法について知っていなければならない。こうした手法については、第(\@ref(c3))章で詳しく学ぶ。  
 
-## 2.3 Allpying GAM in R using the mgcv package  
+## Allpying GAM in R using the mgcv package  
 本節では、`mgvc`パッケージを用いてGAMを適用する方法を学ぶ。まず、`gam`関数を用いて式\@ref(eq:gam)を以下のように適用する。なお、`fx = TRUE`、`k = 5`というのは有効自由度4の平滑化関数が用いられていることを示しているが、詳しくは次章で説明する。
 
 ```{r}
@@ -321,5 +325,343 @@ M2_4 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 5),
 summary(M2_4)
 ```
 
-切片の推定値は`r coef(M2_4)[[1]]`
+切片の推定値は`r sprintf("%.4f",coef(M2_4)[[1]])`なので、モデル式は以下のように書ける。  
+$$
+Dens_i = 0.0047 + f(Depth_i)
+$$
 
+また、結果からはモデルが分散の36.9%を説明すること、推定された残差が従う正規分布の分散が$1.908 \times 10^{-5}$であることも分かる。  
+
+smoother($f(Dens_i)$)の有意性(`Approximate significance of smooth term`)は、以下のF値によって計算されている。なお、$RSS_1、RSS_2$はそれぞれsmootherがないモデルとあるモデルの残差平方和、$pとq$はそれぞれsmootherがあるモデルとないモデルの自由度、$N$はサンプル数である。もしモデルが前提を満たすならば、Fは自由度$N-p$と$p-q$のF分布に従う。  
+
+$$
+F = \frac{(RSS_1 - RSS_2)/(p-q)}{RSS_2/(N-p)}
+$$
+
+モデルによって推定された曲線は以下のようになる(図\@ref(fig:fig-fit-gam))。`mgvc`パッケージで推定した結果は、`gratia`[パッケージ](https://gavinsimpson.github.io/gratia/index.html)を用いると簡単に描画することができる。    
+
+```{r fig-fit-gam, fig.dim = c(4.5,4.5), fig.cap = "Fitted values obtained by the GAM."}
+dataM2_4 <- data.frame(MeanDepth = seq(800, 4865, length.out = 100))
+
+## 予測値を算出
+pred_M2_4_4 <- fitted_values(M2_4, data = dataM2_4) %>% 
+  mutate(df = 4)
+
+## 描画
+pred_M2_4_4 %>% 
+  ggplot(aes(x = MeanDepth, y = fitted))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              alpha = 0.3) +
+  geom_point(data = fish,
+             aes(y = Dens),
+             shape = 1)+
+  coord_cartesian(ylim = c(0,0.032))+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+## Cross validation  
+前節では自由度4で分析を行ったが、自由度はほかの値に設定することも可能である(図\@ref(fig:fig-fit-gam2)。どのようにして最適な自由度を選べばよいだろうか?    
+
+```{r fig-fit-gam2, fig.dim = c(13,7), fig.cap = "Fitted values obtained by the GAM using 2, 3, 4, 5, 7, 9 degrees of freedom."}
+## df = 2  
+M2_4_2 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 3),
+            data = fish)
+
+pred_M2_4_2 <- fitted_values(M2_4_2, data = dataM2_4) %>% 
+  mutate(df = 2)
+
+## df = 3  
+M2_4_3 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 4),
+            data = fish)
+
+pred_M2_4_3 <- fitted_values(M2_4_3, data = dataM2_4) %>% 
+  mutate(df = 3)
+
+## df = 5  
+M2_4_5 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 6),
+            data = fish)
+
+pred_M2_4_5 <- fitted_values(M2_4_5, data = dataM2_4) %>% 
+  mutate(df = 5)
+
+## df = 7  
+M2_4_7 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 8),
+            data = fish)
+
+pred_M2_4_7 <- fitted_values(M2_4_7, data = dataM2_4) %>% 
+  mutate(df = 7)
+
+## df = 9  
+M2_4_9 <- gam(Dens ~ s(MeanDepth, fx = TRUE, k = 10),
+            data = fish)
+
+pred_M2_4_9 <- fitted_values(M2_4_9, data = dataM2_4) %>% 
+  mutate(df = 9)
+
+## 描画  
+bind_rows(pred_M2_4_2, pred_M2_4_3, pred_M2_4_4, pred_M2_4_5, pred_M2_4_7,pred_M2_4_9) %>% 
+  mutate(df = str_c("df = ",df)) %>% 
+  ggplot(aes(x = MeanDepth, y = fitted))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              alpha = 0.3) +
+  geom_point(data = fish,
+             aes(y = Dens),
+             shape = 1)+
+  coord_cartesian(ylim = c(0,0.032))+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2)))) +
+  facet_rep_wrap(~df, repeat.tick.labels = TRUE)
+```
+<br/>  
+
+`gam`関数では、`fx =`と`k =`を書かなければ自動的に交差検証(cross validation)を実行し、最適な自由度を探してくれる。下記のように、最適な自由度は5.62ということになる。    
+
+```{r}
+M2_5 <- gam(Dens ~ s(MeanDepth), data = fish)
+
+summary(M2_5)
+```
+
+推定結果をもとに描いた平滑化曲線は以下のようになる(図\@ref(fig:fig-fit-gam3))。  
+```{r fig-fit-gam3, fig.dim = c(4.5,4.5), fig.cap = "Fitted values obtained by the GAM."}
+pred_M2_5 <- smooth_estimates(M2_5, data = dataM2_4) %>% 
+  ## 95%信頼区間を算出
+  add_confint() %>% 
+  mutate(est = est + coef(M2_5)[[1]],
+         lower_ci = lower_ci + coef(M2_5)[[1]],
+         upper_ci = upper_ci + coef(M2_5)[[1]]) %>% 
+  mutate(df = 4)
+
+## 描画
+pred_M2_5 %>% 
+  ggplot(aes(x = MeanDepth, y = est))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),
+              alpha = 0.3) +
+  geom_point(data = fish,
+             aes(y = Dens),
+             shape = 1)+
+  coord_cartesian(ylim = c(-0.001,0.032))+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+<br/>  
+
+それでは、交差検証とは何だろうか?smoother$f(Depth_i)$の推定値を$\hat{f}(Depth_i)$とするとき、推定値が真のsmootherとどれほど近いかは以下の式で表せる。  
+
+$$
+M = \frac{1}{n}\sum_{i = 1} ^n (f(Depth_i) - \hat{f}(Depth_i))^2
+$$
+
+もし私たちが真の$f(Depth_i)$を知っているならば、Mが最小になるように$\hat{f}(Depth_i)$を推定することができるが、真のsmootherを知ることはできない。そのため、私たちは$M$を何か計算可能なもので代用する必要がある。  
+
+方法としては、交差検証、一般化交差検証(generalized cross validation)、頑強なリスク推定(unbiased risk estimator)、Marrow's Cpなどがある。`gam`関数では、通常の加法モデルを適用するか、一般化加法モデルを適用するかによってこれらのいずれかが用いられる。本節では、通常の交差検証(ordinary cross validation: OCV)について簡単な解説を行う。  
+
+交差検証のスコア$V_0$は以下の式で与えられる。$f^{-i}(Depth_i)$は$i$番目のデータ以外のデータから推定されたsmootherの推定値を表す。$V_0$を最小にするようにsmootherの推定値を求める。  
+
+$$
+V_0 = \frac{1}{n}\sum_{i = 1} ^n (Depth_i -f^{-i}(Depth_i))^2
+$$
+
+理論的に、$V_0$の期待値は$M$の期待値に分散$\sigma^2$を足した値に近似できる。  
+
+$$
+E[V_0] \approx E[M] + \sigma^2
+$$
+
+これを計算するのは負荷が大きいため、通常はgeneralized cross validation scoreというものを用いることでshortcutを行う。詳細については第\@ref(c3)で解説を行う。データ数が50未満の場合は多重共線性やデータの非独立性によって交差検証の結果に問題が生じることがある。そのため、交差検証の結果をきちんと確認することが必要である。  
+
+## Model validation  
+### Normality and homogeneity  
+GAMでは重回帰分析のときと同様に残差を抽出し、その正規性や等分散性、独立性、影響のある観察の有無を確認しなければならない。
+
+`gratia`パッケージでは、`appraise`関数でQQプロット、残差 vs 予測値、残差のヒストグラム、実測値 vs 予測値のプロットを作成してくれる(図\@ref(fig:fig-gam-diagnosis))。なお、それぞれのグラフは`qq_plot()`、`residuals_linpred_plot()`、`residuals_hist_plot()`、`observed_fitted_plot`で個別に作成できる。  
+
+この結果から、等分散性や残差の正規性が成立していないことが分かる。    
+```{r fig-gam-diagnosis1, fig.dim = c(10,10), fig.cap = "Model diagnosis using `gratia` package."}
+appraise(M2_5, type = "response")
+```
+<br/>  
+
+手動で残差 vs 予測値、残差のヒストグラムは以下のように作成できる(図\@ref(fig:fig-gam-diagnosis2))。
+```{r fig-gam-diagnosis2, fig.dim = c(10,5), fig.cap = "Model diagnosis of GAM."}
+data.frame(res <- resid(M2_5),
+           fitted = fitted(M2_5)) -> diag_M2_5
+
+diag_M2_5 %>% 
+  ggplot(aes(x = fitted,y = res))+
+  geom_point()+
+  geom_hline(yintercept = 0, color = "red")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Fitted value", y = "Residuals") -> p_diag_M2_5_a
+
+diag_M2_5 %>% 
+  ggplot(aes(x = res))+
+  geom_histogram(fill = "white", color = "black")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Residuals", y = "Frequancy") -> p_diag_M2_5_b
+
+p_diag_M2_5_a + p_diag_M2_5_b
+```
+
+### Independence  
+残差の独立性を確認するため、残差と説明変数などの変数の関連をプロットする(図\@ref(fig:fig-gam-ind-M2-5))。水深との関連については(A)、等分散性の仮定が満たされていないことを除けば、特にパターンは見られない。もし水深との関連にもパターンがみられていたら、GAMの自由度を上げることでこの問題を解決できる。  
+
+一方で、期間との関連についてはパターンがみられ、期間2の残差がほとんど0を下回っている。このことは、`Period`をモデルに加えた方がいいことを示唆している。      
+
+```{r fig-gam-ind-M2-5, fog.dim = c(10,5), fig.cap = "A: residuals versus depth. B: residuals versus period"}
+data.frame(res = resid(M2_5),
+           MeanDepth = fish$MeanDepth) %>% 
+  ggplot(aes(x = MeanDepth, y = res))+
+  geom_point(shape = 1)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Depth", y = "Residuals", title = "A") -> p_ind_M2_5_a
+
+data.frame(res = resid(M2_5),
+           Period = as.factor(fish$Period)) %>% 
+  ggplot(aes(x = Period, y = res))+
+  geom_boxplot()+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Period", y = "Residuals", title = "B") -> p_ind_M2_5_b
+
+p_ind_M2_5_a + p_ind_M2_5_b
+```
+<br/>  
+
+残差に空間的な相関があるかを調べるため、各データポイントで調査が行われた場所と残差の大きさの関連を示したものが図\@ref(fig:fig-resxy)である。残差の大きさが点の色と大きさで表されている。このデータだけではいまいち解釈がしにくい。  
+
+```{r fig-resxy, fig.dim = c(5, 4.5), fig.cap = "Bubble plot of the residuals."}
+data.frame(res = resid(M2_5),
+           x = fish$Xkm,
+           y = fish$Ykm) %>% 
+  ggplot(aes(x = x, y = y))+
+  geom_point(aes(color = res, size = res),
+             alpha = 0.5)+
+  scale_size(range = c(1,7))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "X-coordinates", y = "Y-coordinates")
+```
+<br/>  
+
+このようなときに使えるのがバリオグラム(variogram)である。バリオグラムは以下の手順で作成する。なお、通常dは離散的に選択する。    
+
+1. 全てのサイト間の距離を計算する。  
+2. 距離がある特定の値dであるサイトの全組み合わせについて残差の差の二乗を計算し、それの平均値を算出する。  
+3. これを全ての距離について行い、距離と平均値の関係をプロットする。  
+
+もし残差が空間的に独立なのであれば、算出された平均値は水平に分布する。  
+
+Rでは`gstat`パッケージで以下のように算出できる。図で表したものが図\@ref(fig:fig-vario-M2-5)である。図からは150m以上離れるとsemi-variogram値(縦軸)が大きくなる傾向があることが分かる。このパターンは、他の変数や交互作用をモデルに含めることで解消できるかもしれない。  
+```{r fig-vario-M2-5, fig.dim = c(4.5,4.5), fig.cap = "Semi-variogram  of  the  residuals  of  the  GAM."}
+fish_cor <- fish
+## coordinateを作成
+coordinates(fish_cor) <- ~ Xkm + Ykm
+
+## 算出
+vario_M2_5 <- variogram(resid(M2_5) ~ 1, fish_cor)
+
+## 作図  
+vario_M2_5 %>% 
+  ggplot(aes(x = dist, y = gamma))+
+  geom_point(size = 3)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Distance (km)", y = "semivariogram")
+```
+<br/>  
+
+この分析の問題点は深さが考慮されていない点である。2地点間のxy平面上の距離が近くても、深さが違えば実際の距離は最大で5km近く離れている可能性がある。  
+
+### Influential observations  
+GAMではcook's distanceは算出できないが、各観測値の影響力の強さは全データを用いたモデルから推定されたsmoother($\hat{f}(Depth_i)$)からその観測値以外のデータを用いたモデルから推定されたsmoother($f^{-i}(Depth_i)$)を引いた値の二乗の合計値を算出することで求めることができる。各観測値について影響力の大きさは以下のように定式化できる。  
+
+$$
+I_i = \sum_{i = 1}^n (\hat{f}(Depth_i) - f^{-i}(Depth_i))^2
+$$
+
+Rでは以下のように計算できる。  
+```{r}
+nd <- data.frame(MeanDepth = seq(min(fish$MeanDepth), max(fish$MeanDepth), length.out = 150))
+pred_M2_5 <- predict(M2_5, newdata = nd, type = "terms")
+
+I <- vector()
+
+for(i in 1:nrow(fish)){
+  M2_5.i <- gam(Dens ~ s(MeanDepth), data = fish %>% filter(Site != fish[i,1][[1]]))
+  pred_M2_5.i <- predict(M2_5.i, newdata = nd, type = "terms")
+  I[i] <- sum((pred_M2_5[1:150] - pred_M2_5.i[1:150])^2)
+}
+```
+
+各ポイントの影響力の大きさをサイズにしてプロットしたのが図\@ref(fig:fig-gam-influential)である。いくつか影響力の高そうな点があるが、それが有意に大きいのか否かを言うことはできない。  
+```{r fig-gam-influential, fig.dim = c(4.5, 4.5), fig.cap = "Scatterplot of fish density versus depth. The size of an observation point is proportional to its influence on the shape of the smoother."}
+fish %>% 
+  mutate(I = I) %>% 
+  ggplot(aes(x = MeanDepth, y = Dens))+
+  geom_point(aes(size = I))+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        legend.position = "none")+
+  labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+## Extending the GAM with more covariates  
+### GAM with smoother and a normal covariate  
+GAMでも通常の線形モデルと同様に2つ以上の説明変数や交互作用を含めることができる。ここでは、これまでのモデルでは考慮できなかった調査期間(`Period`)と調査期間と水深(`MeanDepth`)の交互作用を入れることで、調査期間ごとに水深と魚の密度の関係が変わっているのかを調べるモデルを作成する。本節では交互作用なしとありのモデルを作成し、どちらがより良いモデルかを検討する。  
+
+交互作用なしモデルのモデル式は以下のようになる。このモデルでは、水深と魚の密度の関連はいずれの期間でも同じだが、その平均が期間によって異なることを仮定している。    
+$$
+\begin{aligned}
+Dnes_i &= \alpha + f(Depth_i) + \beta \times Period_i + \epsilon_i \\
+\epsilon_i &\sin N(0,\sigma^2)
+\end{aligned}
+$$
+
+モデルはRで以下のように実行できる。  
+```{r}
+fish <- fish %>% mutate(Period = as.factor(Period))
+M2_6 <- gam(Dens ~ s(MeanDepth) + Period, data = fish)
+```
+
+結果は以下の通り。  
+```{r}
+summary(M2_6)
+```
+
+モデルの推定結果からそれぞれの期間について以下のような式が書ける。  
+$$
+\begin{aligned}
+Period1: Dens_i &= 0.0054 + f(Depth_i) \\
+Period2: Dens_i &= 0.0032 + f(Depth_i)
+\end{aligned}
+$$
+
+モデルの結果を図示したのが図\@ref(fig:fig-fit-gam-M2-6)である。
+```{r fig-fit-gam-M2-6, fig.dim = c(5.2,4.5), fig.cap = "Visualisation of the GAM that contains a smoother of depth and period as a factor."}
+nd <- crossing(MeanDepth = seq(800, 4650, length.out = 100),
+               Period = as.factor(c(1,2)))
+
+fitted_values(M2_6, data = nd, scale = "response") %>% 
+  ggplot(aes(x = MeanDepth))+
+  geom_line(aes(y = fitted, linetype = Period))+
+  geom_point(data = fish,
+             aes(y = Dens, fill = Period),
+             shape = 21)+
+  scale_fill_manual(values = c("white","black"))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))
+```
+
+### GAM with interaction terms; first implement  
