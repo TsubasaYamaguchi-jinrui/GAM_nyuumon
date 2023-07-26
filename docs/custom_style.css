@@ -43,6 +43,10 @@ li {
   margin-bottom: 10px; 
 }
 
+.book .book-body .page-wrapper .page-inner {
+    max-width: 1000px !important;
+}
+
 .math {
   font-size: 17px;
   line-height: 15.5px;

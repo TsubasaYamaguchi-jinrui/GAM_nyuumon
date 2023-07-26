@@ -1,2 +1,446 @@
 # Technical aspects of GAM using pelagic bioluminescent organisms {#c3}  
+本章では、GAMの技術的な側面について説明を行う。    
+
+## Pelagic bioluminescent organism data  
+GAMの技術的な側面を解説するため、本章では @Heger2008 が2004年夏に海洋生物の発光について調べた研究を用いる。船で海洋を航行中に検出した蛍光の強度(`Source`)と、水深(`Depth`)、温度(`Temp`)、塩分(`Salinity`)、酸素(`Oxgen`)などを測定している。  
+
+データは14のステーションでサンプルされている。データは以下の通り。  
+```{r}
+BL <- read_delim("data/HegerPierce.txt")
+
+datatable(BL,
+          options = list(scrollX = 20),
+          filter = "top")
+```
+<br/>  
+
+## Lineaar regression  
+まずは線形回帰を行う。ひとまず、ステーションの違いは無視して分析を行う。  
+
+図\@ref(fig:fig-dataexplore)は水深(`Depth`)と$1m^3$あたりに確認した生物発光の数をプロットしたものである。データを見る限り直線的な関係があるわけではないことが分かる。  
+```{r fig-dataexplore, fig.dim = c(4.5,4.5), fig.cap = "Scatterplot of depth versus bioluminescence sources per m^3"}
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources)) +
+  geom_point()+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)
+```
+<br/>  
+
+以下のモデリングでは、水深を0から1にスケーリングする(モデルがうまく回らなくなるため)。  
+```{r}
+BL %>% 
+  mutate(Original_Depth = Depth,
+         Depth = Depth/max(Depth)) -> BL
+```
+
+明確に直線的な関係はないが、まずは線形回帰を行う。データには様々な変数があるが、いくつかの変数は強く相関しているため、水深のみを説明変数として用いる(図\@ref(fig:fig-dataexplore2))。  
+
+```{r fig-dataexplore2, fig.dim = c(10,10), fig.cap = "Pair plot of the data."}
+ggpairs(BL %>% select(Sources, Depth, Salinity, Temp, Oxgen))
+```
+<br/>  
+
+モデル式は以下のようになる。  
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta \times Depth_i + \epsilon_i\\
+\epsilon_i &\sim N(0, \sigma^2)
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M3_1 <- lm(Sources ~ Depth, data = BL)
+```
+
+モデルによって推定された回帰直線をデータに当てはめると、明らかに当てはまりが悪いことが分かる(図\@ref(fig:fig-fitted-M3-1))。  
+```{r fig-fitted-M3-1, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_1"}
+nd_M3 <- data.frame(Depth = seq(0,1,length.out = 100))
+
+fitted_M3_1 <- predict(M3_1, newdata = nd_M3,) %>% 
+  data.frame() %>% 
+  rename(fitted = 1) %>% 
+  bind_cols(nd_M3)
+
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(size = 2, alpha = 0.6, color = "grey54")+
+   geom_line(data = fitted_M3_1,
+            aes(y = fitted),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+本章の目的は、以下のような式を書いたときに$Depth$と$Sources$の関係をうまく説明できる$f(Depth_i)$という関数を見つけることである。先ほどの線形回帰では$f(Depth_i) = \beta \times Depth_i$だった。次節以降では、$f(Depth_i)$として何が最適かを探っていき、最終的にGAMの解説を行う。    
+
+$$
+Sources_i = \alpha + f(Depth_i) + \epsilon_i (\#eq:fdepth)
+$$
+
+## Polynomial regression model  
+続いて、多項式回帰を行ってみる。モデル式は以下のとおりである。  
+
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta_1 \times Depth_i + \beta_2 \times Depth_i^2 + \beta_3 \times Depth^3 +  \epsilon_i\\
+\epsilon_i &\sim N(0, \sigma^2)
+\end{aligned}
+$$
+
+Rでは以下のコードで実行できる。  
+```{r}
+M3_2 <- lm(Sources ~ poly(Depth,3), data = BL)
+```
+
+モデルによって推定された曲線をデータの上に描いたのが図\@ref(fig:fig-fitted-M3-2)である。先ほどよりは当てはまりがよくなったが、左上と右下の当てはまりが悪いことが分かる。  
+```{r fig-fitted-M3-2, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_2"}
+fitted_M3_2 <- predict(M3_2, newdata = nd_M3,) %>% 
+  data.frame() %>% 
+  rename(fitted = 1) %>% 
+  bind_cols(nd_M3)
+
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(size = 2, alpha = 0.6, color = "grey54")+
+   geom_line(data = fitted_M3_2,
+            aes(y = fitted),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.1,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+次節からは、GAMの数理的な基礎を理解するためにも以下のモデルを解説する。  
+
+1. 線形スプライン回帰(linear spline regression)   
+2. 二次スプライン回帰(quadratic spline regression)  
+3. ノット数(numer of knots)  
+4. 罰則付きスプライン回帰(penalized spline regression)  
+
+## 3.4 Linear spline regression {#s3-4}   
+線形スプライン回帰とは、x軸をいくつかのセグメントに分け、それぞれのセグメントごとに線形回帰を行う方法である。問題は、いくつのセグメントにどのように分けるべきかということである。  
+
+図\@ref(fig:fig-fitted-M3-1)や図\@ref(fig:fig-fitted-M3-2)からは、スケール化された水深がだいたい0.2くらいで傾きが変わっている印象を受ける。そこで、0.2を境に傾きが変わるモデルを考える。ただし、このとき回帰直線は0.2でつながっていなければいけない。  
+
+実際にモデルを適用する前に、$(Depth_i - 0.2)_+$を以下のように定義する。  
+
+$$
+(Depth_i - 0.2)_+ = 
+\begin{cases}
+0 & (Depth_i < 0.2)\\
+Depth_i - 0.2 & (Depth_i ≧ 0.2)\\ 
+\end{cases} 
+$$
+
+Rでは以下のような関数`rhs`を作成してこうした変数を作成する。これは、ある変数`x`について閾値`TH`を境にそれ以下なら0、それ以上なら$x - TH$となるような新しい変数を作成する関数である。  
+
+```{r}
+rhs <- function(x, TH) {
+  ifelse(x >= TH, x - TH, 0)
+}
+```
+
+モデルは以下のようになる。  
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta_1 \times Depth_i + \beta_{11} \times (Depth_i - 0.2)_+ + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+Rでこれを実装すると以下のようになる。  
+```{r}
+M3_3 <- lm(Sources ~ Depth + rhs(Depth, 0.2), data = BL)
+```
+
+モデルから推定された回帰曲線は以下のようになる(図\@ref(fig:fig-fitted-M3-3))。  
+```{r fig-fitted-M3-3, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_3"}
+fitted_M3_3 <- predict(M3_3, newdata = nd_M3) %>% 
+  data.frame() %>% 
+  rename(fitted = 1) %>% 
+  bind_cols(nd_M3)
+
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_M3_3,
+            aes(y = fitted),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.1,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+問題は、モデル`M3_3`が通常の直線回帰モデル(`M3_1`)や多項回帰モデル(`M3_2`)よりもよいモデルかどうかである。赤池情報量規準(AIC)を持ちると[^foot3]、`M3_3`はより予測の良いモデルだということが分かる。  
+
+```{r}
+AIC(M3_1, M3_2, M3_3)
+```
+
+[^foot3]: AICは簡単に言えばより予測の良い(≠ 当てはまりが良い)モデルを選ぶための基準で、低いほど良い。  
+
+しかし、モデル`M3_3`にも問題点がいくつかある。$Depth = 0.2$での傾きの変化が急激であるということと、0.2という数値の選択基準が恣意的である点である。  
+
+こうした問題点を解決する手段として、例えばデータを10等分してそれぞれについて回帰直線を当てはめるというようなものが考えられる。この場合、傾きは以下の9ポイント(第1から第9十分位数)で変わることになる。このようなポイントを**ノット(knot)**という。  
+
+```{r}
+q_Depth <- quantile(BL$Depth, probs = seq(0.1,0.9,0.1))
+```
+
+このとき、モデル式は以下のように書ける。なお、$k_j$は第j十分位数を表す。  
+
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta_1 \times Depth_i + \sum_{j = 1}^9 \Bigl( \beta_{1j} \times (Depth_i - k_j)_+ \Bigl) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+このモデルはRで以下のように実装できる。  
+```{r}
+M3_4 <- lm(Sources ~ Depth + rhs(Depth, q_Depth[1]) + rhs(Depth, q_Depth[2]) +
+             rhs(Depth, q_Depth[3]) + rhs(Depth, q_Depth[4]) + rhs(Depth, q_Depth[5]) +
+             rhs(Depth, q_Depth[6]) + rhs(Depth, q_Depth[7]) + rhs(Depth, q_Depth[8]) + 
+             rhs(Depth, q_Depth[9]), data = BL)
+```
+
+このモデルによって推定された回帰曲線は以下のとおりである(図\@ref(fig:fig-fitted-M3-4))。  
+```{r fig-fitted-M3-4, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_4"}
+fitted_M3_4 <- predict(M3_4, newdata = nd_M3) %>% 
+  data.frame() %>% 
+  rename(fitted = 1) %>% 
+  bind_cols(nd_M3)
+
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_M3_4,
+            aes(y = fitted),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.1,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+先ほどよりもよりデータへの当てはまりはよくなっているが、まだカクカクした線になっている。より細かく$Depth$を区分することは可能である。      
+
+`model.matrix(M3_4)`によって得られるこのモデルのsmootherの要素となった以下のものは、smootherの基底(smoother)と呼ばれる。  
+
+$$
+1, Depth_i, (Depth_i - k_1)_+, (Depth_i - k_2)_+, \dots, (Depth_i - k_9)_+
+$$
+
+## Quadratic spline regression {#s3-5}    
+適切な$f(Depth_i)$を探す試みとして線形スプライン回帰を行ったが、ノットで傾きがカクカクしてしまっていた。これに代わる方法として、二次スプライン回帰(quadratic spline regression)を考えることができる。モデルは以下のように書ける。  
+
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta_1 \times Depth_i + \beta_2 \times Depth_i^2 + \sum_{j = 1}^k \Bigl( \beta_{1j} \times (Depth_i - k_j)_+^2 \Bigl) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned} (\#eq:qsr)
+$$
+
+そのため、$Depth_i$を10等分するのであれば、このモデルにおける基底は以下の12個になる。  
+$$
+1, Depth_i^2, (Depth_i - k_1)_+^2, (Depth_i - k_2)_+^2, \dots, (Depth_i - k_9)_+^2
+$$
+
+このモデルをRで実装するため、以下の関数を作成する。これは、ある変数`x`について閾値`TH`を境にそれ以下なら0、それ以上なら$(x - TH)^2$となるような新しい変数を作成する関数である。    
+```{r}
+rhs2 <- function(x, TH) {
+  ifelse(x >= TH, (x - TH)^2, 0)
+}
+```
+
+モデルは以下のように実行できる。  
+```{r}
+M3_5 <- lm(Sources ~ Depth + I(Depth^2) + rhs2(Depth, q_Depth[1]) + rhs2(Depth, q_Depth[2]) +
+             rhs2(Depth, q_Depth[3]) + rhs2(Depth, q_Depth[4]) + rhs2(Depth, q_Depth[5]) +
+             rhs2(Depth, q_Depth[6]) + rhs2(Depth, q_Depth[7]) + rhs2(Depth, q_Depth[8]) + 
+             rhs2(Depth, q_Depth[9]), data = BL)
+```
+
+このモデルによって推定された回帰曲線は以下のとおりである(図\@ref(fig:fig-fitted-M3-5))。線形スプライン回帰よりもなめらかな曲線になっていることが分かる。    
+```{r fig-fitted-M3-5, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_5"}
+fitted_M3_5 <- predict(M3_5, newdata = nd_M3) %>% 
+  data.frame() %>% 
+  rename(fitted = 1) %>% 
+  bind_cols(nd_M3)
+
+BL %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_M3_5,
+            aes(y = fitted),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.1,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+以下、モデルの結果を見てみよう。`rhs2`関数で作られた変数の多くが有意でないのは、これらが強く相関しており多重共線性の問題があることが原因だろう。    
+```{r}
+summary(M3_5)
+```
+
+式\@ref(eq:qsr)のモデルは正規分布の一般化加法モデルといえる。`mgvc`パッケージではより発展的なsmootherを用いており、多重共線性の問題などが生じないようなっている。  
+
+このモデルは第\@ref(c1)章のときのように以下のように書ける。なお、$\bf{y}$は目的変数をすべて含むベクトル、$\bf{X}$は`model.matrix(M3_5)`によって得られる基底の行列、$\bf{\beta}$は回帰係数をすべて含むベクトルである。この表現で書けるということは、第\@ref(c1)章と全く同じ方法で標準誤差や自由度、信頼区間、予測区間を算出できるということである。    
+$$
+\bf{y} = \bf{X} \times \bf{\beta} + \bf{\epsilon} 
+$$
+
+## Cubic regression splines {#s3-6}    
+より回帰曲線を滑らかにするのであれば、3次スプライン回帰を考えることもできる。モデル式は以下の通り。Rでも前節までと同様に実行することができる。    
+
+$$
+\begin{aligned}
+Sources_i &= \alpha + \beta_1 \times Depth_i + \beta_2 \times Depth_i^2 + \beta_3 \times Depth_i^3 + \sum_{j = 1}^k \Bigl( \beta_{1j} \times (Depth_i - k_j)_+^3 \Bigl) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned} (\#eq:csr)
+$$
+
+@Wood2017 や @Zuur2009 では、さらに発展的な方法として以下のモデルを考えた。  
+
+$$
+\begin{aligned}
+Sources_i &= \sum_{j = 1}^K \Bigl( \beta_{j} \times b_j(Depth_i) \Bigl) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned} (\#eq:crs)
+$$
+
+ここで、$b_1(Depth_i) = 1, b_2(Depth_i) = Depth$であり、$j ≧ 2$のときは$B_j(Depth_i) = R(Depth_i, k_{j-2})$である。また、$k_{j-2}$は$j-2$番目のノットの値を表す。よって、以下のようにも書ける。  
+
+$$
+\begin{aligned}
+Sources_i &= \beta_1 + \beta_1 \times Depth_i + \sum_{j = 2}^K \Bigl( \beta_{j} \times R(Depth_i, k_{j-2}) \Bigl) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned} (\#eq:crs2)
+$$
+
+なお、$(Depth_i, k_{j-2})$は以下のように定義される。  
+
+$$
+R(X,z) = \frac{1}{4} \times \Bigl( (z - \frac{1}{2})^2 - \frac{1}{12} \Bigl) \times \Bigl( (X - \frac{1}{2})^2 - \frac{1}{12} \Bigl) - \frac{1}{24} \times \Bigl( (|X-z| - \frac{1}{2})^4 - \frac{1}{2}(|X-z| - \frac{1}{2})^2 + \frac{7}{240} \Bigl)
+$$
+
+Rでもこの関数を作成する。  
+```{r}
+rk <-function(x, z){
+  ((z-0.5)^2-1/12)*((x-0.5)^2-1/12)/4 - ((abs(x-z)-0.5)^4-0.5*(abs(x-z)- 0.5)^2 +7/240)/24
+}
+```
+
+また、説明変数をすべて含む行列$\bf{X}$を作成する必要がある。この行列は1列目は全て1、2列目は$Depth_i$で、3列目以降は$R(Depth_i, k_{j-2})$である。Rでは以下のように作成できる。  
+
+```{r}
+spl.X <-function(x, xk){
+  q <-length(xk) + 2 
+  n <-length(x) 
+  X <-matrix(1, n, q) 
+  X[,2] <-x 
+  X[,3:q] <-outer(x, xk, FUN = rk) 
+  X
+}
+
+X <- spl.X(BL$Depth, q_Depth)
+```
+
+Rでモデルを以下のように実行できる。なお、$\bf{X}$にはすでに切片に相当する1列目が含まれているため、`Sources ~ X - 1`とする。  
+```{r}
+M3_6 <- lm(Sources ~ X - 1, data = BL)
+```
+
+このモデルによって推定された回帰曲線は以下のとおりである(図\@ref(fig:fig-fitted-M3-6))。2次スプライン回帰の結果と大きくは違わない。
+```{r fig-fitted-M3-6, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_6"}
+Xp <- spl.X(nd_M3$Depth, q_Depth)
+
+fitted_M3_6 <- data.frame(Depth = nd_M3$Depth,
+                          fitted = Xp %*% coef(M3_6))
+
+BL %>% 
+  ggplot()+
+  geom_point(aes(x = Depth, y = Sources),
+             size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_M3_6,
+            aes(x = Depth, y = fitted),
+            linewidth = 1)+
+  geom_vline(xintercept = q_Depth,
+             linetype = "dashed")+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1)+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.1,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+## The number of knots  
+第\@ref(s3-4)から\@ref(s3-6)節までは$Depth_i$を10の区間に分けており、両端を除くとノット数は9だった。しかし、この数はあくまでも恣意的に選択したものに過ぎない。それでは、私たちは**ノット数をいくつに設定するのが適切なのだろうか**。  
+
+図\@ref(fig:fig-fitted-all2)は内側のノット数を変化させたときの回帰曲線を図示したものである。  
+```{r fig-fitted-all2, fig.dim = c(13, 11), fig.cap = "Fitted smoothers for a quadratic spline regression model using different numbers of knots."}
+num <- c(1,3,5,7,9,11,13,15,17, 19, 31)
+q_Depth_list <- list()
+X_list <- list()
+
+for(i in seq_along(num)){
+q_Depth_list[[i]] <- quantile(BL$Depth, probs = seq(0,1,by = 1/(num[i]+1)))[2:(num[i]+1)]
+X_list[[i]] <- spl.X(BL$Depth, q_Depth_list[[i]])
+}
+
+M3_6_list <- list()
+Xp_list <- list()
+fitted_list <- list()
+
+for(i in seq_along(num)){
+  M3_6_list[[i]] <- lm(Sources ~ X_list[[i]] - 1, data = BL)
+  Xp_list[[i]] <- spl.X(nd_M3$Depth, q_Depth_list[[i]])
+  fitted_list[[i]] <- data.frame(Depth = nd_M3$Depth,
+                                 fitted = Xp_list[[i]] %*% coef(M3_6_list[[i]]),
+                                 knot = num[i])
+}
+
+bind_rows(fitted_list[1], fitted_list[[2]], fitted_list[[3]], fitted_list[[4]],
+          fitted_list[[5]], fitted_list[[6]], fitted_list[[7]], fitted_list[[8]],
+          fitted_list[[9]], fitted_list[[10]], fitted_list[[11]]) %>% 
+  mutate(knot = str_c("inner knot = ", knot))-> fitted_all
+  
+BL %>% 
+  ggplot()+
+  geom_point(aes(x = Depth, y = Sources),
+             size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_all,
+            aes(x = Depth, y = fitted),
+            linewidth = 1)+
+  facet_rep_wrap(~knot, repeat.tick.labels = TRUE)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.105,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+
+```{r}
+compare_performance(M3_6_list[[1]],M3_6_list[[2]],M3_6_list[[3]],
+                    M3_6_list[[4]],M3_6_list[[5]],M3_6_list[[6]],
+                    M3_6_list[[7]],M3_6_list[[8]],M3_6_list[[9]],
+                    M3_6_list[[10]],M3_6_list[[11]]) %>% 
+  data.frame() %>% 
+  mutate(knot = num) %>% 
+  select(knot, AIC, AICc, BIC, R2, R2_adjusted)
+```
 

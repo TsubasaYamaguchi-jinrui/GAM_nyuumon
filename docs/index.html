@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-20" />
+<meta name="date" content="2023-07-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -49,6 +49,8 @@
 
 
 
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -226,7 +228,7 @@ div.csl-indent {
 <li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
-<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#cross-validation"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#s2-4"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
 <li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
 <ul>
 <li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
@@ -237,7 +239,22 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
 <li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+<li class="chapter" data-level="2.6.3" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-third-implementation"><i class="fa fa-check"></i><b>2.6.3</b> GAM with interaction; third implementation</a></li>
 </ul></li>
+<li class="chapter" data-level="2.7" data-path="Chapter2.html"><a href="Chapter2.html#transforming-the-density-data"><i class="fa fa-check"></i><b>2.7</b> Transforming the density data</a></li>
+<li class="chapter" data-level="2.8" data-path="Chapter2.html"><a href="Chapter2.html#allowing-for-heterogeneity"><i class="fa fa-check"></i><b>2.8</b> Allowing for heterogeneity</a></li>
+<li class="chapter" data-level="2.9" data-path="Chapter2.html"><a href="Chapter2.html#transforming-and-allowing-for-heterogeinity"><i class="fa fa-check"></i><b>2.9</b> Transforming and allowing for heterogeinity</a></li>
+<li class="chapter" data-level="2.10" data-path="Chapter2.html"><a href="Chapter2.html#what-to-present-in-paper"><i class="fa fa-check"></i><b>2.10</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Chapter3.html"><a href="Chapter3.html"><i class="fa fa-check"></i><b>3</b> Technical aspects of GAM using pelagic bioluminescent organisms</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="Chapter3.html"><a href="Chapter3.html#pelagic-bioluminescent-organism-data"><i class="fa fa-check"></i><b>3.1</b> Pelagic bioluminescent organism data</a></li>
+<li class="chapter" data-level="3.2" data-path="Chapter3.html"><a href="Chapter3.html#lineaar-regression"><i class="fa fa-check"></i><b>3.2</b> Lineaar regression</a></li>
+<li class="chapter" data-level="3.3" data-path="Chapter3.html"><a href="Chapter3.html#polynomial-regression-model"><i class="fa fa-check"></i><b>3.3</b> Polynomial regression model</a></li>
+<li class="chapter" data-level="3.4" data-path="Chapter3.html"><a href="Chapter3.html#s3-4"><i class="fa fa-check"></i><b>3.4</b> 3.4 Linear spline regression</a></li>
+<li class="chapter" data-level="3.5" data-path="Chapter3.html"><a href="Chapter3.html#s3-5"><i class="fa fa-check"></i><b>3.5</b> Quadratic spline regression</a></li>
+<li class="chapter" data-level="3.6" data-path="Chapter3.html"><a href="Chapter3.html#s3-6"><i class="fa fa-check"></i><b>3.6</b> Cubic regression splines</a></li>
+<li class="chapter" data-level="3.7" data-path="Chapter3.html"><a href="Chapter3.html#the-number-of-knots"><i class="fa fa-check"></i><b>3.7</b> The number of knots</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -260,7 +277,7 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">Introduction to GAM using R</h1>
 <p class="author"><em>Tsubasa Yamaguchi</em></p>
-<p class="date"><em>2023-07-20</em></p>
+<p class="date"><em>2023-07-26</em></p>
 </div>
 <div id="本稿の目的" class="section level1 unnumbered hasAnchor">
 <h1>本稿の目的<a href="index.html#本稿の目的" class="anchor-section" aria-label="Anchor link to header"></a></h1>

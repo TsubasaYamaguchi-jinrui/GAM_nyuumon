@@ -2,7 +2,7 @@
 本章では、正規分布に従う一般化加法モデル(GAM)の導入を行う。  
 
 ## Impact of deep-sea fisheries  
-本章では、商業的な漁業が深海(水深800~4865m)の魚の密度に及ぼす影響を調べた @Bailey2009 のデータを用いる。データは2つの期間に分かれており、1979~1989年は商業的な漁業がおこなわれる前(深い水深での漁業が発展している段階)で、1997~2002年は商業的漁業がおこなわれている時期である。商業的漁業は技術的または商業的な理由により水深約1600mまでに限られている。
+本章では、商業的な漁業が深海(水深800–4865m)の魚の密度に及ぼす影響を調べた @Bailey2009 のデータを用いる。データは2つの期間に分かれており、1979年から1989年は商業的な漁業がおこなわれる前(深い水深での漁業が発展している段階)で、1997年から2002年は商業的漁業がおこなわれている時期である。商業的漁業は技術的または商業的な理由により水深約1600mまでに限られている。
 
 ```{r}
 fish <- read_delim("data/BaileyDensity.txt")
@@ -11,6 +11,20 @@ datatable(fish,
           options = list(scrollX = 20),
           filter = "top")
 ```
+<br/>  
+
+期間ごとにデータをサンプリングした場所を示したのが図\@ref(fig:fig-site)である。`Period`は1が1979–1989年を、2が1997–2002年を表す。  
+```{r fig-site, fig.dim = c(5,4.5), fig.cap = "Position of the Sites"}
+fish %>% 
+  mutate(Period = as.factor(Period)) %>% 
+  ggplot(aes(x = Xkm, y = Ykm))+
+  geom_point(aes(fill = Period),
+             shape = 21, alpha = 0.6)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  scale_fill_manual(values = c("white","black"))
+```
+<br/>  
 
 @Bailey2009 では、魚の密度を以下のように定義している。  
 
@@ -196,9 +210,9 @@ pred_M2_2 %>%
 
 $$
 \begin{aligned}
-Dens_i &= \alpha + f(Depth_i) +  \epsilon_i (\#eq:gam) \\
+Dens_i &= \alpha + f(Depth_i) +  \epsilon_i \\
 \epsilon_i &\sim N(0,\sigma^2)
-\end{aligned}
+\end{aligned} (\#eq:gam) 
 $$
 
 ### Moving average and LOESS smoother  
@@ -362,7 +376,7 @@ pred_M2_4_4 %>%
   labs(x = "Mean Depth", y = expression(paste("Fish density"," ", (m^2))))
 ```
 
-## Cross validation  
+## Cross validation {#s2-4}  
 前節では自由度4で分析を行ったが、自由度はほかの値に設定することも可能である(図\@ref(fig:fig-fit-gam2)。どのようにして最適な自由度を選べばよいだろうか?    
 
 ```{r fig-fit-gam2, fig.dim = c(13,7), fig.cap = "Fitted values obtained by the GAM using 2, 3, 4, 5, 7, 9 degrees of freedom."}
@@ -475,22 +489,22 @@ $$
 E[V_0] \approx E[M] + \sigma^2
 $$
 
-これを計算するのは負荷が大きいため、通常はgeneralized cross validation scoreというものを用いることでshortcutを行う。詳細については第\@ref(c3)で解説を行う。データ数が50未満の場合は多重共線性やデータの非独立性によって交差検証の結果に問題が生じることがある。そのため、交差検証の結果をきちんと確認することが必要である。  
+これを計算するのは負荷が大きいため、通常はgeneralized cross validation scoreというものを用いることでshortcutを行う。詳細については第\@ref(c3)章で解説を行う。データ数が50未満の場合は多重共線性やデータの非独立性によって交差検証の結果に問題が生じることがある。そのため、交差検証の結果をきちんと確認することが必要である。  
 
 ## Model validation  
 ### Normality and homogeneity  
 GAMでは重回帰分析のときと同様に残差を抽出し、その正規性や等分散性、独立性、影響のある観察の有無を確認しなければならない。
 
-`gratia`パッケージでは、`appraise`関数でQQプロット、残差 vs 予測値、残差のヒストグラム、実測値 vs 予測値のプロットを作成してくれる(図\@ref(fig:fig-gam-diagnosis))。なお、それぞれのグラフは`qq_plot()`、`residuals_linpred_plot()`、`residuals_hist_plot()`、`observed_fitted_plot`で個別に作成できる。  
+`gratia`パッケージでは、`appraise`関数でQQプロット、残差 vs 予測値、残差のヒストグラム、実測値 vs 予測値のプロットを作成してくれる(図\@ref(fig:fig-gam-diagnosis-M2-5-1))。なお、それぞれのグラフは`qq_plot()`、`residuals_linpred_plot()`、`residuals_hist_plot()`、`observed_fitted_plot`で個別に作成できる。  
 
 この結果から、等分散性や残差の正規性が成立していないことが分かる。    
-```{r fig-gam-diagnosis1, fig.dim = c(10,10), fig.cap = "Model diagnosis using `gratia` package."}
+```{r fig-gam-diagnosis-M2-5-1, fig.dim = c(10,10), fig.cap = "Model diagnosis using `gratia` package."}
 appraise(M2_5, type = "response")
 ```
 <br/>  
 
-手動で残差 vs 予測値、残差のヒストグラムは以下のように作成できる(図\@ref(fig:fig-gam-diagnosis2))。
-```{r fig-gam-diagnosis2, fig.dim = c(10,5), fig.cap = "Model diagnosis of GAM."}
+手動で残差 vs 予測値、残差のヒストグラムは以下のように作成できる(図\@ref(fig:fig-gam-diagnosis-M2-5-2))。
+```{r fig-gam-diagnosis-M2-5-2, fig.dim = c(10,5), fig.cap = "Model diagnosis of GAM."}
 data.frame(res <- resid(M2_5),
            fitted = fitted(M2_5)) -> diag_M2_5
 
@@ -566,10 +580,10 @@ Rでは`gstat`パッケージで以下のように算出できる。図で表し
 ```{r fig-vario-M2-5, fig.dim = c(4.5,4.5), fig.cap = "Semi-variogram  of  the  residuals  of  the  GAM."}
 fish_cor <- fish
 ## coordinateを作成
-coordinates(fish_cor) <- ~ Xkm + Ykm
+sp::coordinates(fish_cor) <- ~ Xkm + Ykm
 
 ## 算出
-vario_M2_5 <- variogram(resid(M2_5) ~ 1, fish_cor)
+vario_M2_5 <- gstat::variogram(resid(M2_5) ~ 1, fish_cor)
 
 ## 作図  
 vario_M2_5 %>% 
@@ -654,14 +668,337 @@ nd <- crossing(MeanDepth = seq(800, 4650, length.out = 100),
 
 fitted_values(M2_6, data = nd, scale = "response") %>% 
   ggplot(aes(x = MeanDepth))+
-  geom_line(aes(y = fitted, linetype = Period))+
   geom_point(data = fish,
              aes(y = Dens, fill = Period),
              shape = 21)+
+  geom_line(aes(y = fitted, linetype = Period),
+            linewidth = 1)+
   scale_fill_manual(values = c("white","black"))+
+  scale_linetype_manual(values = c("solid","dashed"))+
   theme_bw()+
   theme(aspect.ratio = 1)+
   labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))
 ```
 
 ### GAM with interaction terms; first implement  
+GAMで交互作用を含める場合、モデルは以下のようになる。$f_1(Depth_i)$と$f_2(Depth_i)$はそれぞれの期間ごとのsmootherを表す。   
+
+$$
+\begin{aligned}
+Dnes_i &= \alpha + f_1(Depth_i) +f_2(Depth_i) + \beta \times Period_i + \epsilon_i \\
+\epsilon_i &\sin N(0,\sigma^2)
+\end{aligned}
+$$
+
+このモデルはRでは以下のように実行できる。  
+
+```{r}
+M2_7 <- gam(Dens ~ s(MeanDepth, by = Period) + Period, data = fish)
+```
+
+推定結果は以下の通り。期間ごとにsmootherを推定しているので、それぞれのsmootherの自由度が異なる。期間2は自由度が1.078なのでほとんど直線に近いことになる。    
+```{r}
+summary(M2_7)
+```
+
+推定結果から、各期間の魚の密度と水深の関係は以下のようになる。  
+$$
+\begin{aligned}
+Period1: Dens_i &= 0.0054 + f_1(Depth_i) \\
+Period2: Dens_i &= 0.0032 + f_2(Depth_i)
+\end{aligned}
+$$
+
+推定結果を図示したのが図\@ref(fig:fig-fit-gam-M2-7)である。
+```{r fig-fit-gam-M2-7, fig.dim = c(10,5), fig.cap = "Visualisation of the GAM that contains a smoother of depth and period as a factor."}
+fitted_values(M2_7, data = nd, scale = "response") %>% 
+  mutate(Period = str_c("Period ", Period)) %>% 
+  ggplot(aes(x = MeanDepth))+
+  geom_point(data = fish %>% mutate(Period = str_c("Period ", Period)),
+             aes(y = Dens, fill = Period),
+             shape = 21)+
+    geom_line(aes(y = fitted, linetype = Period),
+            linewidth = 1)+
+  scale_fill_manual(values = c("white","black"))+
+  scale_linetype_manual(values = c("solid","dashed"))+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        legend.position = "none")+
+  labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))+
+  facet_wrap(~Period)
+```
+
+### GAM with interaction; third implementation  
+期間ごとに異なるsmootherを推定するもう一つの方法として、以下のモデルを使うこともできる。ここで、$f(Depth)$は両期間に共通するsmoother、、$f_2(Depth)$は期間2のみに適用されるsmootherである。  
+
+$$
+\begin{aligned}
+Dens_i &= \alpha + f(Depth_i) +f_2(Depth_i) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+このモデルはRで以下のように実行できる。モデル式の中にモデル`M2_7`のように$Period$が単独で説明変数として入っていない点には注意が必要である。これは、`gam`で`s(MeanDepth, by = as.numeric(Period == "2"))`のように指定を行う場合は**smootherが0で中心化されていないから**である(それ以外の場合は0で中心化されている)。  
+
+```{r}
+M2_8 <- gam(Dens ~ s(MeanDepth) + s(MeanDepth, by = as.numeric(Period == "2")), data = fish)
+```
+
+モデルの結果は以下のとおりである。期間2だけのsmootherも有意であるので、期間1と2でsmootherが有意に異なることが分かる。モデル`M2_7`と異なるのは、このように**水深と魚の密度の関連が期間ごとに有意に異なるのかを検定できる点である**。    
+```{r}
+summary(M2_8)
+```
+
+推定結果から、各期間の魚の密度と水深の関係は以下のようになる。  
+$$
+\begin{aligned}
+Period1: Dens_i &= 0.0054 + f(Depth_i) \\
+Period2: Dens_i &= 0.0054 + f(Depth_i) + f_2(Depth_i)
+\end{aligned}
+$$
+
+推定結果を図示したのが図\@ref(fig:fig-fit-gam-M2-8)である。
+```{r fig-fit-gam-M2-8, fig.dim = c(10,5), fig.cap = "Visualisation of the GAM that contains a smoother of depth and period as a factor."}
+fitted_values(M2_8, data = nd, scale = "response") %>% 
+  mutate(Period = str_c("Period ", Period)) %>% 
+  ggplot(aes(x = MeanDepth))+
+  geom_point(data = fish %>% mutate(Period = str_c("Period ", Period)),
+             aes(y = Dens, fill = Period),
+             shape = 21)+
+    geom_line(aes(y = fitted, linetype = Period),
+            linewidth = 1)+
+  scale_fill_manual(values = c("white","black"))+
+  scale_linetype_manual(values = c("solid","dashed"))+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        legend.position = "none")+
+  labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))+
+  facet_wrap(~Period)
+```
+
+これまでに適用した交互作用を含むモデル(`M2_7`と`M2_8`)のモデル診断を行うと、いずれも等分散性や正規性の仮定を満たしていないことが分かる(図\@ref(fig:fig-gam-diagnosis-M2-7)と図(fig:fig-gam-diagnosis-M2-8))。  
+
+このようなとき、取りうる手段は(1) 変数を変換する、(2)等分散性を許容できる推定方法(GLSなど)を用いる、(3) (1)と(2)を組み合わせた方法を用いる、などがある。以下では、こうした方法について議論する。  
+
+```{r fig-gam-diagnosis-M2-7, fig.dim = c(10,10), fig.cap = "Model diagnosis of M2_7"}
+appraise(M2_7)
+```
+<br/>  
+
+```{r fig-gam-diagnosis-M2-8, fig.dim = c(10,10), fig.cap = "Model diagnosis of M2_8"}
+appraise(M2_8)
+```
+
+## Transforming the density data  
+まず、魚の密度の平方根を目的変数とするように変数変換を行ったモデルを考える。  
+
+```{r}
+fish <- fish %>% mutate(Dens_sqrt = sqrt(Dens))
+
+M2_9_a <- gam(Dens_sqrt ~ s(MeanDepth, by = Period) + Period, data = fish)
+```
+
+しかし、変数変換を施しても等分散性の仮定は両期間で満たされない。
+```{r fig-diagnosis-M2-9-a, fig.dim = c(5,4.5), fig.cap = "Residuals versus Mean Depth for M2_9_a"}
+data.frame(res = resid(M2_9_a),
+           Period = fish$Period,
+           MeanDepth = fish$MeanDepth) %>% 
+  ggplot(aes(x = MeanDepth, y = res))+
+  geom_point(aes(fill = Period),
+             shape = 21)+
+  geom_hline(aes(yintercept = 0))+
+  scale_fill_manual(values = c("white","black"))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Depth", y = "Residuals")
+```
+<br/>  
+
+魚の密度を対数変換することもできる。  
+```{r}
+fish <- mutate(fish, Dens_log = log(Dens)) 
+
+M2_9_b <- gam(Dens_log ~ s(MeanDepth, by = Period) + Period, data = fish)
+```
+
+そうすると、等分散性の問題が解決されたように見える。  
+```{r fig-diagnosis-M2-9-b, fig.dim = c(5,4.5), fig.cap = "Residuals versus Mean Depth for M2_9_b"}
+data.frame(res = resid(M2_9_b),
+           Period = fish$Period,
+           MeanDepth = fish$MeanDepth) %>% 
+  ggplot(aes(x = MeanDepth, y = res))+
+  geom_point(aes(fill = Period),
+             shape = 21)+
+  geom_hline(aes(yintercept = 0))+
+  scale_fill_manual(values = c("white","black"))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Depth", y = "Residuals")
+```
+<br/>  
+
+ただし、QQプロットを見ると正規性の仮定は満たされていなさそう?
+```{r fig-qqplot-M2-9-b, fig.dim = c(4.5,4.5), fig.cap = "QQplot for M2_9"}
+qq_plot(M2_9_b)+
+  theme_bw()+
+  theme(aspect.ratio = 1)
+```
+
+## Allowing for heterogeneity  
+変数変換の問題点は、大きい目的変数の方が小さいものよりもより圧縮されることで、期間ごとの違いが小さくなってしまう傾向があることである。 @Pinheiro2000 は、モデルの中に分散の不均等性を入れ込むことができることを示した。残差が従う正規分布の分散として$\sigma^2$ではなく、以下の3つのうちのいずれかを考える。  
+
+1つ目は、例えば期間ごと($s = 1, 2$)に異なる分散を考えるというものである。より細かくエリアごとに分散を求めたり、水深をカテゴライズしてそれぞれのカテゴリに異なる分散を割り当てることもできる。  
+
+2つ目と3つ目は、深さによって分散の値を変化させるというもので、その変化の仕方は最尤推定法によって推定されるパラメータ$\delta$によって決定される。  
+
+$$
+\begin{aligned}
+\epsilon_i &\sim N(0, \sigma_s^2)\\
+\epsilon_i &\sim N(0, \sigma^2 \times |Depth_i|^{2 \times \delta}) \\
+\epsilon_i &\sim N(0, e^{2 \times \delta \times Depth_i})
+\end{aligned}
+(\#eq:heterogeinity)
+$$
+
+@Zuur2009 は、正しい分散構造や共変量を選ぶための10ステップのプロトコルを書いている。1つの選択肢は、たくさんの分散構造のモデルを当てはめてみて、AICなどでモデル選択を行うというものである。もう一つは、通常の分散を持つモデルの残差からどのような分散構造を当てはめるべきかを検討するというものである。  
+
+2つ目のアプローチをとるとすると、図\@ref(fig:fig-diagnosis-M2-9-a)は2通りに解釈できる。  
+
+1. 水深が2000m以下のデータはそれ以外のデータより大きな分散をとる  
+2. 水深が深くなるほど、分散は小さくなっていく  
+
+1つ目の解釈に従うとすると、残差の従う正規分布の分散は以下のように書ける。 
+$$
+\begin{aligned}
+var(\epsilon_i) = 
+\begin{cases}
+\sigma_2^2 & (Depth_i < 2000m)\\
+\sigma_1^2 & (Depth_i > 2000m)\\ 
+\end{cases} 
+\end{aligned}
+(\#eq:variance)
+$$
+
+2つ目の解釈に従うとすると、式\@ref(eq:heterogeinity)の2つ目か3つ目のアプローチをとることになる。2つで推定される結果の違いはほとんどなく、問題になるのは$Depth$が0になるときだけであるが、今回は問題ない($Depth > 800$)。  
+
+式\@ref(eq:variance)はRでは以下のように実行できる。  
+```{r}
+fish %>% 
+  mutate(IMD = ifelse(MeanDepth < 2000, "1","2")) %>% 
+  mutate(IMD = as.factor(IMD)) -> fish
+
+M2_10 <- mgcv::gamm(Dens ~ s(MeanDepth, by = Period) + Period,
+              weights = varIdent(form =~ 1|IMD),
+              data = fish)
+```
+
+結果は、`M2_10$lme`と`M2_10$gam`の2つに格納されている(正直、`lme`の方はよくわからない)。  
+
+`summary(M2_10$lme)`の`Variance function`で推定されている1.000...と0.134...は、期間1と2の標準偏差($\sigma_1, \sigma_2$)がそれぞれ$1.00 \times \sigma$と$0.13 \times \sigma$であることを示している。$\sigma$の推定値は`M2_10$lme$sigma`で求められ、0.0059であることから、期間1と2の分散はそれぞれ$(1.00 \times 0.0059)^2$、$(0.13 \times 0.0059)^2$である。
+
+```{r}
+summary(M2_10$lme)
+```
+
+```{r}
+summary(M2_10$gam)
+```
+
+図\@ref(fig:fig-diagnosis-M2-10)は標準化残差とモデルからの予測値をプロットしたものである。標準化残差$e_i^s$は以下のように求められる。$\sigma_j$は期間ごとの分散である。プロットから、パターンが消えていることが確認できる。      
+
+$$
+\begin{aligned}
+e_i &= Dens_i - \hat{\alpha} - \hat{f_1}(Depth_i) -\hat{f_2}(Depth_i) -\hat{\beta} \times Period_i \\
+\epsilon_i^s &= \frac{e_i}{\sqrt{\hat{\sigma_j}^2}}
+\end{aligned}
+$$
+
+```{r fig-diagnosis-M2-10, fig.dim = c(4.5,4.5), fig.cap = "Standardised residuals plotted versus fitted values obtained by the GAMM containing the varIdent residual variance structure."}
+plot(M2_10$lme, col = 1, pch = 16, cex.lab = 1.5)
+```
+<br/>  
+
+ただし、QQプロットを見ると正規性の仮定は満たされていなさそう?
+```{r fig-qqplot-M2-10, fig.dim = c(4.5,4.5), fig.cap = "QQplot for M2_10"}
+qq_plot(M2_10$gam)+
+  theme_bw()+
+  theme(aspect.ratio = 1)
+```
+
+## Transforming and allowing for heterogeinity  
+変数変換を行ったうえでまた等分散性の仮定が満たされない場合は、加えて式\@ref(eq:heterogeinity)のいずれかの方法で分散を調整することもできる。 @Bailey2009 では以下のモデルを適用している。  
+
+$$
+\begin{aligned}
+\sqrt{Dens_i} &= \alpha + f(Depth_i) +f_2(Depth_i) + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma_j^2)\\
+\sigma^2_j &= 
+\begin{cases}
+\sigma_2^2 & (Depth_i < 2000m)\\
+\sigma_1^2 & (Depth_i > 2000m)\\ 
+\end{cases} \\
+\end{aligned}
+$$
+
+Rでは以下のように実行できる。  
+```{r}
+M2_11 <- gamm(Dens_sqrt ~ s(MeanDepth, by = Period) + Period,
+              weights = varIdent(form =~ 1|IMD),
+              data = fish)
+```
+
+モデル診断を実行すると、等分散性の問題も正規性の問題も解決できているように見える(図\@ref(fig:fig-diagnosis-M-11))。  
+```{r fig-diagnosis-M-11, fig.dim = c(10,10), fig.cap = "Model diagnosis for M_11"}
+appraise(M2_11$gam)
+```
+
+モデル`M2_7`, `M2_9_a`、`M2_9_b`、`M2_11`から得られた平滑化曲線を図示したのが図\@ref(fig:fig-fitted-all)である。
+```{r fig-fitted-all, fig.dim = c(11,10), fig.cap = "Estimated smoothing curves obtained by a GAM. A: Gaussian GAM, B: Gaussian GAM square root density, C: Gaussian GAM log density, D: Gaussian GAM square root density, varIdent"}
+fish %>% 
+  pivot_longer(cols = c(Dens,Dens_sqrt,Dens_log),
+               values_to = "Dens", names_to = "type") %>% 
+  mutate(type = ifelse(str_detect(type,"sqrt"),"B",
+                       ifelse(str_detect(type,"log"),"C","A"))) %>% 
+  bind_rows(fish %>% select(-Dens,-Dens_log) %>% rename(Dens = Dens_sqrt) %>% mutate(type = "D")) %>% 
+  mutate(Period = str_c("Period ",Period))-> fish_long
+  
+
+fitted_values(M2_7, data = nd, scale = "response") %>% 
+  mutate(type = "A") %>% 
+  bind_rows(fitted_values(M2_9_a, data = nd, scale = "response") %>% 
+              mutate(type = "B")) %>% 
+  bind_rows(fitted_values(M2_9_b, data = nd, scale = "response") %>% 
+              mutate(type = "C")) %>% 
+  bind_rows(fitted_values(M2_11, data = nd, scale = "response") %>% 
+              mutate(type = "D")) %>% 
+  mutate(Period = str_c("Period ", Period)) %>% 
+  ggplot(aes(x = MeanDepth))+
+  geom_point(data = fish_long,
+             aes(y = Dens, fill = Period),
+             shape = 21, alpha = 0.7, size = 2.5)+
+  scale_fill_manual(values = c("white","black"))+
+  new_scale_fill()+
+  geom_line(aes(y = fitted, linetype = Period),
+            linewidth = 1.2)+
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = Period),
+              alpha = 0.3)+
+  scale_fill_manual(values = c("grey45","red3"))+
+  theme_bw(base_size = 13)+
+  theme(aspect.ratio = 1,
+        strip.text = element_text(hjust = 0),
+        strip.background = element_blank())+
+  labs(x = "Depth", y = expression(paste("Fish density")),
+       fill = "Period", linetype = "Period")+
+  guides(fill = guide_legend(override.aes = list(size = 3)))+
+  facet_rep_wrap(~type, repeat.tick.labels = TRUE,
+                 scales = "free_y")
+```
+
+## What to present in paper  
+本章で行ったような分析を論文で記すとき、以下のものが含まれていなければいけない。  
+
+1. データを測定したサイトの場所を示した図(図\@ref(fig:fig-site))。  
+2. 検討した問い  
+3. データ探索を行ったことと、なぜGAMを適用したかの説明  
+4. モデルの数学的な表現、モデルの結果、モデルの診断結果  
+5. 図\@ref(fig:fig-fitted-all)のうちのいずれか  

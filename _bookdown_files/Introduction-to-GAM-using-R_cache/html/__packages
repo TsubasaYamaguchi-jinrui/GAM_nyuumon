@@ -1,3 +1,7 @@
+nlme
+mgcv
+gratia
+gstat
 tidyverse
 ggplot2
 tibble
@@ -19,8 +23,10 @@ parameters
 report
 see
 data.table
+sp
 plotly
 htmlwidgets
+ggnewscale
 GGally
 patchwork
 DT
@@ -35,8 +41,3 @@ lemon
 extrafont
 systemfonts
 fontregisterer
-nlme
-mgcv
-gratia
-gstat
-sp

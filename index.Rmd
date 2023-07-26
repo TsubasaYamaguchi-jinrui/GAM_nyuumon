@@ -9,6 +9,7 @@ output:
     number_sections: true   
     toc_depth: 4 
     css: custom_style.css   
+    df_print: paged
 site: bookdown::bookdown_site  
 output_dir: "docs"  
 documentclass: book  

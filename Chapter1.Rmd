@@ -1,4 +1,4 @@
-# Review of multiple linear regressions  
+# Review of multiple linear regressions {#c1}  
 本章では、一般化加法モデル(GAM)の説明に入る前に、多くの人に馴染みのある重回帰分析(multiple linear regression)について説明する、なぜなら、GAMは重回帰分析を拡張したものだからである。  
 
 ## Light levels and size of the human visual system   
@@ -15,6 +15,7 @@ datatable(hvs,
           filter = "top",
           options = list(scrollX = 20))
 ```
+<br/>  
 
 [^foot1]: 説明変数(独立変数)とは、物事の原因となっている変数のこと、目的変数(応答変数)とは説明変数の影響を受けて発生した結果となっている変数のことである。今回の場合は、様々な標高など(= 説明変数)が眼窩容量(= 目的変数)に与える影響をモデリングする。  
 
