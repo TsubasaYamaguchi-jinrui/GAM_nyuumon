@@ -124,7 +124,7 @@ BL %>%
 3. ノット数(numer of knots)  
 4. 罰則付きスプライン回帰(penalized spline regression)  
 
-## 3.4 Linear spline regression {#s3-4}   
+## Linear spline regression {#s3-4}   
 線形スプライン回帰とは、x軸をいくつかのセグメントに分け、それぞれのセグメントごとに線形回帰を行う方法である。問題は、いくつのセグメントにどのように分けるべきかということである。  
 
 図\@ref(fig:fig-fitted-M3-1)や図\@ref(fig:fig-fitted-M3-2)からは、スケール化された水深がだいたい0.2くらいで傾きが変わっている印象を受ける。そこで、0.2を境に傾きが変わるモデルを考える。ただし、このとき回帰直線は0.2でつながっていなければいけない。  
@@ -390,7 +390,7 @@ BL %>%
 ## The number of knots  
 第\@ref(s3-4)から\@ref(s3-6)節までは$Depth_i$を10の区間に分けており、両端を除くとノット数は9だった。しかし、この数はあくまでも恣意的に選択したものに過ぎない。それでは、私たちは**ノット数をいくつに設定するのが適切なのだろうか**。  
 
-図\@ref(fig:fig-fitted-all2)は内側のノット数を変化させたときの回帰曲線を図示したものである。  
+図\@ref(fig:fig-fitted-all2)は両端を除くノット数を変化させたときの回帰曲線を図示したものである。結果を見てみると、ノット数による違いはそこまで大きくないように思える。    
 ```{r fig-fitted-all2, fig.dim = c(13, 11), fig.cap = "Fitted smoothers for a quadratic spline regression model using different numbers of knots."}
 num <- c(1,3,5,7,9,11,13,15,17, 19, 31)
 q_Depth_list <- list()
@@ -416,7 +416,8 @@ for(i in seq_along(num)){
 bind_rows(fitted_list[1], fitted_list[[2]], fitted_list[[3]], fitted_list[[4]],
           fitted_list[[5]], fitted_list[[6]], fitted_list[[7]], fitted_list[[8]],
           fitted_list[[9]], fitted_list[[10]], fitted_list[[11]]) %>% 
-  mutate(knot = str_c("inner knot = ", knot))-> fitted_all
+  mutate(knot_text = str_c("inner knot = ", knot)) %>% 
+  mutate(knot_text = fct_reorder(knot_text, knot))-> fitted_all
   
 BL %>% 
   ggplot()+
@@ -425,7 +426,7 @@ BL %>%
   geom_line(data = fitted_all,
             aes(x = Depth, y = fitted),
             linewidth = 1)+
-  facet_rep_wrap(~knot, repeat.tick.labels = TRUE)+
+  facet_rep_wrap(~knot_text, repeat.tick.labels = TRUE)+
   theme_bw(base_size = 12)+
   theme(aspect.ratio = 1,
         strip.background = element_blank(),
@@ -434,13 +435,209 @@ BL %>%
   labs(x = "Scaled depth", y = "Sources")
 ```
 
-```{r}
+AICなどによってこれらのモデルの比較を行うことはできる(図\@ref(fig:fig-modelAIC))。AICとAICcに基づくとノット数が7のモデルが最もよく(値が最も小さく)、そこからノット数が離れるほど予測がよくなくなる(= 値が大きくなる)。BICに基づくとノット数が5のときが最も予測が良い。  
+
+```{r fig-modelAIC, fig.dim = c(5,4.5), fig.cap = "AIC, AICc, BIC of the models with different number of knots."}
 compare_performance(M3_6_list[[1]],M3_6_list[[2]],M3_6_list[[3]],
                     M3_6_list[[4]],M3_6_list[[5]],M3_6_list[[6]],
                     M3_6_list[[7]],M3_6_list[[8]],M3_6_list[[9]],
                     M3_6_list[[10]],M3_6_list[[11]]) %>% 
   data.frame() %>% 
   mutate(knot = num) %>% 
-  select(knot, AIC, AICc, BIC, R2, R2_adjusted)
+  select(knot, AIC, AICc, BIC, R2, R2_adjusted) %>% 
+  pivot_longer(c(AIC, AICc, BIC), names_to = "IC", values_to = "value") %>% 
+  ggplot(aes(x = knot, y = value))+
+  geom_point(aes(color = IC, shape = IC),
+             size = 5, stroke = 2,
+             alpha = 0.7)+
+  scale_shape_manual(values = c(1,5,0))+
+  scale_x_continuous(breaks = num)+
+  labs(y = "Information criteria", color = "", shape = "")+
+  theme_bw()+
+  theme(aspect.ratio = 1)
 ```
 
+しかし、毎回このように様々なノット数でモデリングを行い、情報量規準などに基づいた比較を行うのは時間がかかってしまう。そこで考えられたのが次節(\@ref(s3-8))で説明するpenalized sline modelと呼ばれるものである。  
+
+## Penalized quadratic spline regression {#s3-8}   
+各モデルにおいて、回帰係数などのパラメータは最小二乗法によって推定されている。すなわち、以下で表される残差平方和が最小になるように推定を行っている。    
+
+$$
+Minimize\; over \;\bf{\beta} : \sum_i \epsilon_i^2 
+$$
+
+行列形式で表すと以下のようになる。  
+$$
+Minimize\; over \;\bf{\beta} : ||\bf{\epsilon^2}|| = ||\bf{Y} - \bf{X} \times \bf{\beta}||^2 
+$$
+
+このとき、$\bf{\beta}$の推定値は以下の通りである(第\@ref(c1)章も参照)。  
+
+$$
+\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X})^{-1} \times \bf{X^t} \times y
+$$
+
+さて、ここで式\@ref(eq:qsr)に従う二次スプライン回帰モデルを考える。もし両端を除くノット数がKであるとき、$(Depth-k_j)_+^2$の回帰係数$\beta_{11}, \beta_{12}, \dots, \beta_{1K} $を推定することになる。これらのパラメータは平滑化曲線(回帰曲線)の形に柔軟性を与える(= 形を調整する)役割を担っている。  
+
+ノット数を変えることで曲線の形を調整することはできるが、図\@ref(fig:fig-fitted-all2)で見たようにノット数によって曲線の形は大きくは変わらなかった。そこで、ノット数を変えるのではなく、ノット数は固定して**推定されるパラメータに制限をかけることでsmootherの形を調整する**アプローチを考える。例えば、パラメータ$\beta_{11}, \beta_{12}, \dots, \beta_{1K}$の二乗がある定数$C$以下になるように推定を行うことを考える。  
+
+$$
+\beta_{11}^2 + \beta_{12}^2 + \cdots + \beta_{1K}^2 < C (\#eq:condition)
+$$
+
+こうした方法は**制限付き最適化(constrained optimization)**と呼ばれる。  
+
+ある条件内で残差平方和を最小化するパラメータは**ラグランジュの未定乗数法**と呼ばれる方法で推定できる。例として、条件下で以下の関数$f(x,y)$を最大にする$x,y$の組み合わせを探すことを考える。
+
+$$
+\begin{aligned}
+f(x,y) = 2x^2 + 2y^2 \:\: subject \:\: to \:\: x + y = 1
+\end{aligned}
+$$
+
+まず、以下の関数$f(x,y,\lambda)$を考える。  
+$$
+f(x,y,\lambda) = 2x^2 + 2y^2 + \lambda(x + y-1)
+$$
+
+次に、$f(x,y,\lambda)$をそれぞれの変数について偏微分した値が全て0になるように連立方程式を解く。   
+$$
+\begin{aligned}
+4x + \lambda &= 0\\
+4y + \lambda &= 0\\
+x + y -1 &= 0
+\end{aligned}
+$$
+
+すると、簡単に$x = 1/2, y= 1/2$と解けるが、これが条件の下で$f(x,y)$を最大化する$x$と$y$の値である。制限付き最適化についてもまったく同じことを行う。式\@ref(eq:condition)のような条件があるときに$||\bf{Y} - \bf{X} \times \bf{\beta}||$を最小化するパラメータを求めるには、以下を最小化すればよい。    
+
+$$
+||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\beta_{11}^2 + \beta_{12}^2 + \cdots + \beta_{1K}^2 + C) (\#eq:LLM)
+$$
+
+以下のような$K+3$次元の行列($K$はノット数)$\bf{D}$とベクトル$\bf{\beta}$を定義する。  
+$$
+\bf{D} = 
+\begin{bmatrix}
+0 & \cdots & \quad & \quad & \cdots& 0\\
+\vdots & 0 & \quad & \quad & \quad & \vdots\\
+\quad & \quad &  0 & \quad & \quad & \quad \\
+\quad & \quad & \quad & 1  \quad & \quad & \vdots\\
+\vdots & \quad & \quad & \quad & \ddots & 0\\
+0 & \cdots & \quad & \cdots & 0 & 1
+\end{bmatrix}, \quad
+\bf{\beta} = \begin{bmatrix}
+\beta_1 \\
+\beta_2\\
+\beta_3\\
+\beta_{11}\\
+\vdots\\
+\beta_{19}
+\end{bmatrix}
+$$
+
+このとき、式\@ref(eq:LLM)は以下のように変形できる。  
+
+$$
+||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C})
+$$
+
+これを$\bf{\beta}$について解くと、その推定値は以下のようになる。もし$\lambda = 0$ならば(= 何も条件がなければ)、推定値は通常の最小二乗法によるものと同じになる。    
+$$
+\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y}
+$$
+
+$\lambda$が特定の値を割り当てれば、smoother($f_{\lambda}$)を決定することができる。$\hat{\beta}$は$\lambda$の値によって変わるので、$f_{\lambda}$も$\lambda$によって変わる。$\lambda$はペナルティの大きさを表すので、**大きいほどスプライン回帰を行わない通常の線形回帰や多項式回帰の結果に近づき、0ならば罰則のないスプライン回帰の結果と同じになる**。    
+$$
+\hat{f_{\lambda}} = \bf{X} \times \bf{\hat{\beta}}
+$$
+
+$\lambda$の値ごとの曲線を図示したのが図\@ref(fig:fig-fit-lambda)である。$\lambda$が大きくなると2次の項までを含む普通の多項式回帰の結果に近づく。  
+```{r fig-fit-lambda, fig.dim = c(12,9), fig.cap = "Three smoothers using different values for λ"}
+K <- 9
+D <- diag(rep(1, 3 + K))
+D[1,1]<-D[2,2]<-D[3,3] <-0
+
+X <- model.matrix(M3_5)
+lambdas <- c(0, 0.25,0.7, 0.75, 1,10)
+beta <- list()
+Yhat <- list()
+
+for (i in seq_along(lambdas)){
+  beta[[i]] <- solve(t(X) %*% X + lambdas[i] * D) %*%t(X) %*% BL$Sources
+  MyDepth <- seq(0.1, 1, length =100)
+  XPred <- model.matrix(~ 1 + MyDepth + I(MyDepth^2)+
+                        rhs2(MyDepth, q_Depth[1]) +
+                        rhs2(MyDepth, q_Depth[2]) +
+                        rhs2(MyDepth, q_Depth[3]) +
+                        rhs2(MyDepth, q_Depth[4]) +
+                        rhs2(MyDepth, q_Depth[5]) +
+                        rhs2(MyDepth, q_Depth[6]) +
+                        rhs2(MyDepth, q_Depth[7]) +
+                        rhs2(MyDepth, q_Depth[8]) +
+                        rhs2(MyDepth, q_Depth[9]))
+
+  Yhat[[i]] <- XPred %*% as.vector(beta[[i]]) %>% 
+    data.frame() %>% 
+    rename(fitted = 1) %>% 
+    mutate(lambda = lambdas[i],
+           Depth = MyDepth)
+}
+
+fitted_lambda <- bind_rows(Yhat[[1]], Yhat[[2]], Yhat[[3]], Yhat[[4]],
+                           Yhat[[5]],Yhat[[6]]) %>% 
+  mutate(lambda_text = str_c("lambda = ", lambda))
+
+BL %>% 
+  ggplot()+
+  geom_point(aes(x = Depth, y = Sources),
+             size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_lambda,
+            aes(x = Depth, y = fitted),
+            linewidth = 1)+
+  facet_rep_wrap(~lambda_text, repeat.tick.labels = TRUE)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.105,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+
+## Other smoothers  
+`mgcv`パッケージや`gamlss`パッケージで用いられるsmootherには様々な種類がある。本節では、これらのいくつかについてまとめ、次節(\@ref(s3-10))では、3次平滑化スプラインについて詳しく解説する。  
+
+二次スプライン回帰(第\@ref(s3-5)節)や罰則付きの二次スプライン回帰(第\@ref(s3-8)節)では、以下の変数が説明変数(基底)となる。  
+
+$$
+1, Depth_i^2, (Depth_i - k_1)_+^2, (Depth_i - k_2)_+^2, \dots, (Depth_i - k_9)_+^2
+$$
+
+これは$p$次までの項を含むモデルについて以下のように一般化できる。このようなモデルは**p次スプライン回帰モデル**または*罰則付きp次スプライン回帰*と呼ばれる。    
+$$
+1, Depth_i^2, (Depth_i - k_1)_+^p, (Depth_i - k_2)_+^p, \dots, (Depth_i - k_K)_+^p
+$$
+
+これらのモデルの問題点は各変数が強く相関している可能性が高いことである(特にノット数が多いときは)。**Bスプライン平滑化(B-spline smoothing)**と呼ばれる手法は、変数変換を施すことでこの問題を解決する。  
+
+絶対値の$p$乗項を含むモデルを考えることもできる。そのようなsmootherは**放射基底平滑化(radial basis smoother)**と呼ばれ、以下の基底を含む。  
+
+$$
+1, Depth_i^2, |Depth_i - k_1|^p, |Depth_i - k_2|^p, \dots, |Depth_i - k_K|^p
+$$
+
+## Cubic smoothing spline {#s3-10}  
+第\@ref(s3-8)節でやったように$\beta_{11}, \dots, \beta_{1K}$に制限を設けるのではなく、smootherの二次導関数(二回微分値)の和に制限を設ける方法もある。その場合、以下を最小化するようなパラメータを推定する。  
+
+$$
+||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times 全ポイントでの二次導関数の和 (\#eq:2deriviate)
+$$
+
+一般にsmoother($f(x)$)の二次導関数を$f''(x)$とするとき、$f''(x)$の値が低いほど$f(x)$はより直線的であることを示す。全ての$x$について$f''(x)$の値を合計するためには、$f''(x)$を積分してやればよい。
+
+そのため、式\@ref(eq:2deriviate)は以下のように書き直せる。  
+$$
+||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f''(x) dx
+$$
+
+@Wood2017 は、この基準で最小になる$f(x)$が3次スプラインであることを証明している。

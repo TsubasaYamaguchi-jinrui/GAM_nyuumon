@@ -65,6 +65,11 @@ eq:crs
 eq:crs2
 fig:fig-fitted-M3-6
 fig:fig-fitted-all2
+fig:fig-modelAIC
+eq:condition
+eq:LLM
+fig:fig-fit-lambda
+eq:2deriviate
 c1
 light-levels-and-size-of-the-human-visual-system
 the-variables
@@ -120,3 +125,6 @@ s3-4
 s3-5
 s3-6
 the-number-of-knots
+s3-8
+other-smoothers
+s3-10
