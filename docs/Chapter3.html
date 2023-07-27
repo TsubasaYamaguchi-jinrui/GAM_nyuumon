@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-26" />
+<meta name="date" content="2023-07-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -599,7 +599,7 @@ Sources_i &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Depth_i^2 + \b
 \epsilon_i &amp;\sim N(0,\sigma^2)
 \end{aligned} \tag{3.3}
 \]</span></p>
-<p><span class="citation">S. N. Wood (<a href="#ref-Wood2017">2017</a>)</span> や <span class="citation">Zuur (<a href="#ref-Zuur2009">2009</a>)</span> では、さらに発展的な方法として以下のモデルを考えた。</p>
+<p><span class="citation">Wood (<a href="#ref-Wood2017">2017</a>)</span> や <span class="citation">Zuur (<a href="#ref-Zuur2009">2009</a>)</span> では、さらに発展的な方法として以下のモデルを考えた。</p>
 <p><span class="math display" id="eq:crs">\[
 \begin{aligned}
 Sources_i &amp;= \sum_{j = 1}^K \Bigl( \beta_{j} \times b_j(Depth_i) \Bigl) + \epsilon_i \\
@@ -801,12 +801,12 @@ x + y -1 &amp;= 0
 \end{bmatrix}
 \]</span></p>
 <p>このとき、式<a href="Chapter3.html#eq:LLM">(3.7)</a>は以下のように変形できる。</p>
-<p><span class="math display">\[
-||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C})
+<p><span class="math display" id="eq:LLM2">\[
+||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C}) \tag{3.8}
 \]</span></p>
 <p>これを<span class="math inline">\(\bf{\beta}\)</span>について解くと、その推定値は以下のようになる。もし<span class="math inline">\(\lambda = 0\)</span>ならば(= 何も条件がなければ)、推定値は通常の最小二乗法によるものと同じになる。<br />
 <span class="math display">\[
-\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y}
+\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y} (\#eq:est_beta)
 \]</span></p>
 <p><span class="math inline">\(\lambda\)</span>が特定の値を割り当てれば、smoother(<span class="math inline">\(f_{\lambda}\)</span>)を決定することができる。<span class="math inline">\(\hat{\beta}\)</span>は<span class="math inline">\(\lambda\)</span>の値によって変わるので、<span class="math inline">\(f_{\lambda}\)</span>も<span class="math inline">\(\lambda\)</span>によって変わる。<span class="math inline">\(\lambda\)</span>はペナルティの大きさを表すので、<strong>大きいほどスプライン回帰を行わない通常の線形回帰や多項式回帰の結果に近づき、0ならば罰則のないスプライン回帰の結果と同じになる</strong>。<br />
 <span class="math display">\[
@@ -889,27 +889,41 @@ x + y -1 &amp;= 0
 <h2><span class="header-section-number">3.10</span> Cubic smoothing spline<a href="Chapter3.html#s3-10" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>第<a href="Chapter3.html#s3-8">3.8</a>節でやったように<span class="math inline">\(\beta_{11}, \dots, \beta_{1K}\)</span>に制限を設けるのではなく、smootherの二次導関数(二回微分値)の和に制限を設ける方法もある。その場合、以下を最小化するようなパラメータを推定する。</p>
 <p><span class="math display" id="eq:2deriviate">\[
-||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times 全ポイントでの二次導関数の和 \tag{3.8}
+||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times 全ポイントでの二次導関数の和 \tag{3.9}
 \]</span></p>
 <p>一般にsmoother(<span class="math inline">\(f(x)\)</span>)の二次導関数を<span class="math inline">\(f&#39;&#39;(x)\)</span>とするとき、<span class="math inline">\(f&#39;&#39;(x)\)</span>の値が低いほど<span class="math inline">\(f(x)\)</span>はより直線的であることを示す。全ての<span class="math inline">\(x\)</span>について<span class="math inline">\(f&#39;&#39;(x)\)</span>の値を合計するためには、<span class="math inline">\(f&#39;&#39;(x)\)</span>を積分してやればよい。</p>
-<p>そのため、式<a href="Chapter3.html#eq:2deriviate">(3.8)</a>は以下のように書き直せる。<br />
-<span class="math display">\[
-||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f&#39;&#39;(x) dx
+<p>そのため、式<a href="Chapter3.html#eq:2deriviate">(3.9)</a>は以下のように書き直せる。<br />
+<span class="math display" id="eq:cubic">\[
+||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f&#39;&#39;(x) dx \tag{3.10}
 \]</span></p>
-<p><span class="citation">S. N. Wood (<a href="#ref-Wood2017">2017</a>)</span> は、この基準で最小になる<span class="math inline">\(f(x)\)</span>が3次スプラインであることを証明している。</p>
+<p><span class="citation">Wood (<a href="#ref-Wood2017">2017</a>)</span> は、この基準で最小になる<span class="math inline">\(f(x)\)</span>が3次スプラインであることを証明している。また、式<a href="Chapter3.html#eq:cubic">(3.10)</a>は式<a href="Chapter3.html#eq:LLM2">(3.8)</a>のように書き直すことが分かっているので、<span class="math inline">\(\beta\)</span>の推定値を得るのに積分をする必要はなく、式@ref(eq:est_beta)で求めることができる。</p>
+<p><span class="math inline">\(\bf{\beta}\)</span>を推定するためには、<span class="math inline">\(\bf{X}\)</span>とパラメータ<span class="math inline">\(\lambda\)</span>、罰則を表す行列<span class="math inline">\(\bf{D}\)</span>を知る必要がある。3次平滑化スプライン(cubic smoothing spline)の基本は3次回帰スプライン(cubic regression spline)と同じなので、<span class="math inline">\(\bf{X}\)</span>は同じものを用いることができる。</p>
+<p>両端を除くノット数はこれまでと同様に9とする。</p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="Chapter3.html#cb134-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">spl.X</span>(BL<span class="sc">$</span>Depth, q_Depth)</span></code></pre></div>
+<p><span class="math inline">\(\bf{D}\)</span>は<span class="math inline">\(11\times 11\)</span>の正方行列で、成分は第<a href="Chapter3.html#s3-6">3.6</a>で出てきた<span class="math inline">\(R(X,z)\)</span>によって決まる。<span class="math inline">\(\bf{D}(i + 2, j + 2)\)</span>は<span class="math inline">\(R(x_i,x_j)\)</span>によって決まり、<span class="math inline">\(x_iとx_j\)</span>は両端を除くノットの値である。</p>
+<p>Rでは以下の関数で計算できる。</p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="Chapter3.html#cb135-1" tabindex="-1"></a>spl.S <span class="ot">&lt;-</span> <span class="cf">function</span>(xk){</span>
+<span id="cb135-2"><a href="Chapter3.html#cb135-2" tabindex="-1"></a>  q <span class="ot">&lt;-</span> <span class="fu">length</span>(xk) <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb135-3"><a href="Chapter3.html#cb135-3" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> q, <span class="at">ncol =</span> q)</span>
+<span id="cb135-4"><a href="Chapter3.html#cb135-4" tabindex="-1"></a>  S[<span class="dv">3</span><span class="sc">:</span>q, <span class="dv">3</span><span class="sc">:</span>q] <span class="ot">&lt;-</span> <span class="fu">outer</span>(xk, xk, <span class="at">FUN =</span> rk)</span>
+<span id="cb135-5"><a href="Chapter3.html#cb135-5" tabindex="-1"></a>  S</span>
+<span id="cb135-6"><a href="Chapter3.html#cb135-6" tabindex="-1"></a>}</span>
+<span id="cb135-7"><a href="Chapter3.html#cb135-7" tabindex="-1"></a></span>
+<span id="cb135-8"><a href="Chapter3.html#cb135-8" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">spl.S</span>(q_Depth)</span></code></pre></div>
+<p>最後に、<span class="math inline">\(\lambda\)</span>については</p>
 
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Heger2008" class="csl-entry">
-Heger, A., Ieno, E. N., King, N. J., Morris, K. J., Bagley, P. M., &amp; Priede, I. G. (2008). Deep-sea pelagic bioluminescence over the <span>Mid-Atlantic</span> ridge. <em>Deep Sea Res. Part 2 Top. Stud. Oceanogr.</em>, <em>55</em>(1), 126–136.
+Heger A, Ieno EN, King NJ, et al (2008) Deep-sea pelagic bioluminescence over the <span>Mid-Atlantic</span> ridge. Deep Sea Res Part 2 Top Stud Oceanogr 55:126–136
 </div>
 <div id="ref-Wood2017" class="csl-entry">
-Wood, S. N. (2017). <em>Generalized additive models: An introduction with r, second edition</em>. CRC Press.
+Wood SN (2017) Generalized additive models: An introduction with r, second edition. CRC Press
 </div>
 <div id="ref-Zuur2009" class="csl-entry">
-Zuur, A. F. (2009). <em>Mixed effects models and extensions in ecology with <span>R</span></em>. Springer.
+Zuur AF (2009) Mixed effects models and extensions in ecology with <span>R</span>. Springer, New York, NY
 </div>
 </div>
 <div class="footnotes">

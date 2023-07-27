@@ -19,7 +19,7 @@ header-includes:
 biblio-style: jecon    
 bibliography: GAM.bib   
 link-citations: yes
-csl: apa.csl
+csl: primates.csl
 ---
 
 ```{r, echo = FALSE}
@@ -32,14 +32,10 @@ Sys.setenv("plotly_api_key"="FyXiPMTRDyqnDETur1lG")
 ```
 
 # 本稿の目的 {-}   
+本稿は、**一般化加法モデル(GAM)**の概要を解説し、それをRで実行する方法を学ぶことを目的とする。GAMは一般化線形モデル(GLMに代表される線形なモデルを拡張し、変数間の関係をより柔軟な形で表現できるようにしたものである。そのため、**GLMで仮定されるような単調増加または単調減少の関係だけでなく、非線形な関係を調べることができる**。  
 
+霊長類の行動のような複雑なデータでは変数間の関係が非線形になることがしばしばあるため、GAMは多くの研究で用いられている[e.g., @Matsumoto2017; @Taniguchi2018; @Hongo2022]。GLMのように線形性を仮定するモデルがデータに当てはまらない場合には、GAMなどの非線形性を許容するモデルを使用する必要性が生じてくるだろう。  
 
-本稿で扱うのは、以下の内容である。  
+本稿は、Alain Zuurが執筆した"A beginner's guide to generalized additive models with R"[@Zuur2012]の内容を基に執筆している。本書はなるべく数学的な説明を省きつつ、実際の生態学のデータを用いてGAMについてわかりやすく解説したもので、GAMの入門として非常によい書籍である。より詳細な情報を知りたい場合は原著にアクセスしていただきたい。  
 
-- 
-<br/>  
-
-参考にしたのは主に以下の文献である。  
-なお、本稿の作成に使用したファイルとRのコードは筆者の[Github](https://github.com/TsubasaYamaguchi-jinrui/Network_Analysis_Using_R)ですべて閲覧できる。  
-
-- 
+本稿の内容は[こちら](https://tsubasayamaguchi-jinrui.github.io/GAM_nyuumon/)から読むことができる。  

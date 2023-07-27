@@ -539,12 +539,12 @@ $$
 このとき、式\@ref(eq:LLM)は以下のように変形できる。  
 
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C})
+||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C}) (\#eq:LLM2)
 $$
 
 これを$\bf{\beta}$について解くと、その推定値は以下のようになる。もし$\lambda = 0$ならば(= 何も条件がなければ)、推定値は通常の最小二乗法によるものと同じになる。    
 $$
-\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y}
+\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y} (\#eq:est_beta)
 $$
 
 $\lambda$が特定の値を割り当てれば、smoother($f_{\lambda}$)を決定することができる。$\hat{\beta}$は$\lambda$の値によって変わるので、$f_{\lambda}$も$\lambda$によって変わる。$\lambda$はペナルティの大きさを表すので、**大きいほどスプライン回帰を行わない通常の線形回帰や多項式回帰の結果に近づき、0ならば罰則のないスプライン回帰の結果と同じになる**。    
@@ -637,7 +637,30 @@ $$
 
 そのため、式\@ref(eq:2deriviate)は以下のように書き直せる。  
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f''(x) dx
+||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f''(x) dx (\#eq:cubic)
 $$
 
-@Wood2017 は、この基準で最小になる$f(x)$が3次スプラインであることを証明している。
+@Wood2017 は、この基準で最小になる$f(x)$が3次スプラインであることを証明している。また、式\@ref(eq:cubic)は式\@ref(eq:LLM2)のように書き直すことが分かっているので、$\beta$の推定値を得るのに積分をする必要はなく、式\@ref(eq:est_beta)で求めることができる。  
+
+$\bf{\beta}$を推定するためには、$\bf{X}$とパラメータ$\lambda$、罰則を表す行列$\bf{D}$を知る必要がある。3次平滑化スプライン(cubic smoothing spline)の基本は3次回帰スプライン(cubic regression spline)と同じなので、$\bf{X}$は同じものを用いることができる。  
+
+両端を除くノット数はこれまでと同様に9とする。  
+```{r}
+X <- spl.X(BL$Depth, q_Depth)
+```
+
+$\bf{D}$は$11\times 11$の正方行列で、成分は第\@ref(s3-6)で出てきた$R(X,z)$によって決まる。$\bf{D}(i + 2, j + 2)$は$R(x_i,x_j)$によって決まり、$x_iとx_j$は両端を除くノットの値である。  
+
+Rでは以下の関数で計算できる。  
+```{r}
+spl.S <- function(xk){
+  q <- length(xk) + 2
+  S <- matrix(0, nrow = q, ncol = q)
+  S[3:q, 3:q] <- outer(xk, xk, FUN = rk)
+  S
+}
+
+D <- spl.S(q_Depth)
+```
+
+最後に、$\lambda$については

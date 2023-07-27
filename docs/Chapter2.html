@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-26" />
+<meta name="date" content="2023-07-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -643,7 +643,7 @@ Dens_i &amp;= \alpha + f(Depth_i) +  \epsilon_i \\
 </div>
 <div id="packages-for-smoothing" class="section level3 hasAnchor" number="2.2.5">
 <h3><span class="header-section-number">2.2.5</span> Packages for smoothing<a href="Chapter2.html#packages-for-smoothing" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Rには、平滑化を行うことができるパッケージが複数存在する。例えば、<code>gam</code>パッケージ<span class="citation">(<a href="#ref-Hastie2018">Hastie &amp; Hastie, 2018</a>)</span>、<code>mgcv</code>パッケージ<span class="citation">(<a href="#ref-Wood2007">S. Wood &amp; EPSRC, 2007</a>)</span>、<code>gamlss</code>パッケージ<span class="citation">(<a href="#ref-Rigby2019">Rigby et al., 2019</a>)</span>などがある。それぞれのパッケージに長所と短所があり、<code>gam</code>はLOESSを用いる際に使いやすく、<code>mgvc</code>はより発展的な手法に対して使いやすい。<code>gamlss</code>はより広い分布に対して用いることができる。本稿では主に<code>mgcv</code>パッケージを用いる。</p>
+<p>Rには、平滑化を行うことができるパッケージが複数存在する。例えば、<code>gam</code>パッケージ<span class="citation">(<a href="#ref-Hastie2018">Hastie and Hastie 2018</a>)</span>、<code>mgcv</code>パッケージ<span class="citation">(<a href="#ref-Wood2007">Wood and EPSRC 2007</a>)</span>、<code>gamlss</code>パッケージ<span class="citation">(<a href="#ref-Rigby2019">Rigby et al. 2019</a>)</span>などがある。それぞれのパッケージに長所と短所があり、<code>gam</code>はLOESSを用いる際に使いやすく、<code>mgvc</code>はより発展的な手法に対して使いやすい。<code>gamlss</code>はより広い分布に対して用いることができる。本稿では主に<code>mgcv</code>パッケージを用いる。</p>
 <p><code>mgvc</code>パッケージでは様々な手法を用いた平滑化を行うことができるが、自身のデータに対してどの方法を用いるかを決めるためにはこうした手法について知っていなければならない。こうした手法については、第(<a href="Chapter3.html#c3">3</a>)章で詳しく学ぶ。</p>
 </div>
 </div>
@@ -1277,7 +1277,7 @@ Period2: Dens_i &amp;= 0.0054 + f(Depth_i) + f_2(Depth_i)
 </div>
 <div id="allowing-for-heterogeneity" class="section level2 hasAnchor" number="2.8">
 <h2><span class="header-section-number">2.8</span> Allowing for heterogeneity<a href="Chapter2.html#allowing-for-heterogeneity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>変数変換の問題点は、大きい目的変数の方が小さいものよりもより圧縮されることで、期間ごとの違いが小さくなってしまう傾向があることである。 <span class="citation">Pinheiro &amp; Bates (<a href="#ref-Pinheiro2000">2000</a>)</span> は、モデルの中に分散の不均等性を入れ込むことができることを示した。残差が従う正規分布の分散として<span class="math inline">\(\sigma^2\)</span>ではなく、以下の3つのうちのいずれかを考える。</p>
+<p>変数変換の問題点は、大きい目的変数の方が小さいものよりもより圧縮されることで、期間ごとの違いが小さくなってしまう傾向があることである。 <span class="citation">Pinheiro and Bates (<a href="#ref-Pinheiro2000">2000</a>)</span> は、モデルの中に分散の不均等性を入れ込むことができることを示した。残差が従う正規分布の分散として<span class="math inline">\(\sigma^2\)</span>ではなく、以下の3つのうちのいずれかを考える。</p>
 <p>1つ目は、例えば期間ごと(<span class="math inline">\(s = 1, 2\)</span>)に異なる分散を考えるというものである。より細かくエリアごとに分散を求めたり、水深をカテゴライズしてそれぞれのカテゴリに異なる分散を割り当てることもできる。</p>
 <p>2つ目と3つ目は、深さによって分散の値を変化させるというもので、その変化の仕方は最尤推定法によって推定されるパラメータ<span class="math inline">\(\delta\)</span>によって決定される。</p>
 <p><span class="math display" id="eq:heterogeinity">\[
@@ -1504,24 +1504,24 @@ e_i &amp;= Dens_i - \hat{\alpha} - \hat{f_1}(Depth_i) -\hat{f_2}(Depth_i) -\hat{
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Bailey2009" class="csl-entry">
-Bailey, D. M., Collins, M. A., Gordon, J. D. M., Zuur, A. F., &amp; Priede, I. G. (2009). Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? <em>Proc. Biol. Sci.</em>, <em>276</em>(1664), 1965–1969.
+Bailey DM, Collins MA, Gordon JDM, et al (2009) Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? Proc Biol Sci 276:1965–1969
 </div>
 <div id="ref-Hastie2018" class="csl-entry">
-Hastie, T., &amp; Hastie, M. T. (2018). Package <span>“gam.”</span> <em>GAM Package CRAN, Cran. R-Project. Org/Web/Packages/Gam/Gam. Pdf</em>.
+Hastie T, Hastie MT (2018) Package <span>“gam.”</span> GAM Package CRAN, cran r-project org/web/packages/gam/gam pdf
 </div>
 <div id="ref-Pinheiro2000" class="csl-entry">
-Pinheiro, J., &amp; Bates, D. (2000). <em><span>Mixed-Effects</span> models in <span>S</span> and <span>S-PLUS</span></em>. Springer Science &amp; Business Media.
+Pinheiro J, Bates D (2000) <span>Mixed-Effects</span> models in <span>S</span> and <span>S-PLUS</span>. Springer Science &amp; Business Media
 </div>
 <div id="ref-Rigby2019" class="csl-entry">
-Rigby, R. A., Stasinopoulos, M. D., Heller, G. Z., &amp; De Bastiani, F. (2019). <em>Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span></em>. CRC Press.
+Rigby RA, Stasinopoulos MD, Heller GZ, De Bastiani F (2019) Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span>. CRC Press
 </div>
 <div id="ref-Wood2007" class="csl-entry">
-Wood, S., &amp; EPSRC, P. funded by. (2007). <em><span>R</span> mgcv-package</em>.
+Wood S, EPSRC P funded by (2007) <span>R</span> mgcv-package
 </div>
 <div id="ref-Zuur2009" class="csl-entry">
-Zuur, A. F. (2009). <em>Mixed effects models and extensions in ecology with <span>R</span></em>. Springer.
+Zuur AF (2009) Mixed effects models and extensions in ecology with <span>R</span>. Springer, New York, NY
 </div>
 </div>
             </section>

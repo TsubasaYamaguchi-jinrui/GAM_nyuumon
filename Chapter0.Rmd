@@ -1,5 +1,15 @@
 # 0.  パッケージの読み込み {-}  
-本稿では、
+本稿はRの基本操作と`tidyverse`パッケージによるデータハンドリングができることを前提としている。`tidyverse`パッケージを用いたデータ処理については、以下の書籍などを参照。  
+
+- R for Data Science [@Wickham2016]  
+[電子書籍](https://r4ds.had.co.nz/), [日本語](https://www.oreilly.co.jp/books/9784873118147/)  
+
+- R Graphics Coocbook 2nd Edition [@Chang2018]   
+[電子書籍](https://r-graphics.org/), [日本語](https://www.oreilly.co.jp/books/9784873118925/)  
+
+- RユーザのためのRstudio[実践]入門~tidyverseによるモダンな分析フローの世界 改訂2版 [@Matsumura2021] [出版社サイト](https://gihyo.jp/book/2021/978-4-297-12170-9)  
+
+使用するパッケージは以下のとおりである。GAMの実行は主に`gam`パッケージ[@Hastie2018]を用い、結果の作図についてはggplotパッケージでGAMの結果を可視化することに特化した`gratia`[パッケージ](https://gavinsimpson.github.io/gratia/)を用いる。  
 
 ```{r}
 ## GAM
@@ -31,13 +41,3 @@ library(extrafont)
 require(systemfonts)
 require(fontregisterer)
 ```
-
-なお、本稿はRの基本操作と`tidyverse`パッケージによるデータハンドリングができることを前提としている。`tidyverse`パッケージを用いたデータ処理については、以下の書籍などを参照。  
-
-- R for Data Science [@Wickham2016]  
-[電子書籍](https://r4ds.had.co.nz/), [日本語](https://www.oreilly.co.jp/books/9784873118147/)  
-
-- R Graphics Coocbook 2nd Edition [@Chang2018]   
-[電子書籍](https://r-graphics.org/), [日本語](https://www.oreilly.co.jp/books/9784873118925/)  
-
-- RユーザのためのRstudio[実践]入門~tidyverseによるモダンな分析フローの世界 改訂2版 [@Matsumura2021] [出版社サイト](https://gihyo.jp/book/2021/978-4-297-12170-9)  

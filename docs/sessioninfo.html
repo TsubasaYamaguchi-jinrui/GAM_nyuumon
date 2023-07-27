@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-26" />
+<meta name="date" content="2023-07-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -279,7 +279,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="実行環境" class="section level1 unnumbered hasAnchor">
 <h1>実行環境<a href="sessioninfo.html#実行環境" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="sessioninfo.html#cb134-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="sessioninfo.html#cb136-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.2.2 (2022-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 22621)
@@ -308,86 +308,97 @@ div.csl-indent {
 ## [41] gratia_0.8.1.34    mgcv_1.8-41        nlme_3.1-160      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] googledrive_2.0.0   colorspace_2.0-3    ellipsis_0.3.2     
-##  [4] estimability_1.4.1  fs_1.5.2            rstudioapi_0.15.0  
-##  [7] farver_2.1.1        fansi_1.0.3         mvtnorm_1.1-3      
-## [10] lubridate_1.9.0     xml2_1.3.3          codetools_0.2-18   
-## [13] splines_4.2.2       cachem_1.0.6        polyclip_1.10-4    
-## [16] jsonlite_1.8.4      Rttf2pt1_1.3.8      broom_1.0.2        
-## [19] dbplyr_2.2.1        compiler_4.2.2      httr_1.4.4         
-## [22] emmeans_1.8.3       backports_1.4.1     assertthat_0.2.1   
-## [25] Matrix_1.5-1        fastmap_1.1.0       lazyeval_0.2.2     
-## [28] gargle_1.2.1        cli_3.6.0           tweenr_2.0.2       
-## [31] htmltools_0.5.4     tools_4.2.2         igraph_1.3.5       
-## [34] coda_0.19-4         gtable_0.3.3        glue_1.6.2         
-## [37] V8_4.2.2            Rcpp_1.0.11         cellranger_1.1.0   
-## [40] jquerylib_0.1.4     vctrs_0.6.2         svglite_2.1.1      
-## [43] extrafontdb_1.0     xfun_0.39           rvest_1.0.3        
-## [46] timechange_0.1.1    lifecycle_1.0.3     googlesheets4_1.0.1
-## [49] MASS_7.3-58.1       zoo_1.8-11          scales_1.2.1       
-## [52] tidygraph_1.2.2     hms_1.1.3           RColorBrewer_1.1-3 
-## [55] curl_4.3.3          yaml_2.3.7          mvnfast_0.2.8      
-## [58] gridExtra_2.3       sass_0.4.5          reshape_0.8.9      
-## [61] stringi_1.7.8       highr_0.10          ggokabeito_0.1.0   
-## [64] boot_1.3-28         intervals_0.15.4    rlang_1.1.1        
-## [67] pkgconfig_2.0.3     evaluate_0.20       lattice_0.20-45    
-## [70] labeling_0.4.2      tidyselect_1.2.0    plyr_1.8.8         
-## [73] magrittr_2.0.3      bookdown_0.34       R6_2.5.1           
-## [76] generics_0.1.3      DBI_1.1.3           pillar_1.9.0       
-## [79] haven_2.5.1         withr_2.5.0         xts_0.12.2         
-## [82] spacetime_1.3-0     modelr_0.1.10       crayon_1.5.2       
-## [85] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.23     
-## [88] grid_4.2.2          readxl_1.4.1        FNN_1.1.3.2        
-## [91] reprex_2.0.2        digest_0.6.31       webshot_0.5.4      
-## [94] xtable_1.8-4        munsell_0.5.0       viridisLite_0.4.2  
-## [97] bslib_0.4.2</code></pre>
+##  [1] googledrive_2.0.0   colorspace_2.0-3    estimability_1.4.1 
+##  [4] fs_1.5.2            rstudioapi_0.15.0   farver_2.1.1       
+##  [7] fansi_1.0.3         mvtnorm_1.1-3       lubridate_1.9.0    
+## [10] xml2_1.3.3          codetools_0.2-18    splines_4.2.2      
+## [13] cachem_1.0.6        polyclip_1.10-4     jsonlite_1.8.4     
+## [16] Rttf2pt1_1.3.8      broom_1.0.2         dbplyr_2.2.1       
+## [19] compiler_4.2.2      httr_1.4.4          emmeans_1.8.3      
+## [22] backports_1.4.1     assertthat_0.2.1    Matrix_1.5-1       
+## [25] fastmap_1.1.0       lazyeval_0.2.2      gargle_1.2.1       
+## [28] cli_3.6.0           tweenr_2.0.2        htmltools_0.5.4    
+## [31] tools_4.2.2         igraph_1.3.5        coda_0.19-4        
+## [34] gtable_0.3.3        glue_1.6.2          V8_4.2.2           
+## [37] Rcpp_1.0.11         cellranger_1.1.0    jquerylib_0.1.4    
+## [40] vctrs_0.6.2         svglite_2.1.1       extrafontdb_1.0    
+## [43] xfun_0.39           rvest_1.0.3         timechange_0.1.1   
+## [46] lifecycle_1.0.3     googlesheets4_1.0.1 MASS_7.3-58.1      
+## [49] zoo_1.8-11          scales_1.2.1        tidygraph_1.2.2    
+## [52] hms_1.1.3           RColorBrewer_1.1-3  curl_4.3.3         
+## [55] yaml_2.3.7          mvnfast_0.2.8       gridExtra_2.3      
+## [58] sass_0.4.5          reshape_0.8.9       stringi_1.7.8      
+## [61] ggokabeito_0.1.0    boot_1.3-28         intervals_0.15.4   
+## [64] rlang_1.1.1         pkgconfig_2.0.3     evaluate_0.20      
+## [67] lattice_0.20-45     tidyselect_1.2.0    plyr_1.8.8         
+## [70] magrittr_2.0.3      bookdown_0.34       R6_2.5.1           
+## [73] generics_0.1.3      DBI_1.1.3           pillar_1.9.0       
+## [76] haven_2.5.1         withr_2.5.0         xts_0.12.2         
+## [79] spacetime_1.3-0     modelr_0.1.10       crayon_1.5.2       
+## [82] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.23     
+## [85] grid_4.2.2          readxl_1.4.1        FNN_1.1.3.2        
+## [88] reprex_2.0.2        digest_0.6.31       webshot_0.5.4      
+## [91] xtable_1.8-4        munsell_0.5.0       viridisLite_0.4.2  
+## [94] bslib_0.4.2</code></pre>
 <p><strong>References</strong></p>
 
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div class="csl-entry">
-Bailey, D. M., Collins, M. A., Gordon, J. D. M., Zuur, A. F., &amp; Priede, I. G. (2009). Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? <em>Proc. Biol. Sci.</em>, <em>276</em>(1664), 1965–1969.
+Bailey DM, Collins MA, Gordon JDM, et al (2009) Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? Proc Biol Sci 276:1965–1969
 </div>
 <div class="csl-entry">
-Burnham, K. P., Anderson, D. R., &amp; Huyvaert, K. P. (2011). <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. <em>Behav. Ecol. Sociobiol.</em>, <em>65</em>(1), 23–35.
+Burnham KP, Anderson DR, Huyvaert KP (2011) <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. Behav Ecol Sociobiol 65:23–35
 </div>
 <div class="csl-entry">
-Chang, W. (2018). <em><span>R</span> graphics cookbook: Practical recipes for visualizing data</em>. <span>“O’Reilly Media, Inc.”</span>
+Chang W (2018) <span>R</span> graphics cookbook: Practical recipes for visualizing data. <span>“O’Reilly Media, Inc.”</span>
 </div>
 <div class="csl-entry">
-Dunn, P. K., &amp; Smyth, G. K. (2018). <em>Generalized linear models with examples in <span>R</span></em>. Springer New York.
+Dunn PK, Smyth GK (2018) Generalized linear models with examples in <span>R</span>. Springer New York
 </div>
 <div class="csl-entry">
-Hastie, T., &amp; Hastie, M. T. (2018). Package <span>“gam.”</span> <em>GAM Package CRAN, Cran. R-Project. Org/Web/Packages/Gam/Gam. Pdf</em>.
+Hastie T, Hastie MT (2018) Package <span>“gam.”</span> GAM Package CRAN, cran r-project org/web/packages/gam/gam pdf
 </div>
 <div class="csl-entry">
-Heger, A., Ieno, E. N., King, N. J., Morris, K. J., Bagley, P. M., &amp; Priede, I. G. (2008). Deep-sea pelagic bioluminescence over the <span>Mid-Atlantic</span> ridge. <em>Deep Sea Res. Part 2 Top. Stud. Oceanogr.</em>, <em>55</em>(1), 126–136.
+Heger A, Ieno EN, King NJ, et al (2008) Deep-sea pelagic bioluminescence over the <span>Mid-Atlantic</span> ridge. Deep Sea Res Part 2 Top Stud Oceanogr 55:126–136
 </div>
 <div class="csl-entry">
-Pearce, E., &amp; Dunbar, R. (2012). Latitudinal variation in light levels drives human visual system size. <em>Biol. Lett.</em>, <em>8</em>(1), 90–93.
+Hongo S, Nakashima Y, Akomo-Okoue EF, Mindonga-Nguelet FL (2022) Seasonality in daily movement patterns of mandrills revealed by combining direct tracking and camera traps. J Mammal 103:159–168
 </div>
 <div class="csl-entry">
-Pinheiro, J., &amp; Bates, D. (2000). <em><span>Mixed-Effects</span> models in <span>S</span> and <span>S-PLUS</span></em>. Springer Science &amp; Business Media.
+Matsumoto T (2017) Developmental changes in feeding behaviors of infant chimpanzees at mahale, tanzania: Implications for nutritional independence long before cessation of nipple contact. Am J Phys Anthropol 163:356–366
 </div>
 <div class="csl-entry">
-Rigby, R. A., Stasinopoulos, M. D., Heller, G. Z., &amp; De Bastiani, F. (2019). <em>Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span></em>. CRC Press.
+Pearce E, Dunbar R (2012) Latitudinal variation in light levels drives human visual system size. Biol Lett 8:90–93
 </div>
 <div class="csl-entry">
-Wickham, H., &amp; Grolemund, G. (2016). <em><span>R</span> for data science: Import, tidy, transform, visualize, and model data</em>. <span>“O’Reilly Media, Inc.”</span>
+Pinheiro J, Bates D (2000) <span>Mixed-Effects</span> models in <span>S</span> and <span>S-PLUS</span>. Springer Science &amp; Business Media
 </div>
 <div class="csl-entry">
-Wood, S. N. (2017). <em>Generalized additive models: An introduction with r, second edition</em>. CRC Press.
+Rigby RA, Stasinopoulos MD, Heller GZ, De Bastiani F (2019) Distributions for modeling location, scale, and shape: Using <span>GAMLSS</span> in <span>R</span>. CRC Press
 </div>
 <div class="csl-entry">
-Wood, S., &amp; EPSRC, P. funded by. (2007). <em><span>R</span> mgcv-package</em>.
+Taniguchi H, Matsumoto-Oda A (2018) Wound healing in wild male baboons: Estimating healing time from wound size. PLoS One 13:
 </div>
 <div class="csl-entry">
-Zuur, A. F. (2009). <em>Mixed effects models and extensions in ecology with <span>R</span></em>. Springer.
+Wickham H, Grolemund G (2016) <span>R</span> for data science: Import, tidy, transform, visualize, and model data. <span>“O’Reilly Media, Inc.”</span>
 </div>
 <div class="csl-entry">
-Zuur, A. F., Ieno, E. N., &amp; Elphick, C. S. (2010). A protocol for data exploration to avoid common statistical problems. <em>Methods Ecol. Evol.</em>, <em>1</em>(1), 3–14.
+Wood S, EPSRC P funded by (2007) <span>R</span> mgcv-package
 </div>
 <div class="csl-entry">
-松村優哉., 湯谷啓明., 紀ノ定保礼., &amp; 前田和. (2021). <em>RユーザのためのRstudio[実践]入門 tidyverseによるモダンな分析フローの世界 改訂2版</em>. 技術評論社.
+Wood SN (2017) Generalized additive models: An introduction with r, second edition. CRC Press
+</div>
+<div class="csl-entry">
+Zuur AF (2012) A beginner’s guide to generalized additive models with <span>R</span>. Highland Statistics, Newburgh, Scotland
+</div>
+<div class="csl-entry">
+Zuur AF (2009) Mixed effects models and extensions in ecology with <span>R</span>. Springer, New York, NY
+</div>
+<div class="csl-entry">
+Zuur AF, Ieno EN, Elphick CS (2010) A protocol for data exploration to avoid common statistical problems. Methods Ecol Evol 1:3–14
+</div>
+<div class="csl-entry">
+松村優哉, 湯谷啓明, 紀ノ定保礼, 前田和 (2021) RユーザのためのRstudio[実践]入門 tidyverseによるモダンな分析フローの世界 改訂2版. 技術評論社
 </div>
 </div>
 </div>

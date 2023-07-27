@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-07-26" />
+<meta name="date" content="2023-07-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -282,11 +282,11 @@ div.csl-indent {
 <p>本章では、一般化加法モデル(GAM)の説明に入る前に、多くの人に馴染みのある重回帰分析(multiple linear regression)について説明する、なぜなら、GAMは重回帰分析を拡張したものだからである。</p>
 <div id="light-levels-and-size-of-the-human-visual-system" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> Light levels and size of the human visual system<a href="Chapter1.html#light-levels-and-size-of-the-human-visual-system" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><span class="citation">Pearce &amp; Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> は、ヒトの集団が住んでいる標高と眼窩の容量に正の関連があることから、住んでいる環境の光量がヒトの視覚システムの進化の原動力になっていると結論付けた。本章ではこの論文のデータを用いて重回帰分析について説明を行う。重回帰分析でデータを探索し、モデルを構築し、モデルを当てはめ、モデル選択を行い、モデルの妥当性を確認する方法はGAMでもほとんど同じように適用できる。</p>
+<p><span class="citation">Pearce and Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> は、ヒトの集団が住んでいる標高と眼窩の容量に正の関連があることから、住んでいる環境の光量がヒトの視覚システムの進化の原動力になっていると結論付けた。本章ではこの論文のデータを用いて重回帰分析について説明を行う。重回帰分析でデータを探索し、モデルを構築し、モデルを当てはめ、モデル選択を行い、モデルの妥当性を確認する方法はGAMでもほとんど同じように適用できる。</p>
 </div>
 <div id="the-variables" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> The variables<a href="Chapter1.html#the-variables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><span class="citation">Pearce &amp; Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> は、オックスフォード大学博物館にある55人の成人の頭蓋骨から、頭蓋の容量(cranial capacity: CC)と眼窩容量(orbital volume)、大後頭孔(foramen magnum: FM)などの測定を行った。</p>
+<p><span class="citation">Pearce and Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> は、オックスフォード大学博物館にある55人の成人の頭蓋骨から、頭蓋の容量(cranial capacity: CC)と眼窩容量(orbital volume)、大後頭孔(foramen magnum: FM)などの測定を行った。</p>
 <p>データは以下のとおりである。平均眼窩容量(mean orbital volume)が目的変数であり、それ以外の変数は説明変数である<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>。<code>AbsoluteLatitude</code>と<code>Minimum_Tempreture_celsius</code>はそれぞれ 頭蓋が発見された場所の標高と最低気温、<code>FMarea_intercondyle</code>は体格の大きさを示す指標、<code>Minimum_Illuminance</code>はlogスケールで表した光の強度、<code>Gender</code>は頭蓋の性別である。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="Chapter1.html#cb2-1" tabindex="-1"></a>hvs <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;data/HVS.txt&quot;</span>)</span>
 <span id="cb2-2"><a href="Chapter1.html#cb2-2" tabindex="-1"></a></span>
@@ -380,7 +380,7 @@ div.csl-indent {
 <div id="目的変数と説明変数の関係の確認" class="section level3 hasAnchor" number="1.4.4">
 <h3><span class="header-section-number">1.4.4</span> 目的変数と説明変数の関係の確認<a href="Chapter1.html#目的変数と説明変数の関係の確認" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>最後に、目的変数と説明変数の関連を調べる(図<a href="Chapter1.html#fig:fig-plotxy1">1.3</a>)。図には局所回帰(LOESS)による回帰曲線を追加している。</p>
-<p>図から、<code>LatAbs</code>と<code>OrbitalV</code>の間に線形の関係がありそうだということが分かる(’CC’も?)。<code>Illuminance</code>や<code>Temperature</code>にも同様のことがいえるが、これは変数間に強い相関があることを考えれば当然だろう。多重共線性を考慮し、<span class="citation">Pearce &amp; Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> にもとづいて解析では<code>LatAbs</code>を用いて<code>Illuminance</code>と<code>Temperature</code>は用いないこととする。</p>
+<p>図から、<code>LatAbs</code>と<code>OrbitalV</code>の間に線形の関係がありそうだということが分かる(’CC’も?)。<code>Illuminance</code>や<code>Temperature</code>にも同様のことがいえるが、これは変数間に強い相関があることを考えれば当然だろう。多重共線性を考慮し、<span class="citation">Pearce and Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> にもとづいて解析では<code>LatAbs</code>を用いて<code>Illuminance</code>と<code>Temperature</code>は用いないこととする。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="Chapter1.html#cb11-1" tabindex="-1"></a>hvs_b <span class="sc">%&gt;%</span> </span>
 <span id="cb11-2"><a href="Chapter1.html#cb11-2" tabindex="-1"></a>  <span class="fu">select</span>(LatAbs, CC, FM, Illuminance, Temperature, OrbitalV) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-3"><a href="Chapter1.html#cb11-3" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
@@ -740,7 +740,7 @@ OrbitalV_i &amp;= \alpha + \beta_1 \times LatAbs_i + \beta_2 \times CC_i + \beta
 </li>
 <li>情報理論的アプローチを用い、モデル平均化などを行う(c.f., <span class="citation">Burnham et al. (<a href="#ref-Burnham2011">2011</a>)</span> )。</li>
 </ol>
-<p>ここでは、 <span class="citation">Pearce &amp; Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> に従い、AICを用いたモデル選択を行うことにする。</p>
+<p>ここでは、 <span class="citation">Pearce and Dunbar (<a href="#ref-Pearce2012">2012</a>)</span> に従い、AICを用いたモデル選択を行うことにする。</p>
 <p>Rでは、<code>step</code>関数を用いることでステップワイズ法(AICが最も低くなるまで説明変数を1つずつ増減させる方法)を用いた変数選択を行うことができる。分析の結果、<code>LatAbs</code>、<code>CC</code>、これらの交互作用のみを含むモデルが最もAICが低い(= 予測精度が高い)と判断された。</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="Chapter1.html#cb33-1" tabindex="-1"></a><span class="fu">step</span>(M2)</span></code></pre></div>
 <pre><code>## Start:  AIC=88.54
@@ -967,25 +967,25 @@ OrbitalV_i = 23.23 -0.25 \times LatAbs_i -0.000058 \times CC_i + 0.00022 \times 
 </div>
 </div>
 <h3>References</h3>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Burnham2011" class="csl-entry">
-Burnham, K. P., Anderson, D. R., &amp; Huyvaert, K. P. (2011). <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. <em>Behav. Ecol. Sociobiol.</em>, <em>65</em>(1), 23–35.
+Burnham KP, Anderson DR, Huyvaert KP (2011) <span>AIC</span> model selection and multimodel inference in behavioral ecology: Some background, observations, and comparisons. Behav Ecol Sociobiol 65:23–35
 </div>
 <div id="ref-Dunn2018" class="csl-entry">
-Dunn, P. K., &amp; Smyth, G. K. (2018). <em>Generalized linear models with examples in <span>R</span></em>. Springer New York.
+Dunn PK, Smyth GK (2018) Generalized linear models with examples in <span>R</span>. Springer New York
 </div>
 <div id="ref-Pearce2012" class="csl-entry">
-Pearce, E., &amp; Dunbar, R. (2012). Latitudinal variation in light levels drives human visual system size. <em>Biol. Lett.</em>, <em>8</em>(1), 90–93.
+Pearce E, Dunbar R (2012) Latitudinal variation in light levels drives human visual system size. Biol Lett 8:90–93
 </div>
 <div id="ref-Zuur2010" class="csl-entry">
-Zuur, A. F., Ieno, E. N., &amp; Elphick, C. S. (2010). A protocol for data exploration to avoid common statistical problems. <em>Methods Ecol. Evol.</em>, <em>1</em>(1), 3–14.
+Zuur AF, Ieno EN, Elphick CS (2010) A protocol for data exploration to avoid common statistical problems. Methods Ecol Evol 1:3–14
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol start="1">
 <li id="fn1"><p>説明変数(独立変数)とは、物事の原因となっている変数のこと、目的変数(応答変数)とは説明変数の影響を受けて発生した結果となっている変数のことである。今回の場合は、様々な標高など(= 説明変数)が眼窩容量(= 目的変数)に与える影響をモデリングする。<a href="Chapter1.html#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>　より正確には、F分布の50パーセンタイルが基準になるが、多くの場合その値は1に近い<span class="citation">(<a href="#ref-Dunn2018">Dunn &amp; Smyth, 2018</a>)</span>。<a href="Chapter1.html#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>　より正確には、F分布の50パーセンタイルが基準になるが、多くの場合その値は1に近い<span class="citation">(<a href="#ref-Dunn2018">Dunn and Smyth 2018</a>)</span>。<a href="Chapter1.html#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

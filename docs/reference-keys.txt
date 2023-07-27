@@ -68,8 +68,10 @@ fig:fig-fitted-all2
 fig:fig-modelAIC
 eq:condition
 eq:LLM
+eq:LLM2
 fig:fig-fit-lambda
 eq:2deriviate
+eq:cubic
 c1
 light-levels-and-size-of-the-human-visual-system
 the-variables
