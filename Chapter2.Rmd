@@ -377,7 +377,7 @@ pred_M2_4_4 %>%
 ```
 
 ## Cross validation {#s2-4}  
-前節では自由度4で分析を行ったが、自由度はほかの値に設定することも可能である(図\@ref(fig:fig-fit-gam2)。どのようにして最適な自由度を選べばよいだろうか?    
+前節では自由度4で分析を行ったが、自由度はほかの値に設定することも可能である。図\@ref(fig:fig-fit-gam2)は様々な自由度を用いたモデルの推定結果を図示したものである。どのようにして最適な自由度を選べばよいだろうか?    
 
 ```{r fig-fit-gam2, fig.dim = c(13,7), fig.cap = "Fitted values obtained by the GAM using 2, 3, 4, 5, 7, 9 degrees of freedom."}
 ## df = 2  
@@ -630,7 +630,7 @@ fish %>%
   labs(x = "Depth", y = expression(paste("Fish density"," ", (m^2))))
 ```
 
-## Extending the GAM with more covariates  
+## Extending the GAM with more covariates {#s2-6}    
 ### GAM with smoother and a normal covariate  
 GAMでも通常の線形モデルと同様に2つ以上の説明変数や交互作用を含めることができる。ここでは、これまでのモデルでは考慮できなかった調査期間(`Period`)と調査期間と水深(`MeanDepth`)の交互作用を入れることで、調査期間ごとに水深と魚の密度の関係が変わっているのかを調べるモデルを作成する。本節では交互作用なしとありのモデルを作成し、どちらがより良いモデルかを検討する。  
 
@@ -638,7 +638,7 @@ GAMでも通常の線形モデルと同様に2つ以上の説明変数や交互�
 $$
 \begin{aligned}
 Dnes_i &= \alpha + f(Depth_i) + \beta \times Period_i + \epsilon_i \\
-\epsilon_i &\sin N(0,\sigma^2)
+\epsilon_i &\sim N(0,\sigma^2)
 \end{aligned}
 $$
 

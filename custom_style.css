@@ -48,10 +48,10 @@ li {
 }
 
 .math {
-  font-size: 17px;
-  line-height: 15.5px;
-  margin-bottom: 40px;
-  margin-top: 40px;
+  font-size: 16px;
+  line-height: 150% !important;
+  margin-bottom: 600px;
+  margin-top: 600px;
 }
 
 p.caption {

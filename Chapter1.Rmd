@@ -178,7 +178,7 @@ head(model.matrix(M1))
 
 パラメータは**最小二乗法(ordinary least square)**で求められる。最小二乗法は、残差の二乗和(実際の測定値と推定されたモデルによる予測値の差、ここでは$\sum_i^{55}( y_i - \alpha + \beta \times OrbitalV_i)$)が最小になるようにパラメータを推定する方法である。  
 
-$bfmath(\beta)$の推定値は数学的に以下のように求められる。なお、$\mathbf{X^t}$は$\mathbf{X}$の転置行列を、$\mathbf{X^{-1}}$はは$\mathbf{X}$の逆行列を表す。  
+$\mathbf{\beta}$の推定値は数学的に以下のように求められる。なお、$\mathbf{X^t}$は$\mathbf{X}$の転置行列を、$\mathbf{X^{-1}}$はは$\mathbf{X}$の逆行列を表す。  
 
 $$
 \mathbf{\hat{\beta}} = (\mathbf{X^t}\times \mathbf{X})^{-1} \times \mathbf{X^t} \times \mathbf{y} (\#eq:bhat)  
@@ -246,7 +246,7 @@ data.frame(estd = estd) %>%
 #### 外れ値のチェック  
 モデルに極端な外れ値がないかを調べるときには、LeverageとCook's distanceが用いられることが多い。  
 
-*everageは$\mathbf{H}$の対角成分で0から1の値をとり、大きいほどそのデータポイントが結果に大きな影響を与える外れ値であることを示す。特に極端な値はないよう(図\@ref(fig:fig-leverage))。    
+leverageは$\mathbf{H}$の対角成分で0から1の値をとり、大きいほどそのデータポイントが結果に大きな影響を与える外れ値であることを示す。特に極端な値はないよう(図\@ref(fig:fig-leverage))。    
 
 ```{r fig-leverage, fig.dim = c(4.5,4.5), fig.cap = "Leveragevalue for each observation"}
 data.frame(h = diag(H),

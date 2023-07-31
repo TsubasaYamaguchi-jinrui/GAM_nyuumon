@@ -1,7 +1,7 @@
 # Technical aspects of GAM using pelagic bioluminescent organisms {#c3}  
 本章では、GAMの技術的な側面について説明を行う。    
 
-## Pelagic bioluminescent organism data  
+## Pelagic bioluminescent organism data {#s3-1}   
 GAMの技術的な側面を解説するため、本章では @Heger2008 が2004年夏に海洋生物の発光について調べた研究を用いる。船で海洋を航行中に検出した蛍光の強度(`Source`)と、水深(`Depth`)、温度(`Temp`)、塩分(`Salinity`)、酸素(`Oxgen`)などを測定している。  
 
 データは14のステーションでサンプルされている。データは以下の通り。  
@@ -14,7 +14,7 @@ datatable(BL,
 ```
 <br/>  
 
-## Lineaar regression  
+## Lineaar regression {#s3-2}   
 まずは線形回帰を行う。ひとまず、ステーションの違いは無視して分析を行う。  
 
 図\@ref(fig:fig-dataexplore)は水深(`Depth`)と$1m^3$あたりに確認した生物発光の数をプロットしたものである。データを見る限り直線的な関係があるわけではないことが分かる。  
@@ -58,7 +58,7 @@ M3_1 <- lm(Sources ~ Depth, data = BL)
 ```{r fig-fitted-M3-1, fig.dim = c(4.5,4.5), fig.cap = "Fitted line estimated from M3_1"}
 nd_M3 <- data.frame(Depth = seq(0,1,length.out = 100))
 
-fitted_M3_1 <- predict(M3_1, newdata = nd_M3,) %>% 
+fitted_M3_1 <- predict(M3_1, newdata = nd_M3) %>% 
   data.frame() %>% 
   rename(fitted = 1) %>% 
   bind_cols(nd_M3)
@@ -117,7 +117,7 @@ BL %>%
 ```
 <br/>  
 
-次節からは、GAMの数理的な基礎を理解するためにも以下のモデルを解説する。  
+次節からは、GAMの数理的な基礎を理解するためにも以下を解説する。  
 
 1. 線形スプライン回帰(linear spline regression)   
 2. 二次スプライン回帰(quadratic spline regression)  
@@ -298,9 +298,9 @@ summary(M3_5)
 
 式\@ref(eq:qsr)のモデルは正規分布の一般化加法モデルといえる。`mgvc`パッケージではより発展的なsmootherを用いており、多重共線性の問題などが生じないようなっている。  
 
-このモデルは第\@ref(c1)章のときのように以下のように書ける。なお、$\bf{y}$は目的変数をすべて含むベクトル、$\bf{X}$は`model.matrix(M3_5)`によって得られる基底の行列、$\bf{\beta}$は回帰係数をすべて含むベクトルである。この表現で書けるということは、第\@ref(c1)章と全く同じ方法で標準誤差や自由度、信頼区間、予測区間を算出できるということである。    
+このモデルは第\@ref(c1)章のときのように以下のように書ける。なお、$\mathbf{y}$は目的変数をすべて含むベクトル、$\mathbf{X}$は`model.matrix(M3_5)`によって得られる基底の行列、$\mathbf{\beta}$は回帰係数をすべて含むベクトルである。この表現で書けるということは、第\@ref(c1)章と全く同じ方法で標準誤差や自由度、信頼区間、予測区間を算出できるということである。    
 $$
-\bf{y} = \bf{X} \times \bf{\beta} + \bf{\epsilon} 
+\mathbf{y} = \mathbf{X} \times \mathbf{\beta} + \mathbf{\epsilon} 
 $$
 
 ## Cubic regression splines {#s3-6}    
@@ -344,7 +344,7 @@ rk <-function(x, z){
 }
 ```
 
-また、説明変数をすべて含む行列$\bf{X}$を作成する必要がある。この行列は1列目は全て1、2列目は$Depth_i$で、3列目以降は$R(Depth_i, k_{j-2})$である。Rでは以下のように作成できる。  
+また、説明変数をすべて含む行列$\mathbf{X}$を作成する必要がある。この行列は1列目は全て1、2列目は$Depth_i$で、3列目以降は$R(Depth_i, k_{j-2})$である。Rでは以下のように作成できる。  
 
 ```{r}
 spl.X <-function(x, xk){
@@ -359,7 +359,7 @@ spl.X <-function(x, xk){
 X <- spl.X(BL$Depth, q_Depth)
 ```
 
-Rでモデルを以下のように実行できる。なお、$\bf{X}$にはすでに切片に相当する1列目が含まれているため、`Sources ~ X - 1`とする。  
+Rでモデルを以下のように実行できる。なお、$\mathbf{X}$にはすでに切片に相当する1列目が含まれているため、`Sources ~ X - 1`とする。  
 ```{r}
 M3_6 <- lm(Sources ~ X - 1, data = BL)
 ```
@@ -463,18 +463,18 @@ compare_performance(M3_6_list[[1]],M3_6_list[[2]],M3_6_list[[3]],
 各モデルにおいて、回帰係数などのパラメータは最小二乗法によって推定されている。すなわち、以下で表される残差平方和が最小になるように推定を行っている。    
 
 $$
-Minimize\; over \;\bf{\beta} : \sum_i \epsilon_i^2 
+Minimize\; over \;\mathbf{\beta} : \sum_i \epsilon_i^2 
 $$
 
 行列形式で表すと以下のようになる。  
 $$
-Minimize\; over \;\bf{\beta} : ||\bf{\epsilon^2}|| = ||\bf{Y} - \bf{X} \times \bf{\beta}||^2 
+Minimize\; over \;\mathbf{\beta} : ||\mathbf{\epsilon^2}|| = ||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}||^2 
 $$
 
-このとき、$\bf{\beta}$の推定値は以下の通りである(第\@ref(c1)章も参照)。  
+このとき、$\mathbf{\beta}$の推定値は以下の通りである(第\@ref(c1)章も参照)。  
 
 $$
-\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X})^{-1} \times \bf{X^t} \times y
+\hat{\mathbf{\beta}} = (\mathbf{X^t} \times \mathbf{X})^{-1} \times \mathbf{X^t} \times y
 $$
 
 さて、ここで式\@ref(eq:qsr)に従う二次スプライン回帰モデルを考える。もし両端を除くノット数がKであるとき、$(Depth-k_j)_+^2$の回帰係数$\beta_{11}, \beta_{12}, \dots, \beta_{1K} $を推定することになる。これらのパラメータは平滑化曲線(回帰曲線)の形に柔軟性を与える(= 形を調整する)役割を担っている。  
@@ -509,15 +509,15 @@ x + y -1 &= 0
 \end{aligned}
 $$
 
-すると、簡単に$x = 1/2, y= 1/2$と解けるが、これが条件の下で$f(x,y)$を最大化する$x$と$y$の値である。制限付き最適化についてもまったく同じことを行う。式\@ref(eq:condition)のような条件があるときに$||\bf{Y} - \bf{X} \times \bf{\beta}||$を最小化するパラメータを求めるには、以下を最小化すればよい。    
+すると、簡単に$x = 1/2, y= 1/2$と解けるが、これが条件の下で$f(x,y)$を最大化する$x$と$y$の値である。制限付き最適化についてもまったく同じことを行う。式\@ref(eq:condition)のような条件があるときに$||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}||$を最小化するパラメータを求めるには、以下を最小化すればよい。    
 
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\beta_{11}^2 + \beta_{12}^2 + \cdots + \beta_{1K}^2 + C) (\#eq:LLM)
+||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}|| + \lambda \times (\beta_{11}^2 + \beta_{12}^2 + \cdots + \beta_{1K}^2 + C) (\#eq:LLM)
 $$
 
-以下のような$K+3$次元の行列($K$はノット数)$\bf{D}$とベクトル$\bf{\beta}$を定義する。  
+以下のような$K+3$次元の行列($K$はノット数)$\mathbf{D}$とベクトル$\mathbf{\beta}$を定義する。  
 $$
-\bf{D} = 
+\mathbf{D} = 
 \begin{bmatrix}
 0 & \cdots & \quad & \quad & \cdots& 0\\
 \vdots & 0 & \quad & \quad & \quad & \vdots\\
@@ -526,7 +526,7 @@ $$
 \vdots & \quad & \quad & \quad & \ddots & 0\\
 0 & \cdots & \quad & \cdots & 0 & 1
 \end{bmatrix}, \quad
-\bf{\beta} = \begin{bmatrix}
+\mathbf{\beta} = \begin{bmatrix}
 \beta_1 \\
 \beta_2\\
 \beta_3\\
@@ -539,17 +539,17 @@ $$
 このとき、式\@ref(eq:LLM)は以下のように変形できる。  
 
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}|| + \lambda \times (\bf{\beta^t} \times \bf{D} \times \bf{\beta} - \bf{C}) (\#eq:LLM2)
+||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}|| + \lambda \times (\mathbf{\beta^t} \times \mathbf{D} \times \mathbf{\beta} - \mathbf{C}) (\#eq:LLM2)
 $$
 
-これを$\bf{\beta}$について解くと、その推定値は以下のようになる。もし$\lambda = 0$ならば(= 何も条件がなければ)、推定値は通常の最小二乗法によるものと同じになる。    
+これを$\mathbf{\beta}$について解くと、その推定値は以下のようになる。もし$\lambda = 0$ならば(= 何も条件がなければ)、推定値は通常の最小二乗法によるものと同じになる。    
 $$
-\hat{\bf{\beta}} = (\bf{X^t} \times \bf{X} + \lambda \times \bf{D})^{-1} \times \bf{X^t} \times \bf{y} (\#eq:est_beta)
+\hat{\mathbf{\beta}} = (\mathbf{X^t} \times \mathbf{X} + \lambda \times \mathbf{D})^{-1} \times \mathbf{X^t} \times \mathbf{y} (\#eq:estbeta)
 $$
 
 $\lambda$が特定の値を割り当てれば、smoother($f_{\lambda}$)を決定することができる。$\hat{\beta}$は$\lambda$の値によって変わるので、$f_{\lambda}$も$\lambda$によって変わる。$\lambda$はペナルティの大きさを表すので、**大きいほどスプライン回帰を行わない通常の線形回帰や多項式回帰の結果に近づき、0ならば罰則のないスプライン回帰の結果と同じになる**。    
 $$
-\hat{f_{\lambda}} = \bf{X} \times \bf{\hat{\beta}}
+\hat{f_{\lambda}} = \mathbf{X} \times \mathbf{\hat{\beta}} (\#eq:estf)
 $$
 
 $\lambda$の値ごとの曲線を図示したのが図\@ref(fig:fig-fit-lambda)である。$\lambda$が大きくなると2次の項までを含む普通の多項式回帰の結果に近づく。  
@@ -627,29 +627,29 @@ $$
 $$
 
 ## Cubic smoothing spline {#s3-10}  
-第\@ref(s3-8)節でやったように$\beta_{11}, \dots, \beta_{1K}$に制限を設けるのではなく、smootherの二次導関数(二回微分値)の和に制限を設ける方法もある。その場合、以下を最小化するようなパラメータを推定する。  
+第\@ref(s3-8)節でやったように$\beta_{11}, \dots, \beta_{1K}$に制限を設けるのではなく、smootherの二次導関数(二回微分値)の和に制限を設ける方法もある。その場合、以下を最小化するようなパラメータを推定する。このような方法を**平滑化スプライン**(smoothing spline)という。    
 
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times 全ポイントでの二次導関数の和 (\#eq:2deriviate)
+||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}||^2 + \lambda \times 全ポイントでの二次導関数の和 (\#eq:2deriviate)
 $$
 
 一般にsmoother($f(x)$)の二次導関数を$f''(x)$とするとき、$f''(x)$の値が低いほど$f(x)$はより直線的であることを示す。全ての$x$について$f''(x)$の値を合計するためには、$f''(x)$を積分してやればよい。
 
 そのため、式\@ref(eq:2deriviate)は以下のように書き直せる。  
 $$
-||\bf{Y} - \bf{X} \times \bf{\beta}||^2 + \lambda \times \int f''(x) dx (\#eq:cubic)
+||\mathbf{Y} - \mathbf{X} \times \mathbf{\beta}||^2 + \lambda \times \int f''(x) dx (\#eq:cubic)
 $$
 
-@Wood2017 は、この基準で最小になる$f(x)$が3次スプラインであることを証明している。また、式\@ref(eq:cubic)は式\@ref(eq:LLM2)のように書き直すことが分かっているので、$\beta$の推定値を得るのに積分をする必要はなく、式\@ref(eq:est_beta)で求めることができる。  
+@Wood2017 は、この基準で最小になる$f(x)$が3次スプラインであることを証明している。また、式\@ref(eq:cubic)は式\@ref(eq:LLM2)のように書き直すことが分かっているので、$\beta$の推定値を得るのに積分をする必要はなく、式\@ref(eq:estbeta)で求めることができる。  
 
-$\bf{\beta}$を推定するためには、$\bf{X}$とパラメータ$\lambda$、罰則を表す行列$\bf{D}$を知る必要がある。3次平滑化スプライン(cubic smoothing spline)の基本は3次回帰スプライン(cubic regression spline)と同じなので、$\bf{X}$は同じものを用いることができる。  
+$\mathbf{\beta}$を推定するためには、$\mathbf{X}$とパラメータ$\lambda$、罰則を表す行列$\mathbf{D}$を知る必要がある。3次平滑化スプライン(cubic smoothing spline)の基本は3次回帰スプライン(cubic regression spline)と同じなので、$\mathbf{X}$は同じものを用いることができる。  
 
 両端を除くノット数はこれまでと同様に9とする。  
 ```{r}
 X <- spl.X(BL$Depth, q_Depth)
 ```
 
-$\bf{D}$は$11\times 11$の正方行列で、成分は第\@ref(s3-6)で出てきた$R(X,z)$によって決まる。$\bf{D}(i + 2, j + 2)$は$R(x_i,x_j)$によって決まり、$x_iとx_j$は両端を除くノットの値である。  
+$\mathbf{D}$は$11\times 11$の正方行列で、成分は第\@ref(s3-6)で出てきた$R(X,z)$によって決まる。$\mathbf{D}(i + 2, j + 2)$は$R(x_i,x_j)$によって決まり、$x_iとx_j$は両端を除くノットの値である。  
 
 Rでは以下の関数で計算できる。  
 ```{r}
@@ -663,4 +663,566 @@ spl.S <- function(xk){
 D <- spl.S(q_Depth)
 ```
 
-最後に、$\lambda$については
+最後に、$\lambda$については交差検証(第\@ref(s2-4)節を参照)を行うことで最適な値を決定する。例えば、$\lambda$を0から0.01の間に25個とるとき、交差検証スコアは以下のように算出できる。  
+
+```{r}
+K <- 25
+OCV <- vector(length = K)
+lambda <- seq(0,0.001, length.out = K)
+N <- nrow(BL)
+
+for(j in 1:K){
+  lambdas <- lambda[j]
+  EP <- vector(length = N)
+  for(i in 1:N){
+    # i番目のデータを除く
+    Xi <- X[-i, ]
+    betai <- solve(t(Xi) %*% Xi + lambdas * D) %*%t(Xi) %*% BL$Sources[-i]
+    Yi <- X[i,] %*% betai
+    EP[i] <- BL$Sources[i] - Yi
+  }
+  OCV[j] <- sum(EP^2)/N
+}
+```
+
+図示すると以下のようになり、$\lambda = 0.000208$のときに交差検証スコアが最も低くなることが分かる(図\@ref(fig:fig-ocv-gam))。    
+```{r fig-ocv-gam, fig.dim = c(4.5,4.5), fig.cap = "OCV score plotted versus λ for the cubic smoothing spline."}
+data.frame(lambda = lambda,
+           OCV = OCV) %>% 
+  arrange(OCV) -> ocv
+
+ocv %>% 
+  ggplot(aes(x = lambda, y = OCV))+
+  geom_line()+
+  geom_point(x= ocv[1,1], y = ocv[1,2],
+             color = "red2", size = 5)+
+  annotate(geom = "text",
+          x= ocv[1,1]+ 0.000002, y = ocv[1,2] + 0.05,
+          label = str_c("lambda = ", round(ocv[1,1],5)))+
+  geom_segment(x= ocv[1,1] + 0.00002, y = ocv[1,2] + 0.04,
+               xend = ocv[1,1], yend = ocv[1,2])+
+  theme_bw()+
+  theme(aspect.ratio = 1)
+```
+<br/>  
+
+データが多いときには上記の交差検証スコアを算出するのは非常に時間がかかるが、交差検証スコアは以下の式で計算できることが数学的にわかっている。なお、$A_{ii}$はハット行列$\mathbf{S}$の対角成分である(後述)。  
+
+$$
+V_0 =  \frac{1}{n}\sum_{i = 1} ^n (Y_i - \hat{f(X_i)})^2/(1-A_{ii})
+$$
+
+こちらの交差検証スコアは以下のように計算できる。  
+```{r}
+OCV2 <- vector(length = K)
+
+for(i in 1:K){
+    lambdas <- lambda[i]
+    S <- X%*%solve(t(X) %*% X + lambdas * D) %*%t(X) 
+    Sii <- diag(S)
+    fit <- S %*% BL$Sources
+    E <- BL$Sources - fit
+    OCV2[i] <- (1/N) *sum((E/(1-Sii))^2)
+}
+```
+
+これは先ほど計算した交差検証スコアと全く同じ値を与える。
+```{r}
+data.frame(lambda = lambda,
+           OCV = OCV,
+           OCV2 =OCV2)
+```
+<br/>  
+
+さて、ここまでの説明で$\mathbf{X}$、$\mathbf{D}$、$\lambda$を求めることができたので、$\mathbf{\beta}$を求めてsmootherを描くことができる。  
+
+```{r}
+## 先敵のlambda
+lambda_opt <- ocv[1,1]
+
+## betaの推定値
+beta <- solve(t(X) %*% X + lambda_opt*D) %*% t(X) %*% BL$Sources
+
+## 図示用の行列X
+nd <- data.frame(Depth = seq(min(BL$Depth), max(BL$Depth), length = 100))
+Xp <- spl.X(nd$Depth, q_Depth)
+
+## smoother
+fitted_css <- data.frame(fit = Xp%*%beta) %>% 
+  bind_cols(nd)
+```
+
+図\@ref(fig:fig-fit-css)は推定された回帰曲線を図示したものである。
+```{r fig-fit-css, fig.dim = c(4.5,4.5), fig.cap = "Estimated cubic smoothing spline for the bioluminescence data."}
+BL %>% 
+  ggplot()+
+  geom_point(aes(x = Depth, y = Sources),
+             size = 2, alpha = 0.6, color = "grey54")+
+  geom_line(data = fitted_css,
+            aes(x = Depth, y = fit),
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.105,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+
+## Summary of smoother types  
+これまで見てきた手法では、以下の4つの手法でsmootherの形を調整してきた。  
+
+1. 移動平均や局所回帰の範囲を変更する。  
+2. スプライン回帰のノット数を変更する(= linear or quadratic spline regression)。  
+3. パラメータに対して制限を設ける(= 制限付き最適化)  
+4. 二次導関数に対して制限を設ける(= cubic smoothing spline)  
+
+## Degree of freedom of smoother  
+式\@ref(eq:estbeta)回帰係数のパラメータ$\mathbf{\beta}$は以下の式で与えられる。  
+
+$$
+\hat{\mathbf{\beta}} = (\mathbf{X^t} \times \mathbf{X} + \lambda \times \mathbf{D})^{-1} \times \mathbf{X^t} \times \mathbf{y}
+$$
+
+また、式\@ref(eq:estf)で見たようにsmootherは以下のように書ける。  
+$$
+\hat{f(_{\lambda})} = \mathbf{X} \times \hat{\mathbf{\beta}}
+$$
+
+これらを合わせると、以下のように書ける。  
+$$
+\begin{aligned}
+\hat{y} &= \hat{f_{\lambda}} = \mathbf{X} \times (\mathbf{X^t} \times \mathbf{X} + \mathbf{\lambda} \times \mathbf{D})^{-1} \times \mathbf{X^t} \times \mathbf{y} \\
+&= S_{\mathbf{\lambda}} \times \mathbf{y}
+\end{aligned}
+$$
+
+ここで、$\mathbf{S_{\lambda}}$は重回帰分析のときに出たハット行列(第\@ref(c1)章参照)と同じ役割を持っている。第\@ref(c1)章で、重回帰分析については自由度はハット行列の対角成分を合計することで得られることを見た。smootherの自由度も$\mathbf{S_{\lambda}}$の対角成分の合計によって求めることができる。  
+
+```{r}
+X <- spl.X(BL$Depth, q_Depth)
+D <- spl.S(q_Depth)
+lambda_opt <- ocv[1,1]
+
+## Sを求める
+S.lambda <- X %*% solve(t(X)%*%X + lambda_opt*D) %*%t(X)
+
+## 自由度を求める  
+df1 <- sum(diag(S.lambda))
+
+df1
+```
+
+よって、smootherの自由度は`r df1`である。なお、$\lambda$の値が大きいほど自由度は小さくなる。$\lambda$の値によって自由度がどう変わるかをプロットしたのが図\@ref(fig:fig-df-smoother))だが、このことが確かめられる。  
+
+```{r fig-df-smoother, fig.dim = c(4.5,4.5), fig.cap = "Effective degrees of freedom plotted versus λ."}
+df <- vector()
+lambda <- seq(0,5,length = 200)
+
+for(i in seq_along(lambda)){
+  S.lambda <- X %*% solve(t(X)%*%X + lambda[i]*D) %*%t(X)
+  df[i] <- sum(diag(S.lambda))
+}
+
+data.frame(lambda = lambda,
+           df = df) %>% 
+  ggplot(aes(x = lambda, y = df))+
+  geom_line()+
+  theme_bw()+
+  theme(aspect.ratio = 1)
+```
+
+## Bias-variance trade-off  
+続いて、smootherの信頼区間を計算することを考える。その前に、"bias-variance trade off"について学ぶ必要がある。  
+
+あるsmootherについての平均二乗誤差(mean squared error: MSE)は以下のように定義できる。なお、$f(Depth_i)$は真のsmootherである。  
+
+$$
+MSE(\hat{f_{\lambda}}(Depth_i)) = E \Bigl( \bigl( \hat{f_{\lambda}}(Depth_i) - f(Depth_i) \bigl)^2 \Bigl) 
+$$
+
+これは、以下のように変形することができる。式の前半部分はバイアス(推定されたsmootherと真のsmootherの差)を表し、後半部分は推定されたsmootherの分散を表す。$\lambda$が小さいとき、推定されたsmootherはより非線形性が強いのでバイアスは小さくなるが、推定されたsmoother内でのばらつきは大きくなる。$\lambda$が大きいときはこの逆である。すなわち、バイアスと分散の間にはトレードオフの関係がある。  
+
+$$
+MSE(\hat{f_{\lambda}}(Depth_i)) = \Bigl(E \bigl( \hat{f_{\lambda}}(Depth_i) \bigl)- f(Depth_i) \Bigl) ^2 + var \bigl(\hat{f_{\lambda}}(Depth_i)\bigl)
+$$
+
+## Confidence intervals  
+今回取り上げたsmootherについて、モデルから推定される高原の数の推定値($\hat{\mathbf{y}}$)とその分散共分散行列は以下のように書ける。標準偏差は分散共分散行列の対角成分の1/2乗であり、信頼区間はそれの-2倍と2倍した区間となる(正確には自由度を考慮する必要がある)。    
+
+$$
+\begin{aligned}
+\hat{\mathbf{y}} &= \hat{f} = \mathbf{S_{\lambda}} \times \mathbf{y}\\
+cov(\hat{f}) &= \sigma^2 \times \mathbf{S_{\lambda}} \times \mathbf{S_{\lambda}}^t
+\end{aligned}
+$$
+
+分散$\sigma^2$を求めるためには、error degrees of freedomを求める必要がある。これは、以下の式で求められる。なお、$tr()$は行列の対角成分の和を計算する関数である。  
+
+$$
+N - tr(2 \times \mathbf{S_{\lambda}} - \mathbf{S_{\lambda}} \times \mathbf{S_{\lambda}}^t)
+$$
+
+分散の推定値は以下の式で求められる。なお、$df_{e}$はerror degrees of freedom   
+
+$$
+(\mathbf{y} - \mathbf{X} \times \hat{\beta})^2/df_{error} 
+$$
+
+Rでは以下のように求められる。  
+```{r}
+## error degrees of freedom
+df.Error <- nrow(BL) - sum(diag(2*S.lambda - S.lambda %*% t(S.lambda)))
+
+## sigma
+sigma2 <- sum((BL$Sources - X%*%beta)^2)/df.Error
+(sigma <- sqrt(sigma2))
+```
+
+さて、それでは$\sigma$が求まったのが標準誤差を計算することができる。図\@ref(fig:fig-fit-css)で回帰曲線を描いたときに使用した行列$X_p$について標準誤差を算出すると以下のようになる。`se_predY`がそれぞれの$Depth$の値のときの標準誤差である。    
+
+```{r}
+Sp.lambda <- Xp %*% solve(t(Xp)%*%Xp + lambda_opt*D) %*%t(Xp)
+cov_predY <- sigma2 * Sp.lambda %*% t(Sp.lambda)
+se_predY <- sqrt(diag(cov_predY))
+```
+
+よって、95%信頼区間付きの回帰曲線は以下のように書ける(図\@ref(fig:fig-fit-css2))。  
+```{r fig-fit-css2, fig.dim = c(4.5,4.5), fig.cap = "Estimated cubic smoothing spline for the bioluminescence data with 95% confidence interval."}
+fitted_css %>% 
+  mutate(lower = fit - se_predY*qt(0.975, df = df1),
+         upper = fit + se_predY*qt(0.975, df = df1)) -> fitted_css2
+
+BL %>% 
+  ggplot()+
+  geom_point(aes(x = Depth, y = Sources),
+             size = 2, alpha = 0.2, color = "grey54")+
+  geom_line(data = fitted_css2,
+            aes(x = Depth, y = fit),
+            linewidth = 1)+
+  geom_ribbon(data = fitted_css2,
+            aes(x = Depth, y = fit, ymin = lower, ymax = upper),
+            color = "black", alpha = 0, linetype = "dashed",
+            linewidth = 1)+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.105,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+しかし、こうして求めた信頼区間には問題がある。求めた信頼区間は、**推定されたsmoother**(`yfit = Xp %*% beta`)**がバイアスのない推定値だと仮定したうえで計算されたもの**である。もしsmootherの推定値にバイアスがあるのであれば、図\@ref(fig:fig-fit-css2)で図示した区間を信頼区間とはみなせない。  
+
+`mgcv`パッケージでは、<u>バイアスに対処するために補正を行っている</u>。  
+
+## Using the function gam in mgcv  
+`mgcv`パッケージを用いたGAMは以下のように実行できる。`gam`関数は前節までの方法と似ているが、より洗練された方法を用いてsmootherの推定を行っている。    
+
+```{r}
+M3_7 <- gam(Sources ~ s(Depth), data = BL)
+```
+
+推定結果は以下の通り。smootherの自由度は8.496で推定された切片は16.7455である。`GCV score`は、一般化交差検証のスコアである。  
+```{r}
+summary(M3_7)
+```
+
+推定された回帰曲線(smoother)は以下のとおりである(図\@ref(fig:fig-fit-M3-7))。  
+```{r fig-fit-M3-7, fig.dim = c(4.5,4.5), fig.cap = "Estimated smoother obtained by the gam function from the package mgcv for the bioluminescence data."}
+pred_M3_7 <- fitted_values(M3_7, data = nd) 
+
+## 描画
+pred_M3_7 %>% 
+  ggplot(aes(x = Depth, y = fitted))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower, ymax = upper),
+              color = "black", alpha = 0, linetype = "dashed",
+            linewidth = 1) +
+  geom_point(data = BL,
+             aes(y = Sources),
+             size = 2, alpha = 0.2, color = "grey54")+
+  theme_bw(base_size = 12)+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  coord_cartesian(ylim = c(0,120), xlim = c(0.105,1))+
+  labs(x = "Scaled depth", y = "Sources")
+```
+<br/>  
+
+それでは、`gam`関数では実際にどのような手順で推定が行われているのだろうか。まず、`s(Depth)`としたときに何が行われているのだろうか。関数`s()`の引数はいくつかあるが、そのうちデフォルトで与えられているのは以下の3つである。  
+
+`k = -1, fx = FALSE, bs = "tp"`    
+
+`fx = FALSE`は、罰則付きの回帰スプラインが使われていることを表し、もし`fx = TRUE`ならば自由度を固定した回帰スプラインが行われる。`k`はsmootherの基底の次元を表し、$k-1$がsmootherの自由度の上限になる。`k = -1`ではデフォルトの値が選ばれる。`bs`は使用されるsmootherが指定される。詳しい説明は`?smoother.terms`とすれば見ることができる。  
+
+つまり、引数を何も指定しないときは罰則付きの回帰スプラインが適用され、自由度は交差検証によって決定される。自由度を固定してGAMを実行するときは以下のようにすればよい。`k = 5`にするとsmootherの自由度は4になる。    
+
+```{r}
+M2_8 <- gam(Sources ~ s(Depth, fx = TRUE, k = 5), data = BL)
+```
+
+使われるsmootherの種類による推定結果の違いは小さいが、データ数によっては種類を変えることで推定が効率的になったりする。デフォルトの`bs = "tp"`では**薄板平滑化スプライン**(thin plate regression spline)と呼ばれる方法が用いられる。この方法では交互作用項を含めた平滑化を行うことができるようだ(詳しくは[こちら](https://qiita.com/saltcooky/items/d5a1a62756d10273b008)や[こちら](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/http://ibis.t.u-tokyo.ac.jp/suzuki/lecture/2015/dataanalysis/L12.pdf))。  
+
+`bs = "cr"`では、罰則付きの3次スプライン回帰が適用され、`bs = "cc"`では説明変数の両端のポイントが接続される場合(例えば月データの分析)に使える3次スプライン回帰である。  
+
+さて、最初のモデル(`M3_7`)の説明に戻ろう。モデルの予測値は`fitted()`関数で求めることができる。  
+```{r}
+head(fitted(M3_7), n = 10)
+```
+
+パラメータ(回帰係数)の推定値は以下のように求められる。
+```{r}
+coef(M3_7)
+```
+
+`predict()`関数で`type = "lpmatrix"`とすると、モデルの説明変数を含む行列を得ることができる。
+```{r}
+X <- predict(M3_7, type = "lpmatrix")
+```
+
+よって、モデルの予測値は以下のように求めることができる。  
+```{r}
+mu <- X %*% coef(M3_7)
+```
+
+また、予測値の分散共分散行列は$\mathbf{X} \times cov(\mathbf{\beta}) \times \mathbf{X^t}$で求めることができるので(第\@ref(c1)章参照)、以下のように求められる、  
+
+```{r}
+cov_mu <- X %*% M3_7$Vp %*% t(X)
+```
+
+## The danger of using GAM  
+これまで様々な方法でsmootherを推定してきたが、その多くではスケール化された水深が0.3から0.4のあたりで光源の数がわずかに増加していると推定された。しかし、これまではサンプリングを行ったステーションの影響は無視して分析を行ってきた(第\@ref(s3-1)節も参照)。推定されたsmotherのパターンがこうした影響を受けていることはないだろうか。  
+
+まず、モデルの診断を行う。図\@ref(fig:fig-diagnosis-M3-7)はモデルの予測値と残差の関係をプロットしたものである。明確なパターンがあり、等分散性の仮定が満たされていないことが分かる。    
+
+```{r fig-diagnosis-M3-7, fig.dim = c(4.5,4.5), fig.cap = "Residuals  plotted   versus   fitted   values  for    the    GAM    using    only  depth as smoother."}
+data.frame(fit = fitted(M3_7),
+           resid = resid(M3_7)) %>% 
+  ggplot(aes(x = fit, y = resid))+
+  geom_point()+
+  geom_hline(yintercept = 0,
+             linetype = "dotted")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(y = "Residuals", x = "Fitted values")
+```
+<br/>  
+
+図\@ref(fig:fig-diagnosis-M3-7-b)は、ステーションごとの残差をプロットしたものである。ステーションごとにパターン(0以上が多い/0以下が多いなど)があることが分かる。  
+```{r fig-diagnosis-M3-7-b, fig.dim = c(4.5,4.5), fig.cap = "Residuals plotted versus station for the GAM using only depth as smoother."}
+data.frame(resid = resid(M3_7),
+           Station = as.factor(BL$Station)) %>% 
+  ggplot(aes(x = Station, y = resid))+
+  geom_boxplot()+
+  geom_hline(yintercept = 0,
+             linetype = "dotted")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(y = "Residuals")
+```
+<br/>  
+
+また、水深と残差の関係をステーションごとにプロットすると(図\@ref(fig:fig-diagnosis-M3-7-c))、ステーションごとに違う傾向があることが分かる。以上より、smootherとして$f(Depth_i)$だけを考えることが適当ではないことが示唆された。  
+```{r fig-diagnosis-M3-7-c, fig.dim = c(10,10), fig.cap = "Residuals plotted versus depth for each station for the GAM using only depth as smoother."}
+data.frame(resid = resid(M3_7),
+           Station = BL$Station,
+           Depth = BL$Depth) %>% 
+  ggplot(aes(x = Depth, y = resid))+
+  geom_point(alpha = 0.5,
+             shape = 1)+
+  facet_rep_wrap(~Station, repeat.tick.labels = TRUE)+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))+
+  labs(y = "Residuals")
+```
+<br/>  
+
+この問題を解決する方法としては、各ステーションに異なるsmootherを適用することなどがあるが、数が多すぎる。他の方法としては、渦巻き(`Eddy`)の有無によってsmootherを変えるというものである。  
+
+図\@ref(fig:fig-plot-by-eddy)は、渦巻きの有無ごとに水深と光源の数の関係を描いた図である。明らかに渦巻きの有無ごとに傾きが異なっていることが分かる。  　　
+```{r fig-plot-by-eddy, fig.dim = c(10,4.5), fig.cap = "Source s profiles plotted versus scaled depth for absence (left) and presence (right) of eddies. Each line corresponds to a station."}
+BL %>% 
+  mutate(Station = as.factor(Station)) %>% 
+  ggplot(aes(x = Depth, y = Sources))+
+  geom_point(aes(color = Station))+
+  facet_rep_wrap(~Eddy)+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))
+```
+<br/>  
+
+そこで、以下の渦巻きの有無ごとにsmootherが異なるモデルを考える。なお,$j = 1,2$で$f_1(Depth_i)$は渦巻きがないときのsmootherである。`Station`は説明変数に入れた。  
+
+$$
+\begin{aligned}
+Sources_i &= \alpha + f_j(Depth_i) + Station_i + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned} 
+$$
+
+Rでは、第\@ref(s2-6)節で見たように`by = `とすることで渦巻きの有無ごとのsmootherを推定できる。以下では、渦巻きの有無ごとにsmootherを推定する場合としない場合のモデルを作成する。  
+
+```{r}
+M3_8 <- gam(Sources ~ s(Depth) + factor(Station), data = BL)
+M3_9 <-  gam(Sources ~ s(Depth, by = factor(Eddy)) + factor(Station), data = BL)
+```
+
+AICを比較すると、渦巻きの有無ごとにsmootherを推定したモデルの方がよいモデルであることが分かる。  
+```{r}
+AIC(M3_8, M3_9)
+```
+
+推定された渦巻きの有無ごとのsmootherを図示したのが図\@ref(fig:fig-smoother-by-eddy)である。両者が異なるパターンを示していることが分かる。渦巻きがあり(`Eddy = 1`)のときに水深が深いところで95%信頼区間が狭くなっているのは、そのあたりのデータが少ないからである。  
+```{r fig-smoother-by-eddy, fig.dim = c(9,4.5), fig.cap = "Estimated smoothers for depth for absence (left) and presence (right) of eddies."}
+## M3_8
+smooth_estimates(M3_9) %>% 
+  add_confint() %>% 
+  rename(Eddy = 7) %>% 
+  mutate(Eddy = str_c("Eddy = ", Eddy)) %>% 
+  ggplot(aes(x = Depth, y = est))+
+  geom_line(aes(),
+            linewidth = 1)+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),
+              alpha = 0,
+              color = "black",
+              linetype = "dashed",
+              linewidth = 0.7)+
+  facet_rep_wrap(~Eddy, repeat.tick.labels = TRUE)+
+  theme_bw()+
+  theme(aspect.ratio = 1,
+        strip.background = element_blank(),
+        strip.text = element_text(hjust = 0))
+```
+<br/>  
+
+他の方法はランダム効果を用いる方法であるが、これについては別の本で解説を行っている[@Zuur2014]。  
+
+## Additive models with multiple smoothers  
+これまでのモデルは、一つの変数のsmootherのみを用いていた。これを二つ以上の変数のsmootherに拡張するのはシンプルである。  
+
+ここでは、蛍光物質(クロロフィル)の量(mg/L)(`flcugl`)のsmootherも加えたモデルを考える。
+$$
+\begin{aligned}
+Sources_i &= \alpha + f_1(Depth_i) + f_2(flcugl_i) +  Station_i + \epsilon_i \\
+\epsilon_i &\sim N(0,\sigma^2)
+\end{aligned}
+$$
+
+図\@ref(fig:fig-datacheck)は`Depth`と`flcugl`、`flcugl`と`Sources`の関係をプロットしたものである。`flcugl`には一つだけ外れ値があるので、以後の分析ではこれは除く。
+```{r fig-datacheck, fig.dim = c(9,4.5), fig.cap = "Scatterplot of flcugl versus depth (left) and sources versus flcugl (right)."}
+BL %>% 
+  ggplot(aes(x = Depth, y = flcugl))+
+  geom_point(shape = 1, alpha = 0.7)+
+  theme_bw()+
+  theme(aspect.ratio = 1) -> p1
+
+BL %>% 
+  ggplot(aes(x =flcugl, y = Sources))+
+  geom_point(shape = 1, alpha = 0.7)+
+  theme_bw()+
+  theme(aspect.ratio = 1) -> p2
+
+p1 + p2
+```
+<br/>  
+
+これまでと同様に、それぞれのsmootherは以下のように書ける。それぞれのsmootherについてノットの数と位置を決定する必要があるが、これは同じでも違くてもよい。また、それぞれのsmootherについて基底($b_{1j}(Depth_i),b_{2j}(flcugl_i)$)を決める必要がある。例えば、$Depth$については線形スプライン回帰を適用するが、$flcugl$については3次平滑化スプラインを適用する、ということもできる。       
+$$
+\begin{aligned}
+f_1(Depth_i) &= \sum_{j =1}^K \beta_{1j} \times b_{1j}(Depth_i)\\
+f_2(flcugl_i) &= \sum_{j =1}^K \beta_{2j} \times b_{2j}(flcugl_i)\\
+\end{aligned}
+$$
+
+モデル全体の切片$\alpha$があるので、各smootherの切片は除いて0の周りで周辺化する。各smootherのパラメータ$\lambda_1, \lambda_2$は交差検証によって決定され、自由度もそれに基づいて別々に計算される。  
+
+Rでは以下のように実行する。ここでは、両方のsmootherに3次平滑化スプラインを用いる。  
+
+```{r}
+BL2 <- BL %>% filter(flcugl < 0.03)
+
+M3_10 <- gam(Sources ~ s(Depth, bs = "cr") + s(flcugl, bs = "cr") + factor(Station),
+             data = BL2)
+```
+
+推定された各smootherは以下の通り(図\@ref(fig:fig-multsmoother))。`flcugl`のsmootherはゆっくり増加したのち、急激に減少していることが分かる。`Depth`の方はほとんど変わらない。      
+```{r fig-multsmoother, fig.dim = c(9,4.5), fig.cap = "Estimated cubic smoothing splines for Depth and fclugl."}
+draw(M3_10)
+```
+
+モデルの要約は以下の通り。いずれのsmootherも有意であるが、このモデルでは渦巻きの有無の効果を無視している。`flcugl`の効果も渦巻きの有無によって異なるかもしれない。  
+```{r}
+summary(M3_10)
+```
+
+そこで、以下の7つのモデルを作成してAICによるモデル比較を行う。交互作用を考慮する2次元のsmootherがあるモデル(`M3_11_h`と`M3_11_i`)については第\@ref(c6)章で触れる。    
+```{r}
+## Depthのみ、Eddyによる違いなし
+M3_11_a <- gam(Sources ~ s(Depth, bs = "cr") + factor(Station), data = BL2)
+
+## flcuglのみ、Eddyによる違いなし
+M3_11_b <- gam(Sources ~ s(flcugl, bs = "cr") + factor(Station), data = BL2)
+
+## Depthとflcugl。DepthのみEddyによる違いあり  
+M3_11_c <- gam(Sources ~ s(Depth, bs = "cr", by = factor(Eddy)) +
+                 s(flcugl, bs = "cr") + factor(Station), data = BL2)
+
+## Depthとflcugl。flcuglのみEddyによる違いあり  
+M3_11_d <- gam(Sources ~ s(Depth, bs = "cr") +
+                 s(flcugl, bs = "cr", by = factor(Eddy)) + factor(Station), data = BL2)
+
+## Depthとflcugl、両方がEddyによって異なる  
+M3_11_e <- gam(Sources ~ s(Depth, bs = "cr", by = factor(Eddy)) +
+                 s(flcugl, bs = "cr", by = factor(Eddy)) + factor(Station), data = BL2)
+
+## DepthのみでEddyによって異なる。flcuglは普通の説明変数として入れる。  
+M3_11_f <- gam(Sources ~ s(Depth, bs = "cr", by = factor(Eddy)) + flcugl + factor(Station),
+               data = BL2)
+
+## DepthのみでEddyによって異なる。flcuglとEddyの交互作用を入れる。 
+M3_11_g <- gam(Sources ~ s(Depth, bs = "cr", by = factor(Eddy)) + flcugl*factor(Eddy) +
+                 factor(Station), data = BL2)
+
+## Depthとflcuglの交互作用を考える。Eddyによる傾きの違いなし。    
+M3_11_h <- gam(Sources ~ te(Depth, flcugl) + factor(Station), data = BL2)
+
+## Depthとflcuglの交互作用を考える。Eddyによる傾きの違いあり。 
+M3_11_i <- gam(Sources ~ te(Depth, flcugl,  by = factor(Eddy)) 
+               + factor(Station), data = BL2)
+```
+
+モデル比較の結果、どちらのsmootherも渦巻きの有無によって異なる`M3_11_e`が最も良いよう。  
+```{r}
+AIC(M3_10, M3_11_a, M3_11_b,M3_11_c,M3_11_d,M3_11_e,M3_11_f,M3_11_g,M3_11_h,M3_11_i) %>% 
+  data.frame() %>% 
+  arrange(AIC)
+```
+
+`M3_11_e`のsmootherを図示すると以下のようになる(図\@ref(fig:fig-multsmoother2))。  
+```{r fig-multsmoother2, fig.dim = c(10,10), fig.cap = "Estimated smoothers for mM3_11_e."}
+smooth_estimates(M3_11_e) %>% 
+  add_confint() %>% 
+  pivot_longer(cols = c(Depth, flcugl)) %>% 
+  drop_na(value) %>% 
+  rename(Eddy = 6) %>% 
+  mutate(Eddy = str_c("Eddy = ", Eddy)) %>% 
+  ggplot(aes(x = value, y = est))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),
+              alpha = 0, color = "grey29", linewidth = 0.9,
+              linetype = "dashed")+
+  labs(x = "x", y = "")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  facet_rep_grid(Eddy~name, scales = "free_x",
+                 repeat.tick.labels = TRUE)
+```
+
