@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5 Additive modelling applied on stable isotope ratios of ocean squid | Introduction to GAM using R</title>
+  <meta name="description" content="5 Additive modelling applied on stable isotope ratios of ocean squid | Introduction to GAM using R" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5 Additive modelling applied on stable isotope ratios of ocean squid | Introduction to GAM using R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5 Additive modelling applied on stable isotope ratios of ocean squid | Introduction to GAM using R" />
+  
+  
+  
+
+<meta name="author" content="Tsubasa Yamaguchi" />
+
+
+<meta name="date" content="2023-08-03" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="Chapter4.html"/>
+<link rel="next" href="sessioninfo.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.27/datatables.js"></script>
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
+<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="custom_style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>本稿の目的</a></li>
+<li class="chapter" data-level="" data-path="Chapter0.html"><a href="Chapter0.html"><i class="fa fa-check"></i>0. パッケージの読み込み</a></li>
+<li class="chapter" data-level="1" data-path="Chapter1.html"><a href="Chapter1.html"><i class="fa fa-check"></i><b>1</b> Review of multiple linear regressions</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="Chapter1.html"><a href="Chapter1.html#light-levels-and-size-of-the-human-visual-system"><i class="fa fa-check"></i><b>1.1</b> Light levels and size of the human visual system</a></li>
+<li class="chapter" data-level="1.2" data-path="Chapter1.html"><a href="Chapter1.html#the-variables"><i class="fa fa-check"></i><b>1.2</b> The variables</a></li>
+<li class="chapter" data-level="1.3" data-path="Chapter1.html"><a href="Chapter1.html#protocol-for-the-analysis"><i class="fa fa-check"></i><b>1.3</b> Protocol for the analysis</a></li>
+<li class="chapter" data-level="1.4" data-path="Chapter1.html"><a href="Chapter1.html#data-exploration"><i class="fa fa-check"></i><b>1.4</b> Data exploration</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="Chapter1.html"><a href="Chapter1.html#欠損値の確認"><i class="fa fa-check"></i><b>1.4.1</b> 欠損値の確認</a></li>
+<li class="chapter" data-level="1.4.2" data-path="Chapter1.html"><a href="Chapter1.html#s1-4-2"><i class="fa fa-check"></i><b>1.4.2</b> 外れ値の確認</a></li>
+<li class="chapter" data-level="1.4.3" data-path="Chapter1.html"><a href="Chapter1.html#多重共線性の確認"><i class="fa fa-check"></i><b>1.4.3</b> 多重共線性の確認</a></li>
+<li class="chapter" data-level="1.4.4" data-path="Chapter1.html"><a href="Chapter1.html#目的変数と説明変数の関係の確認"><i class="fa fa-check"></i><b>1.4.4</b> 目的変数と説明変数の関係の確認</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression"><i class="fa fa-check"></i><b>1.5</b> Multiple linear regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="Chapter1.html"><a href="Chapter1.html#underlying-statistical-theory"><i class="fa fa-check"></i><b>1.5.1</b> Underlying statistical theory</a>
+<ul>
+<li class="chapter" data-level="1.5.1.1" data-path="Chapter1.html"><a href="Chapter1.html#外れ値のチェック"><i class="fa fa-check"></i><b>1.5.1.1</b> 外れ値のチェック</a></li>
+<li class="chapter" data-level="1.5.1.2" data-path="Chapter1.html"><a href="Chapter1.html#信頼区間と予測区間の算出"><i class="fa fa-check"></i><b>1.5.1.2</b> 95%信頼区間と予測区間の算出</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5.2" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression-1"><i class="fa fa-check"></i><b>1.5.2</b> Multiple linear regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="Chapter1.html"><a href="Chapter1.html#fitting-the-model-in-r-and-estimate-parameters"><i class="fa fa-check"></i><b>1.5.3</b> Fitting the model in R and estimate parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="Chapter1.html"><a href="Chapter1.html#finding-the-optimal-model"><i class="fa fa-check"></i><b>1.6</b> Finding the optimal model</a></li>
+<li class="chapter" data-level="1.7" data-path="Chapter1.html"><a href="Chapter1.html#degree-of-freedom"><i class="fa fa-check"></i><b>1.7</b> Degree of freedom</a></li>
+<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#c1-8"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
+<li class="chapter" data-level="1.9" data-path="Chapter1.html"><a href="Chapter1.html#model-interpretation"><i class="fa fa-check"></i><b>1.9</b> Model interpretation</a></li>
+<li class="chapter" data-level="1.10" data-path="Chapter1.html"><a href="Chapter1.html#what-to-do-if-things-go-wrong"><i class="fa fa-check"></i><b>1.10</b> What to do if things go wrong</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chapter2.html"><a href="Chapter2.html"><i class="fa fa-check"></i><b>2</b> Introduction to additive models using deep-sea fisheries data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="Chapter2.html"><a href="Chapter2.html#impact-of-deep-sea-fisheries"><i class="fa fa-check"></i><b>2.1</b> Impact of deep-sea fisheries</a></li>
+<li class="chapter" data-level="2.2" data-path="Chapter2.html"><a href="Chapter2.html#first-encounter-with-smoothers"><i class="fa fa-check"></i><b>2.2</b> First encounter with smoothers</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="Chapter2.html"><a href="Chapter2.html#applying-linear-regression"><i class="fa fa-check"></i><b>2.2.1</b> Applying linear regression</a>
+<ul>
+<li class="chapter" data-level="2.2.1.1" data-path="Chapter2.html"><a href="Chapter2.html#当てはめるモデル"><i class="fa fa-check"></i><b>2.2.1.1</b> 当てはめるモデル</a></li>
+<li class="chapter" data-level="2.2.1.2" data-path="Chapter2.html"><a href="Chapter2.html#data-exploration-1"><i class="fa fa-check"></i><b>2.2.1.2</b> data exploration</a></li>
+<li class="chapter" data-level="2.2.1.3" data-path="Chapter2.html"><a href="Chapter2.html#model-diagnosis"><i class="fa fa-check"></i><b>2.2.1.3</b> model diagnosis</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.2" data-path="Chapter2.html"><a href="Chapter2.html#applying-cubic-polynomials"><i class="fa fa-check"></i><b>2.2.2</b> Applying cubic polynomials</a></li>
+<li class="chapter" data-level="2.2.3" data-path="Chapter2.html"><a href="Chapter2.html#a-simple-gam"><i class="fa fa-check"></i><b>2.2.3</b> A simple GAM</a></li>
+<li class="chapter" data-level="2.2.4" data-path="Chapter2.html"><a href="Chapter2.html#moving-average-and-loess-smoother"><i class="fa fa-check"></i><b>2.2.4</b> Moving average and LOESS smoother</a>
+<ul>
+<li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#s2-4"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chapter2.html"><a href="Chapter2.html#independence"><i class="fa fa-check"></i><b>2.5.2</b> Independence</a></li>
+<li class="chapter" data-level="2.5.3" data-path="Chapter2.html"><a href="Chapter2.html#influential-observations"><i class="fa fa-check"></i><b>2.5.3</b> Influential observations</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="Chapter2.html"><a href="Chapter2.html#s2-6"><i class="fa fa-check"></i><b>2.6</b> Extending the GAM with more covariates</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
+<li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+<li class="chapter" data-level="2.6.3" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-third-implementation"><i class="fa fa-check"></i><b>2.6.3</b> GAM with interaction; third implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="Chapter2.html"><a href="Chapter2.html#transforming-the-density-data"><i class="fa fa-check"></i><b>2.7</b> Transforming the density data</a></li>
+<li class="chapter" data-level="2.8" data-path="Chapter2.html"><a href="Chapter2.html#allowing-for-heterogeneity"><i class="fa fa-check"></i><b>2.8</b> Allowing for heterogeneity</a></li>
+<li class="chapter" data-level="2.9" data-path="Chapter2.html"><a href="Chapter2.html#transforming-and-allowing-for-heterogeinity"><i class="fa fa-check"></i><b>2.9</b> Transforming and allowing for heterogeinity</a></li>
+<li class="chapter" data-level="2.10" data-path="Chapter2.html"><a href="Chapter2.html#s2-10"><i class="fa fa-check"></i><b>2.10</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Chapter3.html"><a href="Chapter3.html"><i class="fa fa-check"></i><b>3</b> Technical aspects of GAM using pelagic bioluminescent organisms</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="Chapter3.html"><a href="Chapter3.html#s3-1"><i class="fa fa-check"></i><b>3.1</b> Pelagic bioluminescent organism data</a></li>
+<li class="chapter" data-level="3.2" data-path="Chapter3.html"><a href="Chapter3.html#s3-2"><i class="fa fa-check"></i><b>3.2</b> Lineaar regression</a></li>
+<li class="chapter" data-level="3.3" data-path="Chapter3.html"><a href="Chapter3.html#polynomial-regression-model"><i class="fa fa-check"></i><b>3.3</b> Polynomial regression model</a></li>
+<li class="chapter" data-level="3.4" data-path="Chapter3.html"><a href="Chapter3.html#s3-4"><i class="fa fa-check"></i><b>3.4</b> Linear spline regression</a></li>
+<li class="chapter" data-level="3.5" data-path="Chapter3.html"><a href="Chapter3.html#s3-5"><i class="fa fa-check"></i><b>3.5</b> Quadratic spline regression</a></li>
+<li class="chapter" data-level="3.6" data-path="Chapter3.html"><a href="Chapter3.html#s3-6"><i class="fa fa-check"></i><b>3.6</b> Cubic regression splines</a></li>
+<li class="chapter" data-level="3.7" data-path="Chapter3.html"><a href="Chapter3.html#the-number-of-knots"><i class="fa fa-check"></i><b>3.7</b> The number of knots</a></li>
+<li class="chapter" data-level="3.8" data-path="Chapter3.html"><a href="Chapter3.html#s3-8"><i class="fa fa-check"></i><b>3.8</b> Penalized quadratic spline regression</a></li>
+<li class="chapter" data-level="3.9" data-path="Chapter3.html"><a href="Chapter3.html#other-smoothers"><i class="fa fa-check"></i><b>3.9</b> Other smoothers</a></li>
+<li class="chapter" data-level="3.10" data-path="Chapter3.html"><a href="Chapter3.html#s3-10"><i class="fa fa-check"></i><b>3.10</b> Cubic smoothing spline</a></li>
+<li class="chapter" data-level="3.11" data-path="Chapter3.html"><a href="Chapter3.html#summary-of-smoother-types"><i class="fa fa-check"></i><b>3.11</b> Summary of smoother types</a></li>
+<li class="chapter" data-level="3.12" data-path="Chapter3.html"><a href="Chapter3.html#degree-of-freedom-of-smoother"><i class="fa fa-check"></i><b>3.12</b> Degree of freedom of smoother</a></li>
+<li class="chapter" data-level="3.13" data-path="Chapter3.html"><a href="Chapter3.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>3.13</b> Bias-variance trade-off</a></li>
+<li class="chapter" data-level="3.14" data-path="Chapter3.html"><a href="Chapter3.html#confidence-intervals"><i class="fa fa-check"></i><b>3.14</b> Confidence intervals</a></li>
+<li class="chapter" data-level="3.15" data-path="Chapter3.html"><a href="Chapter3.html#using-the-function-gam-in-mgcv"><i class="fa fa-check"></i><b>3.15</b> Using the function gam in mgcv</a></li>
+<li class="chapter" data-level="3.16" data-path="Chapter3.html"><a href="Chapter3.html#the-danger-of-using-gam"><i class="fa fa-check"></i><b>3.16</b> The danger of using GAM</a></li>
+<li class="chapter" data-level="3.17" data-path="Chapter3.html"><a href="Chapter3.html#additive-models-with-multiple-smoothers"><i class="fa fa-check"></i><b>3.17</b> Additive models with multiple smoothers</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="Chapter4.html"><a href="Chapter4.html"><i class="fa fa-check"></i><b>4</b> Introducing generalized additive models using deep-sea fishery data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="Chapter4.html"><a href="Chapter4.html#from-additive-models-to-generalized-additive-models"><i class="fa fa-check"></i><b>4.1</b> From additive models to generalized additive models</a></li>
+<li class="chapter" data-level="4.2" data-path="Chapter4.html"><a href="Chapter4.html#review-of-glm"><i class="fa fa-check"></i><b>4.2</b> Review of GLM</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="Chapter4.html"><a href="Chapter4.html#distribution"><i class="fa fa-check"></i><b>4.2.1</b> Distribution</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chapter4.html"><a href="Chapter4.html#predictor-function"><i class="fa fa-check"></i><b>4.2.2</b> Predictor function</a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chapter4.html"><a href="Chapter4.html#link-function"><i class="fa fa-check"></i><b>4.2.3</b> Link function</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chapter4.html"><a href="Chapter4.html#start-with-glm-or-gam"><i class="fa fa-check"></i><b>4.3</b> Start with GLM or GAM ?</a></li>
+<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#results-of-poisson-and-negative-binomial-glm"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
+<li class="chapter" data-level="4.5" data-path="Chapter4.html"><a href="Chapter4.html#using-offset-in-a-glm-or-gam"><i class="fa fa-check"></i><b>4.5</b> Using offset in a GLM or GAM</a></li>
+<li class="chapter" data-level="4.6" data-path="Chapter4.html"><a href="Chapter4.html#poisson-glm-with-offset"><i class="fa fa-check"></i><b>4.6</b> Poisson GLM with offset</a></li>
+<li class="chapter" data-level="4.7" data-path="Chapter4.html"><a href="Chapter4.html#negative-binomial-glm-with-offset"><i class="fa fa-check"></i><b>4.7</b> Negative binomial GLM with offset</a></li>
+<li class="chapter" data-level="4.8" data-path="Chapter4.html"><a href="Chapter4.html#poisson-and-negative-binomial-gam-with-offset"><i class="fa fa-check"></i><b>4.8</b> Poisson and negative binomial GAM with offset</a></li>
+<li class="chapter" data-level="4.9" data-path="Chapter4.html"><a href="Chapter4.html#what-to-present-in-paper"><i class="fa fa-check"></i><b>4.9</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chapter5.html"><a href="Chapter5.html"><i class="fa fa-check"></i><b>5</b> Additive modelling applied on stable isotope ratios of ocean squid</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="Chapter5.html"><a href="Chapter5.html#stable-isotope-ratios-of-squid"><i class="fa fa-check"></i><b>5.1</b> Stable isotope ratios of squid</a></li>
+<li class="chapter" data-level="5.2" data-path="Chapter5.html"><a href="Chapter5.html#the-variables-1"><i class="fa fa-check"></i><b>5.2</b> The variables</a></li>
+<li class="chapter" data-level="5.3" data-path="Chapter5.html"><a href="Chapter5.html#data-exploration-2"><i class="fa fa-check"></i><b>5.3</b> Data exploration</a></li>
+<li class="chapter" data-level="5.4" data-path="Chapter5.html"><a href="Chapter5.html#brain-storming"><i class="fa fa-check"></i><b>5.4</b> Brain storming</a></li>
+<li class="chapter" data-level="5.5" data-path="Chapter5.html"><a href="Chapter5.html#applying-the-multiple-linear-regression-model"><i class="fa fa-check"></i><b>5.5</b> Applying the multiple linear regression model</a></li>
+<li class="chapter" data-level="5.6" data-path="Chapter5.html"><a href="Chapter5.html#applying-an-additive-model"><i class="fa fa-check"></i><b>5.6</b> Applying an additive model</a></li>
+<li class="chapter" data-level="5.7" data-path="Chapter5.html"><a href="Chapter5.html#testing-linearity-versus-non-linearity"><i class="fa fa-check"></i><b>5.7</b> Testing linearity versus non-linearity</a>
+<ul>
+<li class="chapter" data-level="5.7.1" data-path="Chapter5.html"><a href="Chapter5.html#programming-a-smoother-manually"><i class="fa fa-check"></i><b>5.7.1</b> Programming a smoother manually</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="Chapter5.html"><a href="Chapter5.html#s5-8"><i class="fa fa-check"></i><b>5.8</b> Consequence of ignoring collinearity in the additive model</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to GAM using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="additive-modelling-applied-on-stable-isotope-ratios-of-ocean-squid" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">5</span> Additive modelling applied on stable isotope ratios of ocean squid<a href="Chapter5.html#additive-modelling-applied-on-stable-isotope-ratios-of-ocean-squid" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="stable-isotope-ratios-of-squid" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Stable isotope ratios of squid<a href="Chapter5.html#stable-isotope-ratios-of-squid" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>同位体(isotope)とは、同じ原子であるが異なる中性子数を持つものを指す。そのうち、原子核が安定していて放射能を持たないものを安定同位体(stable isotope)という。例えば、炭素には2つの安定同位体(<span class="math inline">\(^{12}\rm{C}\)</span>と<span class="math inline">\(^{13}\rm{C}\)</span>)が存在する。　　</p>
+<p>同位体は同じ化学的性質を持つが、中性子の数が異なるので重さがわずかに異なる。重い同位体の方が体に残りやすいため、食物連鎖の上位に位置する動物ほど体組織に占める重い方の同位体の割合が多くなる。そのため、生態学では生態系におけるその種の栄養段階を調べるために、体組織中の2つの窒素同位体(<span class="math inline">\(^{15}\rm{N}\)</span>と<span class="math inline">\(^{14}\rm{N}\)</span>)の比が用いられることがある。一方、栄養段階による安定同位体比の変化は炭素よりも窒素で大きいため、食物連鎖の下の方の生物には炭素同位体比が用いられることが多い。また、炭素の安定同位体比はその生物が生息する環境(海水域、淡水域、沿岸域、沖合など)によっても異なるため、その動物が属する生態系を特定するために炭素同位体比が用いられることもある。</p>
+<p>ここでは、北大西洋の北極圏及び亜北極圏に豊富に生息し、様々な捕食者の餌となっているイカ(Gonatus fabricii)の安定同位体比(<span class="math inline">\(\delta^{13}\rm{C}, \delta^{15}\rm{N}\)</span>)を測定したMendes( <span class="citation">Zuur (<a href="#ref-Zuur2012">2012</a>)</span> の著者の一人)らの研究データを用いる。この研究は、井戸や水深、体サイズによって個体群内の安定同位体比が変わるかを調べることを目的としている。</p>
+</div>
+<div id="the-variables-1" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> The variables<a href="Chapter5.html#the-variables-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>データは以下の通り。　　</p>
+<ul>
+<li><code>Lat</code>：緯度<br />
+</li>
+<li><code>Depth</code>: サンプルを採集した水深<br />
+</li>
+<li><code>ML</code>: イカの外套膜の長さ<br />
+</li>
+<li><code>d15N</code>: 窒素同位体比(<span class="math inline">\(^{15}\rm{N}\)</span>の占める割合)</li>
+</ul>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="Chapter5.html#cb210-1" tabindex="-1"></a>Squid <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;data/SquidNorway.txt&quot;</span>)</span>
+<span id="cb210-2"><a href="Chapter5.html#cb210-2" tabindex="-1"></a></span>
+<span id="cb210-3"><a href="Chapter5.html#cb210-3" tabindex="-1"></a><span class="fu">datatable</span>(Squid,</span>
+<span id="cb210-4"><a href="Chapter5.html#cb210-4" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">scrollX =</span> <span class="dv">20</span>),</span>
+<span id="cb210-5"><a href="Chapter5.html#cb210-5" tabindex="-1"></a>          <span class="at">filter =</span> <span class="st">&quot;top&quot;</span>)</span></code></pre></div>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c15b35929b418cdaded6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c15b35929b418cdaded6">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"62.98\" data-max=\"74.5\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"600\" data-max=\"1200\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"52\" data-max=\"292\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"10.59\" data-max=\"14.65\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105"],[62.98,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,64.67,65.5,65.5,65.5,65.5,65.5,65.5,65.5,65.5,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,70.79,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,69.33,67.5,67.5,67.5,67.5,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,72.25,74.5,74.5,74.5,74.5,74.5,74.5,74.5,74.5,74.5,74.5,74.5,74.5],[600,600,600,600,600,600,600,600,600,600,600,600,600,600,700,700,700,700,700,700,700,700,750,750,750,750,750,750,750,750,750,750,750,750,750,750,750,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,1100,1100,1100,1100,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200,1200],[210,131,166,128,175,110,140,134,187,81,134,105,52,75,192,169,187,110,122,172,146,116,216,116,105,93,125,70,87,64,70,64,58,64,58,64,64,134,140,146,99,175,140,140,93,122,251,93,93,99,99,93,75,87,86,95,165,251,263,233,195,169,140,233,140,151,99,105,140,116,110,134,102,99,81,134,99,125,115,248,292,187,230,187,146,155,239,96,110,99,110,81,110,210,122,181,169,116,128,70,146,58,87,58,87],[14.07,12.58,12.54,13.4,13.98,12.47,12.68,13.17,12.26,11.24,11.26,11.48,11.94,11.56,14.34,12.51,13.82,11.4,12.36,12.76,12.79,11.99,13.73,12.26,12.05,12.71,13.69,11.73,11.91,11.08,11.04,10.99,11.42,10.96,11.58,10.8,10.59,13.06,13.14,13.42,12.11,13.09,13.11,12.06,12.17,12.39,14.11,12.44,11.49,12.34,12.42,12.2,12.61,11.91,11.33,12.25,13.75,14.43,13.14,12.52,12.47,12.24,12.82,13.73,11.98,12.46,12.27,11.71,12.99,12.79,12.3,12.71,12.79,14.08,12.09,13.29,11.81,11.78,11.61,13.91,14.14,14.2,12.45,14.29,13.43,13.15,12.72,13.06,12.56,11.43,12.49,11.24,13.52,13.86,12.9,14.65,14.23,13.4,13.67,11.58,13.42,11.02,12.33,11.62,11.98]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Lat<\/th>\n      <th>Depth<\/th>\n      <th>ML<\/th>\n      <th>d15N<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":20,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="data-exploration-2" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Data exploration<a href="Chapter5.html#data-exploration-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>まずはデータ探索を行う。</p>
+<p>図<a href="Chapter5.html#fig:fig-dataexplore-squid">5.1</a>は各変数のdotplotを示したものである。いずれの変数も外れ値のようなものはなさそうに見える。ただし、<code>lat</code>と<code>Depth</code>については連続値にもかかわらず同じ値のデータがたくさんある。これは、同時に(同じクルーズ中に)複数の検体を採集していることがあるからであり、これはデータの非独立性を生んでいる可能性がある。もし同じ場所で採集された検体が似た環境条件にさらされているとすると、これを考慮する必要がある。ひとまず今回は、全ての観察が独立であると仮定して分析を行う。</p>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="Chapter5.html#cb211-1" tabindex="-1"></a>Squid <span class="sc">%&gt;%</span> </span>
+<span id="cb211-2"><a href="Chapter5.html#cb211-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">no_sample =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb211-3"><a href="Chapter5.html#cb211-3" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(ML, d15N, Lat, Depth)) <span class="sc">%&gt;%</span> </span>
+<span id="cb211-4"><a href="Chapter5.html#cb211-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> no_sample))<span class="sc">+</span></span>
+<span id="cb211-5"><a href="Chapter5.html#cb211-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>,</span>
+<span id="cb211-6"><a href="Chapter5.html#cb211-6" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb211-7"><a href="Chapter5.html#cb211-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb211-8"><a href="Chapter5.html#cb211-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb211-9"><a href="Chapter5.html#cb211-9" tabindex="-1"></a>  <span class="fu">facet_rep_wrap</span>(<span class="sc">~</span>name, <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb211-10"><a href="Chapter5.html#cb211-10" tabindex="-1"></a>                 <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>)<span class="sc">+</span></span>
+<span id="cb211-11"><a href="Chapter5.html#cb211-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Values&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Order of the data&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-dataexplore-squid"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-dataexplore-squid-1.png" alt="Cleveland dotplots for all variables. There are no clear outliers." width="960" />
+<p class="caption">
+図5.1: Cleveland dotplots for all variables. There are no clear outliers.
+</p>
+</div>
+<p><br/></p>
+<p>変数同士の散布図を示したのが図<a href="Chapter5.html#fig:fig-scatter-squid">5.2</a>である。図から、水深と緯度が中程度の相関を持っていることが分かるので、いずれかをモデルから除く方がよい。今回は水深を除く(6つの値しか取らないため)。ただし、第<a href="Chapter5.html#s5-8">5.8</a>節では両方含めた場合の結果も確認する。</p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="Chapter5.html#cb212-1" tabindex="-1"></a><span class="fu">ggpairs</span>(Squid)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-scatter-squid"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-scatter-squid-1.png" alt="Multi-panel scatterplot with Pearson correlation coefficients." width="960" />
+<p class="caption">
+図5.2: Multi-panel scatterplot with Pearson correlation coefficients.
+</p>
+</div>
+<p><br/></p>
+<p>目的変数(<code>d15N</code>)とそのほかの変数の関係をより詳しく調べる(図<a href="Chapter5.html#fig:fig-scatter-squid2">5.3</a>)。水深と緯度は窒素同位体比とあまり関係がなさそうだが、外套膜の長さは安定同位体比と強く関連しているように見える。この関係は線形と非線形のどちらだろうか?また、分散は外套膜が長いほど大きくなっているように見えるが、実際にそうだろうか?</p>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="Chapter5.html#cb213-1" tabindex="-1"></a>Squid <span class="sc">%&gt;%</span> </span>
+<span id="cb213-2"><a href="Chapter5.html#cb213-2" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(Depth, Lat, ML)) <span class="sc">%&gt;%</span> </span>
+<span id="cb213-3"><a href="Chapter5.html#cb213-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> d15N))<span class="sc">+</span></span>
+<span id="cb213-4"><a href="Chapter5.html#cb213-4" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb213-5"><a href="Chapter5.html#cb213-5" tabindex="-1"></a>  <span class="fu">facet_rep_wrap</span>(<span class="sc">~</span>name, <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb213-6"><a href="Chapter5.html#cb213-6" tabindex="-1"></a>                 <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>)<span class="sc">+</span></span>
+<span id="cb213-7"><a href="Chapter5.html#cb213-7" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;loess&quot;</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">span =</span> <span class="fl">0.9</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-scatter-squid2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-scatter-squid2-1.png" alt="Multi-panel scatterplot showing the relationship between d15N and the three covariates. A LOESS smoother was added to aid visual interpretation." width="1152" />
+<p class="caption">
+図5.3: Multi-panel scatterplot showing the relationship between d15N and the three covariates. A LOESS smoother was added to aid visual interpretation.
+</p>
+</div>
+</div>
+<div id="brain-storming" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Brain storming<a href="Chapter5.html#brain-storming" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>さて、以下では窒素同位体比(<code>d15N</code>)を緯度(<code>Lat</code>)と外套膜の長さ(<code>ML</code>)の関数としてモデリングする。図<a href="Chapter5.html#fig:fig-scatter-squid2">5.3</a>を見る限りは<code>ML</code>と<code>d15N</code>の関係は線形だが、もしかすると緯度と外套膜長の交互作用を考えると、変数間の関係は非線形になるかもしれない。</p>
+<p>まずは交互作用がなく、smootherが2つあるGAMが考えられる。<br />
+<span class="math display" id="eq:gam5-1">\[
+\begin{aligned}
+d15N_i &amp;= \alpha + f_1(Lat_i) + f_2(ML_i) + \epsilon_i\\
+\epsilon_i &amp;\sim N(0, \sigma^2)
+\end{aligned} \tag{5.1}
+\]</span></p>
+<p>しかし、緯度は9つの値しか取らないのでsmootherを推定するには不十分である。よって以下のモデルの方が適当だろう。</p>
+<p><span class="math display" id="eq:gam5-2">\[
+\begin{aligned}
+d15N_i &amp;= \alpha + \beta \times Lat_i  + f_2(ML_i) + \epsilon_i\\
+\epsilon_i &amp;\sim N(0, \sigma^2)
+\end{aligned} \tag{5.2}
+\]</span></p>
+<p>あるいは、いずれも線形な関係を持つと仮定するモデルを考えることもできる。</p>
+<p><span class="math display" id="eq:gam5-3">\[
+\begin{aligned}
+d15N_i &amp;= \alpha + \beta_1 \times Lat_i  + \beta_2 \times ML_i + \epsilon_i\\
+\epsilon_i &amp;\sim N(0, \sigma^2)
+\end{aligned} \tag{5.3}
+\]</span></p>
+<p>以下では、式<a href="Chapter5.html#eq:gam5-2">(5.2)</a>と式<a href="Chapter5.html#eq:gam5-3">(5.3)</a>のモデルについてみていく。まずは重回帰分析を行ったのち(式<a href="Chapter5.html#eq:gam5-2">(5.2)</a>)、加法モデルを適用してどちらが適切かを考えていく。</p>
+</div>
+<div id="applying-the-multiple-linear-regression-model" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Applying the multiple linear regression model<a href="Chapter5.html#applying-the-multiple-linear-regression-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>式<a href="Chapter5.html#eq:gam5-3">(5.3)</a>のモデルは以下のように実行できる。</p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="Chapter5.html#cb214-1" tabindex="-1"></a>M5_1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(d15N <span class="sc">~</span> ML <span class="sc">+</span> Lat, <span class="at">data =</span> Squid)</span></code></pre></div>
+<p>まずはモデル診断を行う。標準化残差とモデルの予測値、外套膜の長さの関係をプロットしたのが図<a href="Chapter5.html#fig:fig-diagnosis-gam5-1">5.4</a>である。図<a href="Chapter5.html#fig:fig-diagnosis-gam5-1">5.4</a>のAを見る限り、残差は概ね均等に分布しているように見える。すなわち、分散の不均等性はないようだ。図<a href="Chapter5.html#fig:fig-diagnosis-gam5-1">5.4</a>のBにもパターンは見られず、外套膜長と窒素同位体比に非線形性はないように思える。</p>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="Chapter5.html#cb215-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">rstandard</span>(M5_1),</span>
+<span id="cb215-2"><a href="Chapter5.html#cb215-2" tabindex="-1"></a>           <span class="at">fitted =</span> <span class="fu">fitted</span>(M5_1)) <span class="sc">%&gt;%</span> </span>
+<span id="cb215-3"><a href="Chapter5.html#cb215-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb215-4"><a href="Chapter5.html#cb215-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb215-5"><a href="Chapter5.html#cb215-5" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb215-6"><a href="Chapter5.html#cb215-6" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb215-7"><a href="Chapter5.html#cb215-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb215-8"><a href="Chapter5.html#cb215-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb215-9"><a href="Chapter5.html#cb215-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fitted values&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Standardized residuals&quot;</span>,</span>
+<span id="cb215-10"><a href="Chapter5.html#cb215-10" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;A&quot;</span>) <span class="ot">-&gt;</span> p1</span>
+<span id="cb215-11"><a href="Chapter5.html#cb215-11" tabindex="-1"></a></span>
+<span id="cb215-12"><a href="Chapter5.html#cb215-12" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">rstandard</span>(M5_1),</span>
+<span id="cb215-13"><a href="Chapter5.html#cb215-13" tabindex="-1"></a>           <span class="at">ML =</span> Squid<span class="sc">$</span>ML) <span class="sc">%&gt;%</span> </span>
+<span id="cb215-14"><a href="Chapter5.html#cb215-14" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ML, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb215-15"><a href="Chapter5.html#cb215-15" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb215-16"><a href="Chapter5.html#cb215-16" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb215-17"><a href="Chapter5.html#cb215-17" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb215-18"><a href="Chapter5.html#cb215-18" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb215-19"><a href="Chapter5.html#cb215-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb215-20"><a href="Chapter5.html#cb215-20" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mantel length&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Standardized residuals&quot;</span>,</span>
+<span id="cb215-21"><a href="Chapter5.html#cb215-21" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;B&quot;</span>) <span class="ot">-&gt;</span> p2</span>
+<span id="cb215-22"><a href="Chapter5.html#cb215-22" tabindex="-1"></a></span>
+<span id="cb215-23"><a href="Chapter5.html#cb215-23" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-gam5-1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-gam5-1-1.png" alt="A: Residuals versus fitted values. B: Residuals versus mantle length." width="864" />
+<p class="caption">
+図5.4: A: Residuals versus fitted values. B: Residuals versus mantle length.
+</p>
+</div>
+<p><br/></p>
+<p>しかし、実際に非線形性がないかはきちんと調べる必要がある。調べる一つの方法は、標準化残差に対して以下のモデルを適用することである。モデルに切片を含めなかったのは、標準化残差は平均が0になるからである。</p>
+<p><span class="math display">\[
+\begin{aligned}
+e_i &amp;= f(ML_i) + \eta_i\\
+\eta &amp;\sim N(0,\sigma_{\eta}^2)  
+\end{aligned}
+\]</span></p>
+<p>Rでは以下のように実行できる。</p>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="Chapter5.html#cb216-1" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">rstandard</span>(M5_1)</span>
+<span id="cb216-2"><a href="Chapter5.html#cb216-2" tabindex="-1"></a>T1 <span class="ot">&lt;-</span> <span class="fu">gam</span>(E <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> <span class="fu">s</span>(ML), <span class="at">data =</span> Squid)</span></code></pre></div>
+<p>結果は以下の通り。smootherは有意であることから、標準化残差と外套膜長の関係は非線形であることが分かる。</p>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="Chapter5.html#cb217-1" tabindex="-1"></a><span class="fu">summary</span>(T1)</span></code></pre></div>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## E ~ -1 + s(ML)
+## 
+## Approximate significance of smooth terms:
+##         edf Ref.df     F p-value   
+## s(ML) 2.537   3.19 4.861  0.0029 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.141   Deviance explained = 15.4%
+## GCV = 0.89241  Scale est. = 0.87084   n = 105</code></pre>
+<p>図<a href="Chapter5.html#fig:fig-smoother-T1">5.5</a>は推定されたsmootherを図示したものである。</p>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="Chapter5.html#cb219-1" tabindex="-1"></a><span class="fu">draw</span>(T1)<span class="sc">+</span></span>
+<span id="cb219-2"><a href="Chapter5.html#cb219-2" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb219-3"><a href="Chapter5.html#cb219-3" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smoother-T1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smoother-T1-1.png" alt="Smoothing function of ML obtained by applying an additive model on the residuals of the multiple linear regression model in Equation (5.3)." width="432" />
+<p class="caption">
+図5.5: Smoothing function of ML obtained by applying an additive model on the residuals of the multiple linear regression model in Equation (5.3).
+</p>
+</div>
+</div>
+<div id="applying-an-additive-model" class="section level2 hasAnchor" number="5.6">
+<h2><span class="header-section-number">5.6</span> Applying an additive model<a href="Chapter5.html#applying-an-additive-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>それでは、加法モデルを適用する。式<a href="Chapter5.html#eq:gam5-2">(5.2)</a>のモデルは以下のように実行できる。</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="Chapter5.html#cb220-1" tabindex="-1"></a>M5_2 <span class="ot">&lt;-</span> <span class="fu">gam</span>(d15N <span class="sc">~</span> <span class="fu">s</span>(ML) <span class="sc">+</span> Lat, <span class="at">data =</span> Squid)</span></code></pre></div>
+<p>結果は以下の通り。緯度は5%水準で窒素同位体比と有意に正に関連していた。また、smootherの自由度は2.57であり有意だった。<span class="math inline">\(R^2\)</span>値は0.578であり、データのばらつきの60%近くがモデルによって説明されている。smootherは薄板平滑化スプラインによって推定されている。</p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="Chapter5.html#cb221-1" tabindex="-1"></a><span class="fu">summary</span>(M5_2)</span></code></pre></div>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## d15N ~ s(ML) + Lat
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  8.81246    1.45034   6.076 2.22e-08 ***
+## Lat          0.05409    0.02086   2.593   0.0109 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##         edf Ref.df     F p-value    
+## s(ML) 2.577  3.246 43.71  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.578   Deviance explained = 59.2%
+## GCV = 0.40038  Scale est. = 0.38293   n = 105</code></pre>
+<p>図<a href="Chapter5.html#fig:fig-smoother-gam5-2">5.6</a>は推定されたsmootherである。smootherは外套膜長と窒素同位体比の関係が非線形であることを示唆している。</p>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="Chapter5.html#cb223-1" tabindex="-1"></a><span class="fu">draw</span>(M5_2)<span class="sc">+</span></span>
+<span id="cb223-2"><a href="Chapter5.html#cb223-2" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb223-3"><a href="Chapter5.html#cb223-3" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smoother-gam5-2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smoother-gam5-2-1.png" alt="Estimated thin plate regression spline for mantle length. Residuals are added." width="672" />
+<p class="caption">
+図5.6: Estimated thin plate regression spline for mantle length. Residuals are added.
+</p>
+</div>
+<p><br/></p>
+<p>モデル診断を行う。図<a href="Chapter5.html#fig:fig-diagnosis-gam-5-2">5.7</a>は残差とモデルの予測値、共変量、水深の関係をプロットしたものと、残差のヒストグラムを描いたものである。特にパターンは見られず、モデルの前提が満たされているように見える。</p>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="Chapter5.html#cb224-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2),</span>
+<span id="cb224-2"><a href="Chapter5.html#cb224-2" tabindex="-1"></a>           <span class="at">fitted =</span> <span class="fu">fitted</span>(M5_2)) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-3"><a href="Chapter5.html#cb224-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-4"><a href="Chapter5.html#cb224-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-5"><a href="Chapter5.html#cb224-5" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb224-6"><a href="Chapter5.html#cb224-6" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb224-7"><a href="Chapter5.html#cb224-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-8"><a href="Chapter5.html#cb224-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-9"><a href="Chapter5.html#cb224-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fitted values&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span>,</span>
+<span id="cb224-10"><a href="Chapter5.html#cb224-10" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;A&quot;</span>) <span class="ot">-&gt;</span> p1</span>
+<span id="cb224-11"><a href="Chapter5.html#cb224-11" tabindex="-1"></a></span>
+<span id="cb224-12"><a href="Chapter5.html#cb224-12" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2),</span>
+<span id="cb224-13"><a href="Chapter5.html#cb224-13" tabindex="-1"></a>           <span class="at">ML =</span> Squid<span class="sc">$</span>ML) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-14"><a href="Chapter5.html#cb224-14" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ML, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-15"><a href="Chapter5.html#cb224-15" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-16"><a href="Chapter5.html#cb224-16" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb224-17"><a href="Chapter5.html#cb224-17" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb224-18"><a href="Chapter5.html#cb224-18" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-19"><a href="Chapter5.html#cb224-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-20"><a href="Chapter5.html#cb224-20" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mantel length&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span>,</span>
+<span id="cb224-21"><a href="Chapter5.html#cb224-21" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;B&quot;</span>) <span class="ot">-&gt;</span> p2</span>
+<span id="cb224-22"><a href="Chapter5.html#cb224-22" tabindex="-1"></a></span>
+<span id="cb224-23"><a href="Chapter5.html#cb224-23" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2),</span>
+<span id="cb224-24"><a href="Chapter5.html#cb224-24" tabindex="-1"></a>           <span class="at">Lat =</span> Squid<span class="sc">$</span>Lat) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-25"><a href="Chapter5.html#cb224-25" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Lat, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-26"><a href="Chapter5.html#cb224-26" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-27"><a href="Chapter5.html#cb224-27" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb224-28"><a href="Chapter5.html#cb224-28" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb224-29"><a href="Chapter5.html#cb224-29" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-30"><a href="Chapter5.html#cb224-30" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-31"><a href="Chapter5.html#cb224-31" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Latitude&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span>,</span>
+<span id="cb224-32"><a href="Chapter5.html#cb224-32" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;C&quot;</span>) <span class="ot">-&gt;</span> p3</span>
+<span id="cb224-33"><a href="Chapter5.html#cb224-33" tabindex="-1"></a></span>
+<span id="cb224-34"><a href="Chapter5.html#cb224-34" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2),</span>
+<span id="cb224-35"><a href="Chapter5.html#cb224-35" tabindex="-1"></a>           <span class="at">Depth =</span> Squid<span class="sc">$</span>Depth) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-36"><a href="Chapter5.html#cb224-36" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Depth, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-37"><a href="Chapter5.html#cb224-37" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-38"><a href="Chapter5.html#cb224-38" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb224-39"><a href="Chapter5.html#cb224-39" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>)<span class="sc">+</span></span>
+<span id="cb224-40"><a href="Chapter5.html#cb224-40" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-41"><a href="Chapter5.html#cb224-41" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-42"><a href="Chapter5.html#cb224-42" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Depth&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span>,</span>
+<span id="cb224-43"><a href="Chapter5.html#cb224-43" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;D&quot;</span>) <span class="ot">-&gt;</span> p4</span>
+<span id="cb224-44"><a href="Chapter5.html#cb224-44" tabindex="-1"></a></span>
+<span id="cb224-45"><a href="Chapter5.html#cb224-45" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2)) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-46"><a href="Chapter5.html#cb224-46" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-47"><a href="Chapter5.html#cb224-47" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb224-48"><a href="Chapter5.html#cb224-48" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb224-49"><a href="Chapter5.html#cb224-49" tabindex="-1"></a>                 <span class="at">bins =</span> <span class="dv">12</span>)<span class="sc">+</span></span>
+<span id="cb224-50"><a href="Chapter5.html#cb224-50" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-51"><a href="Chapter5.html#cb224-51" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-52"><a href="Chapter5.html#cb224-52" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Reisduals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>,</span>
+<span id="cb224-53"><a href="Chapter5.html#cb224-53" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;E&quot;</span>) <span class="ot">-&gt;</span> p5</span>
+<span id="cb224-54"><a href="Chapter5.html#cb224-54" tabindex="-1"></a></span>
+<span id="cb224-55"><a href="Chapter5.html#cb224-55" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M5_2)) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-56"><a href="Chapter5.html#cb224-56" tabindex="-1"></a>  <span class="fu">arrange</span>(resid) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-57"><a href="Chapter5.html#cb224-57" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb224-58"><a href="Chapter5.html#cb224-58" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb224-59"><a href="Chapter5.html#cb224-59" tabindex="-1"></a>  <span class="fu">geom_col</span>()<span class="sc">+</span></span>
+<span id="cb224-60"><a href="Chapter5.html#cb224-60" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb224-61"><a href="Chapter5.html#cb224-61" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb224-62"><a href="Chapter5.html#cb224-62" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Sorted residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Residuals&quot;</span>,</span>
+<span id="cb224-63"><a href="Chapter5.html#cb224-63" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;F&quot;</span>) <span class="ot">-&gt;</span> p6</span>
+<span id="cb224-64"><a href="Chapter5.html#cb224-64" tabindex="-1"></a></span>
+<span id="cb224-65"><a href="Chapter5.html#cb224-65" tabindex="-1"></a>(p1<span class="sc">+</span>p2<span class="sc">+</span>p3)<span class="sc">/</span>(p4<span class="sc">+</span>p5<span class="sc">+</span>p6)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-gam-5-2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-gam-5-2-1.png" alt="Model validation graphs for the additive model in Equation ( 5.2). A: Residuals versus fitted values. B: Residuals versus ML. C: Residuals versus latitude. D: Residuals versus depth. E: Histogram of residuals. F: Sorted residuals." width="1152" />
+<p class="caption">
+図5.7: Model validation graphs for the additive model in Equation ( 5.2). A: Residuals versus fitted values. B: Residuals versus ML. C: Residuals versus latitude. D: Residuals versus depth. E: Histogram of residuals. F: Sorted residuals.
+</p>
+</div>
+</div>
+<div id="testing-linearity-versus-non-linearity" class="section level2 hasAnchor" number="5.7">
+<h2><span class="header-section-number">5.7</span> Testing linearity versus non-linearity<a href="Chapter5.html#testing-linearity-versus-non-linearity" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>加法モデルで推定されたsmootherの自由度は2.577であり、線形モデルの場合(= 1)と大きく違うわけではない。どのようなときに線形モデルではなく加法モデルを使った方がよいと判断すべきだろうか。</p>
+<p>以下の事実は加法モデルを使うべきだとする主張を支持する。</p>
+<ol style="list-style-type: decimal">
+<li>重回帰分析の結果から、外套膜長と標準化残差に非線形の関係がみられることが確かめられた。<br />
+</li>
+<li>加法モデルのモデル診断では問題が見つからなかった。<br />
+</li>
+<li><code>gam</code>関数の交差検証によって、自由度が2.577だと推定された。</li>
+</ol>
+<p>これらに加えて、AICも加法モデルがより良いモデルであることを示唆している。</p>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="Chapter5.html#cb225-1" tabindex="-1"></a><span class="fu">AIC</span>(M5_1, M5_2)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["AIC"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"4.000000","2":"218.8549","_rn_":"M5_1"},{"1":"5.576842","2":"203.6604","_rn_":"M5_2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>また、F検定によってそちらのモデルが優れているかを判断することもできる。ただし、この結果の解釈には注意が必要である。一般にp値が0.001以下であればsmootherの効果が十分にあるといえる。</p>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="Chapter5.html#cb226-1" tabindex="-1"></a><span class="fu">anova</span>(M5_1, M5_2, <span class="at">test =</span> <span class="st">&quot;F&quot;</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"102.0000","2":"45.79729","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"100.4232","2":"38.45470","3":"1.576842","4":"7.342588","5":"12.16033","6":"8.271156e-05","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>他の種類のsmootherでも同様の結果がみられるか確かめることで、加法モデルの方が線形モデルより適切かを検討することもできる。例えば、以下のように3次回帰スプラインでも自由度は2.57と推定され、データに非線形な関係があることが支持される。</p>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="Chapter5.html#cb227-1" tabindex="-1"></a>M5_3 <span class="ot">&lt;-</span> <span class="fu">gam</span>(d15N <span class="sc">~</span> <span class="fu">s</span>(ML, <span class="at">bs =</span> <span class="st">&quot;cr&quot;</span>) <span class="sc">+</span> Lat, <span class="at">data =</span> Squid)</span>
+<span id="cb227-2"><a href="Chapter5.html#cb227-2" tabindex="-1"></a></span>
+<span id="cb227-3"><a href="Chapter5.html#cb227-3" tabindex="-1"></a>M5_3</span></code></pre></div>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## d15N ~ s(ML, bs = &quot;cr&quot;) + Lat
+## 
+## Estimated degrees of freedom:
+## 2.57  total = 4.57 
+## 
+## GCV score: 0.400323</code></pre>
+<div id="programming-a-smoother-manually" class="section level3 hasAnchor" number="5.7.1">
+<h3><span class="header-section-number">5.7.1</span> Programming a smoother manually<a href="Chapter5.html#programming-a-smoother-manually" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>最後に、手動で加法モデルを適用してみることで加法モデルの方が線形モデルより適切であることを確かめる。</p>
+<p>第<a href="Chapter3.html#c3">3</a>章で見たように、smootherは基底を<span class="math inline">\(b_j(ML_i)\)</span>のように書くとき、以下のように表すことができる。<br />
+<span class="math display">\[
+f(ML_i) = \sum_{j = 1}^K \beta_j \times b_j(ML_i)  
+\]</span></p>
+<p>例えば、二次スプライン回帰であればsmootherは以下のように書けた(第<a href="Chapter3.html#s3-5">3.5</a>節)。ここで、<span class="math inline">\(k_j\)</span>は内側のノットである。<br />
+<span class="math display">\[
+f(ML_i) = \alpha + \beta_1 \times ML_i + \beta_2 \times ML_i^2 + \sum_{j = 1}^K \beta_{1j} (ML_i - \kappa_j)_+^2
+\]</span></p>
+<p>よって、式<a href="Chapter5.html#eq:gam5-2">(5.2)</a>のモデルは以下のように書ける。<br />
+<span class="math display" id="eq:gam5-2b">\[
+\begin{aligned}
+d15N_i &amp;= \alpha + \beta_0 \times Lat_i  +  \beta_1 \times ML_i + \beta_2 \times ML_i^2 + \sum_{j = 1}^K \beta_{1j} (ML_i - \kappa_j)_+^2 + \epsilon_i\\
+\epsilon_i &amp;\sim N(0, \sigma^2)
+\end{aligned} \tag{5.4}
+\]</span></p>
+<p>ここから、式<a href="Chapter5.html#eq:gam5-3">(5.3)</a>の線形モデルと加法モデル(式<a href="#eq:gam5-7">(<strong>??</strong>)</a>)はネストしていることが分かる。よって、この2つのモデルにF検定をするとき、式<a href="#eq:gam5-7">(<strong>??</strong>)</a>で<span class="math inline">\(\beta_2 = \beta_{11} = \beta_{12} = \cdots = 0\)</span>という帰無仮説を検定していることになっている。他の加法モデルについても基本的に同様のことが言える。</p>
+<p>以下では、3次自然スプラインを手動で適用することでこのことを確かめる。以下のモデルでは、数学的な問題を回避するために外套膜長を0から1にスケールする。</p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="Chapter5.html#cb229-1" tabindex="-1"></a>Squid <span class="sc">%&gt;%</span> </span>
+<span id="cb229-2"><a href="Chapter5.html#cb229-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">MLsc =</span> (ML <span class="sc">-</span> <span class="fu">min</span>(ML))<span class="sc">/</span>(<span class="fu">max</span>(ML) <span class="sc">-</span> <span class="fu">min</span>(ML))) <span class="ot">-&gt;</span> Squid</span></code></pre></div>
+<p>また、内側のノットは3つにする。外側を含めたノットの値は以下の通り。</p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="Chapter5.html#cb230-1" tabindex="-1"></a>q_ML <span class="ot">&lt;-</span> <span class="fu">quantile</span>(Squid<span class="sc">$</span>MLsc, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length =</span> <span class="dv">5</span>))</span>
+<span id="cb230-2"><a href="Chapter5.html#cb230-2" tabindex="-1"></a></span>
+<span id="cb230-3"><a href="Chapter5.html#cb230-3" tabindex="-1"></a>q_ML</span></code></pre></div>
+<pre><code>##        0%       25%       50%       75%      100% 
+## 0.0000000 0.1708333 0.2916667 0.4708333 1.0000000</code></pre>
+<p>3次自然スプラインにおいて規定は以下のように定義される。なお、<span class="math inline">\(K\)</span>は内側のノット数である。<br />
+<span class="math display">\[
+\begin{aligned}
+b_1(MLsc_i) &amp;= 1\\
+b_2(MLsc_i) &amp;= MLsc_i\\
+b_{k+2}(MLsc_i) &amp;= d_k(MLsc_i) - d_{K-1}(MLsc_i)\\
+d_k(MLsc_i) &amp;= \frac{(MLsc_i - \kappa_k)_+^3 - (MLsc_i - \kappa_K)_+^3}{\kappa_K - \kappa_k}
+\end{aligned}
+\]</span></p>
+<p>なお、第@red(c3)で見たように、<span class="math inline">\((MLsc_i - \kappa)_+\)</span>配下のように定義される。<br />
+<span class="math display">\[
+(MLsc_i - \kappa)_+ =
+\begin{cases}
+0 &amp; (MLsc_i &lt; \kappa)\\
+MLsc_i - \kappa &amp; (MLsc_i ≧ 0\kappa\\
+\end{cases}
+\]</span></p>
+<p>Rで<span class="math inline">\((MLsc_i - \kappa)_+\)</span>、<span class="math inline">\(d_k\)</span>を作成する関数と、基底<span class="math inline">\(b_k(MLsc_i)\)</span>を作成する関数を作成する。</p>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="Chapter5.html#cb232-1" tabindex="-1"></a>rhs <span class="ot">&lt;-</span> <span class="cf">function</span>(x, TH){<span class="fu">ifelse</span>(x <span class="sc">&gt;=</span> TH, (x<span class="sc">-</span>TH)<span class="sc">^</span><span class="dv">3</span>, <span class="dv">0</span>)}</span>
+<span id="cb232-2"><a href="Chapter5.html#cb232-2" tabindex="-1"></a>dk <span class="ot">&lt;-</span> <span class="cf">function</span>(x, TH, K){(<span class="fu">rhs</span>(x,TH) <span class="sc">-</span> <span class="fu">rhs</span>(x, K))<span class="sc">/</span>(K <span class="sc">-</span> TH)}</span>
+<span id="cb232-3"><a href="Chapter5.html#cb232-3" tabindex="-1"></a><span class="do">## 以下、誤っている可能性。教科書通りの定義ならK-1はK-1番目のκを指定する必要がある。</span></span>
+<span id="cb232-4"><a href="Chapter5.html#cb232-4" tabindex="-1"></a>bj <span class="ot">&lt;-</span> <span class="cf">function</span>(x, TH, K){<span class="fu">dk</span>(x, TH, K) <span class="sc">-</span> <span class="fu">dk</span>(x, K<span class="dv">-1</span>, K)}</span></code></pre></div>
+<p>これらを利用して3次自然スプラインを適用すると以下のようになる。</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="Chapter5.html#cb233-1" tabindex="-1"></a>M5_4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(d15N <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Lat <span class="sc">+</span> MLsc <span class="sc">+</span> <span class="fu">bj</span>(MLsc, q_ML[<span class="dv">2</span>],  q_ML[<span class="dv">4</span>]) <span class="sc">+</span> <span class="fu">bj</span>(MLsc, q_ML[<span class="dv">3</span>],  q_ML[<span class="dv">4</span>]),</span>
+<span id="cb233-2"><a href="Chapter5.html#cb233-2" tabindex="-1"></a>           <span class="at">data =</span> Squid)</span></code></pre></div>
+<p><span class="math inline">\(b_j\)</span>を含む説明変数の行列は以下のように取り出せる。</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="Chapter5.html#cb234-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(M5_4)</span>
+<span id="cb234-2"><a href="Chapter5.html#cb234-2" tabindex="-1"></a></span>
+<span id="cb234-3"><a href="Chapter5.html#cb234-3" tabindex="-1"></a><span class="fu">head</span>(X)</span></code></pre></div>
+<pre><code>##   (Intercept)   Lat      MLsc bj(MLsc, q_ML[2], q_ML[4])
+## 1           1 62.98 0.6583333                 -1.3037500
+## 2           1 64.67 0.3291667                 -0.6191341
+## 3           1 64.67 0.4750000                 -0.9187500
+## 4           1 64.67 0.3166667                 -0.5947996
+## 5           1 64.67 0.5125000                 -0.9975000
+## 6           1 64.67 0.2416667                 -0.4568322
+##   bj(MLsc, q_ML[3], q_ML[4])
+## 1                 -1.4296181
+## 2                 -0.6320708
+## 3                 -0.9781597
+## 4                 -0.6050507
+## 5                 -1.0705035
+## 6                 -0.4580169</code></pre>
+<p>推定された回帰係数は以下の通り。</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="Chapter5.html#cb236-1" tabindex="-1"></a><span class="fu">coef</span>(M5_4)</span></code></pre></div>
+<pre><code>##                (Intercept)                        Lat 
+##                 6.96611562                 0.05567002 
+##                       MLsc bj(MLsc, q_ML[2], q_ML[4]) 
+##                 4.19388641               -17.04870266 
+## bj(MLsc, q_ML[3], q_ML[4]) 
+##                15.64702422</code></pre>
+<p>smootherは切片を含めない場合以下のように計算できる。</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="Chapter5.html#cb238-1" tabindex="-1"></a>smoother <span class="ot">&lt;-</span> X[,<span class="dv">3</span><span class="sc">:</span><span class="dv">5</span>] <span class="sc">%*%</span> <span class="fu">coef</span>(M5_4)[<span class="dv">3</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<p><code>gam()</code>関数の結果で出力されるようにsmootherを中心化するには以下のようにする。</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="Chapter5.html#cb239-1" tabindex="-1"></a>smoother_center <span class="ot">&lt;-</span> smoother <span class="sc">-</span> <span class="fu">mean</span>(smoother)</span></code></pre></div>
+<p>smootherを図示すると以下のようになる(図<a href="#fig:fig-smoother-gam-5-4"><strong>??</strong></a>)。図<a href="Chapter5.html#fig:fig-smoother-gam5-2">5.6</a>とよく似た曲線が推定された。</p>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="Chapter5.html#cb240-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">MLsc =</span> Squid<span class="sc">$</span>MLsc, </span>
+<span id="cb240-2"><a href="Chapter5.html#cb240-2" tabindex="-1"></a>           <span class="at">fitted =</span> smoother_center,</span>
+<span id="cb240-3"><a href="Chapter5.html#cb240-3" tabindex="-1"></a>           <span class="at">resid =</span> <span class="fu">resid</span>(M5_4) <span class="sc">+</span> smoother_center) <span class="sc">%&gt;%</span> </span>
+<span id="cb240-4"><a href="Chapter5.html#cb240-4" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb240-5"><a href="Chapter5.html#cb240-5" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> MLsc, <span class="at">y =</span> fitted),</span>
+<span id="cb240-6"><a href="Chapter5.html#cb240-6" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb240-7"><a href="Chapter5.html#cb240-7" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> MLsc, <span class="at">y =</span> resid),</span>
+<span id="cb240-8"><a href="Chapter5.html#cb240-8" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb240-9"><a href="Chapter5.html#cb240-9" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">MLsc =</span> q_ML),</span>
+<span id="cb240-10"><a href="Chapter5.html#cb240-10" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">xintercept =</span> MLsc))<span class="sc">+</span></span>
+<span id="cb240-11"><a href="Chapter5.html#cb240-11" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb240-12"><a href="Chapter5.html#cb240-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb240-13"><a href="Chapter5.html#cb240-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Scaled ML&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Smoothing function ML&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smoother-gam5-4"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smoother-gam5-4-1.png" alt="Estimated cubic spline using our self-programmed code." width="432" />
+<p class="caption">
+図5.8: Estimated cubic spline using our self-programmed code.
+</p>
+</div>
+<p><br/></p>
+<p>さて、ここで3次自然スプラインモデルを通常の線形回帰モデルと比較する。</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="Chapter5.html#cb241-1" tabindex="-1"></a>M5_5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(d15N <span class="sc">~</span> Lat <span class="sc">+</span> MLsc, <span class="at">data =</span> Squid)</span></code></pre></div>
+<p>F検定を行うと有意だった。これは、<span class="math inline">\(b_3\)</span>と<span class="math inline">\(b_4\)</span>にかかる回帰係数が0であるという帰無仮説が棄却されたことを表す。このことから、加法モデルを適用することがより適切だということができる。</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="Chapter5.html#cb242-1" tabindex="-1"></a><span class="fu">anova</span>(M5_4, M5_5, <span class="at">test =</span> <span class="st">&quot;F&quot;</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Res.Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["RSS"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Df"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Sum of Sq"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["F"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Pr(>F)"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"100","2":"39.07319","3":"NA","4":"NA","5":"NA","6":"NA","_rn_":"1"},{"1":"102","2":"45.79729","3":"-2","4":"-6.724103","5":"8.604497","6":"0.0003564125","_rn_":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div id="s5-8" class="section level2 hasAnchor" number="5.8">
+<h2><span class="header-section-number">5.8</span> Consequence of ignoring collinearity in the additive model<a href="Chapter5.html#s5-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>さて、ここまでのモデルは水深と緯度に相関があるため緯度のみをモデルに含めてきた。これらを同時にモデルに含めるとどうなるのだろうか。</p>
+<p>以下のモデルを考える。<br />
+<span class="math display">\[
+\begin{aligned}
+d15N_i &amp;= \alpha + f_1(Lat_i) + f_2(ML_i) + f_3(Depth_i) + \epsilon_i\\
+\epsilon_i &amp;\sim N(0, \sigma^2)
+\end{aligned}
+\]</span></p>
+<p>しかし、Rで実行すると以下のようなエラーが出る。これは、緯度と水深がとる固有の値が少ないからである。</p>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="Chapter5.html#cb243-1" tabindex="-1"></a>M5_6 <span class="ot">&lt;-</span> <span class="fu">gam</span>(d15N <span class="sc">~</span> <span class="fu">s</span>(Lat)<span class="sc">+</span> <span class="fu">s</span>(Depth) <span class="sc">+</span> <span class="fu">s</span>(ML), <span class="at">data =</span> Squid)</span></code></pre></div>
+<pre><code>## Error in smooth.construct.tp.smooth.spec(object, dk$data, dk$knots): A term has fewer unique covariate combinations than specified maximum degrees of freedom</code></pre>
+<p>ここで、緯度と水深をsmootherにしないという選択肢もあるが、ここでは自由度の上限を決めることで対処する。</p>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="Chapter5.html#cb245-1" tabindex="-1"></a>M5_6 <span class="ot">&lt;-</span> <span class="fu">gam</span>(d15N <span class="sc">~</span> <span class="fu">s</span>(Lat, <span class="at">k =</span> <span class="dv">4</span>)<span class="sc">+</span> <span class="fu">s</span>(Depth, <span class="at">k =</span> <span class="dv">4</span>) <span class="sc">+</span> <span class="fu">s</span>(ML), <span class="at">data =</span> Squid)</span></code></pre></div>
+<p>結果は以下の通り。</p>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="Chapter5.html#cb246-1" tabindex="-1"></a><span class="fu">summary</span>(M5_6)</span></code></pre></div>
+<pre><code>## 
+## Family: gaussian 
+## Link function: identity 
+## 
+## Formula:
+## d15N ~ s(Lat, k = 4) + s(Depth, k = 4) + s(ML)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 12.56952    0.06025   208.6   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##            edf Ref.df      F p-value    
+## s(Lat)   1.491  1.776  2.369  0.0621 .  
+## s(Depth) 1.000  1.000  0.209  0.6486    
+## s(ML)    2.566  3.233 39.058  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =   0.58   Deviance explained =   60%
+## GCV = 0.40446  Scale est. = 0.38113   n = 105</code></pre>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Zuur2012" class="csl-entry">
+Zuur AF (2012) A beginner’s guide to generalized additive models with <span>R</span>. Highland Statistics, Newburgh, Scotland
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="Chapter4.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sessioninfo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

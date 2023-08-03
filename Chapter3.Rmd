@@ -125,7 +125,7 @@ BL %>%
 4. 罰則付きスプライン回帰(penalized spline regression)  
 
 ## Linear spline regression {#s3-4}   
-線形スプライン回帰とは、x軸をいくつかのセグメントに分け、それぞれのセグメントごとに線形回帰を行う方法である。問題は、いくつのセグメントにどのように分けるべきかということである。  
+線形スプライン回帰とは、x軸をいくつかのセグメントに分け、それぞれのセグメントごとに線形回帰を行う方法である。問題は、**いくつのセグメントにどのように分けるべきか**ということである。  
 
 図\@ref(fig:fig-fitted-M3-1)や図\@ref(fig:fig-fitted-M3-2)からは、スケール化された水深がだいたい0.2くらいで傾きが変わっている印象を受ける。そこで、0.2を境に傾きが変わるモデルを考える。ただし、このとき回帰直線は0.2でつながっていなければいけない。  
 
@@ -457,7 +457,7 @@ compare_performance(M3_6_list[[1]],M3_6_list[[2]],M3_6_list[[3]],
   theme(aspect.ratio = 1)
 ```
 
-しかし、毎回このように様々なノット数でモデリングを行い、情報量規準などに基づいた比較を行うのは時間がかかってしまう。そこで考えられたのが次節(\@ref(s3-8))で説明するpenalized sline modelと呼ばれるものである。  
+しかし、毎回このように様々なノット数でモデリングを行い、情報量規準などに基づいた比較を行うのは時間がかかってしまう。そこで考えられたのが次節(\@ref(s3-8))で説明するpenalized spline modelと呼ばれるものである。  
 
 ## Penalized quadratic spline regression {#s3-8}   
 各モデルにおいて、回帰係数などのパラメータは最小二乗法によって推定されている。すなわち、以下で表される残差平方和が最小になるように推定を行っている。    
@@ -863,7 +863,7 @@ $$
 N - tr(2 \times \mathbf{S_{\lambda}} - \mathbf{S_{\lambda}} \times \mathbf{S_{\lambda}}^t)
 $$
 
-分散の推定値は以下の式で求められる。なお、$df_{e}$はerror degrees of freedom   
+分散の推定値は以下の式で求められる。なお、$df_{error}$はerror degrees of freedomである。     
 
 $$
 (\mathbf{y} - \mathbf{X} \times \hat{\beta})^2/df_{error} 

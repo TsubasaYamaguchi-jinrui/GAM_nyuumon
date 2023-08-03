@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4 Introducing generalized additive models using deep-sea fishery data | Introduction to GAM using R</title>
+  <meta name="description" content="4 Introducing generalized additive models using deep-sea fishery data | Introduction to GAM using R" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4 Introducing generalized additive models using deep-sea fishery data | Introduction to GAM using R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4 Introducing generalized additive models using deep-sea fishery data | Introduction to GAM using R" />
+  
+  
+  
+
+<meta name="author" content="Tsubasa Yamaguchi" />
+
+
+<meta name="date" content="2023-08-03" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="Chapter3.html"/>
+<link rel="next" href="Chapter5.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.27/datatables.js"></script>
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
+<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="custom_style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>本稿の目的</a></li>
+<li class="chapter" data-level="" data-path="Chapter0.html"><a href="Chapter0.html"><i class="fa fa-check"></i>0. パッケージの読み込み</a></li>
+<li class="chapter" data-level="1" data-path="Chapter1.html"><a href="Chapter1.html"><i class="fa fa-check"></i><b>1</b> Review of multiple linear regressions</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="Chapter1.html"><a href="Chapter1.html#light-levels-and-size-of-the-human-visual-system"><i class="fa fa-check"></i><b>1.1</b> Light levels and size of the human visual system</a></li>
+<li class="chapter" data-level="1.2" data-path="Chapter1.html"><a href="Chapter1.html#the-variables"><i class="fa fa-check"></i><b>1.2</b> The variables</a></li>
+<li class="chapter" data-level="1.3" data-path="Chapter1.html"><a href="Chapter1.html#protocol-for-the-analysis"><i class="fa fa-check"></i><b>1.3</b> Protocol for the analysis</a></li>
+<li class="chapter" data-level="1.4" data-path="Chapter1.html"><a href="Chapter1.html#data-exploration"><i class="fa fa-check"></i><b>1.4</b> Data exploration</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="Chapter1.html"><a href="Chapter1.html#欠損値の確認"><i class="fa fa-check"></i><b>1.4.1</b> 欠損値の確認</a></li>
+<li class="chapter" data-level="1.4.2" data-path="Chapter1.html"><a href="Chapter1.html#s1-4-2"><i class="fa fa-check"></i><b>1.4.2</b> 外れ値の確認</a></li>
+<li class="chapter" data-level="1.4.3" data-path="Chapter1.html"><a href="Chapter1.html#多重共線性の確認"><i class="fa fa-check"></i><b>1.4.3</b> 多重共線性の確認</a></li>
+<li class="chapter" data-level="1.4.4" data-path="Chapter1.html"><a href="Chapter1.html#目的変数と説明変数の関係の確認"><i class="fa fa-check"></i><b>1.4.4</b> 目的変数と説明変数の関係の確認</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression"><i class="fa fa-check"></i><b>1.5</b> Multiple linear regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="Chapter1.html"><a href="Chapter1.html#underlying-statistical-theory"><i class="fa fa-check"></i><b>1.5.1</b> Underlying statistical theory</a>
+<ul>
+<li class="chapter" data-level="1.5.1.1" data-path="Chapter1.html"><a href="Chapter1.html#外れ値のチェック"><i class="fa fa-check"></i><b>1.5.1.1</b> 外れ値のチェック</a></li>
+<li class="chapter" data-level="1.5.1.2" data-path="Chapter1.html"><a href="Chapter1.html#信頼区間と予測区間の算出"><i class="fa fa-check"></i><b>1.5.1.2</b> 95%信頼区間と予測区間の算出</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5.2" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression-1"><i class="fa fa-check"></i><b>1.5.2</b> Multiple linear regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="Chapter1.html"><a href="Chapter1.html#fitting-the-model-in-r-and-estimate-parameters"><i class="fa fa-check"></i><b>1.5.3</b> Fitting the model in R and estimate parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="Chapter1.html"><a href="Chapter1.html#finding-the-optimal-model"><i class="fa fa-check"></i><b>1.6</b> Finding the optimal model</a></li>
+<li class="chapter" data-level="1.7" data-path="Chapter1.html"><a href="Chapter1.html#degree-of-freedom"><i class="fa fa-check"></i><b>1.7</b> Degree of freedom</a></li>
+<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#c1-8"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
+<li class="chapter" data-level="1.9" data-path="Chapter1.html"><a href="Chapter1.html#model-interpretation"><i class="fa fa-check"></i><b>1.9</b> Model interpretation</a></li>
+<li class="chapter" data-level="1.10" data-path="Chapter1.html"><a href="Chapter1.html#what-to-do-if-things-go-wrong"><i class="fa fa-check"></i><b>1.10</b> What to do if things go wrong</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chapter2.html"><a href="Chapter2.html"><i class="fa fa-check"></i><b>2</b> Introduction to additive models using deep-sea fisheries data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="Chapter2.html"><a href="Chapter2.html#impact-of-deep-sea-fisheries"><i class="fa fa-check"></i><b>2.1</b> Impact of deep-sea fisheries</a></li>
+<li class="chapter" data-level="2.2" data-path="Chapter2.html"><a href="Chapter2.html#first-encounter-with-smoothers"><i class="fa fa-check"></i><b>2.2</b> First encounter with smoothers</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="Chapter2.html"><a href="Chapter2.html#applying-linear-regression"><i class="fa fa-check"></i><b>2.2.1</b> Applying linear regression</a>
+<ul>
+<li class="chapter" data-level="2.2.1.1" data-path="Chapter2.html"><a href="Chapter2.html#当てはめるモデル"><i class="fa fa-check"></i><b>2.2.1.1</b> 当てはめるモデル</a></li>
+<li class="chapter" data-level="2.2.1.2" data-path="Chapter2.html"><a href="Chapter2.html#data-exploration-1"><i class="fa fa-check"></i><b>2.2.1.2</b> data exploration</a></li>
+<li class="chapter" data-level="2.2.1.3" data-path="Chapter2.html"><a href="Chapter2.html#model-diagnosis"><i class="fa fa-check"></i><b>2.2.1.3</b> model diagnosis</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.2" data-path="Chapter2.html"><a href="Chapter2.html#applying-cubic-polynomials"><i class="fa fa-check"></i><b>2.2.2</b> Applying cubic polynomials</a></li>
+<li class="chapter" data-level="2.2.3" data-path="Chapter2.html"><a href="Chapter2.html#a-simple-gam"><i class="fa fa-check"></i><b>2.2.3</b> A simple GAM</a></li>
+<li class="chapter" data-level="2.2.4" data-path="Chapter2.html"><a href="Chapter2.html#moving-average-and-loess-smoother"><i class="fa fa-check"></i><b>2.2.4</b> Moving average and LOESS smoother</a>
+<ul>
+<li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#s2-4"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chapter2.html"><a href="Chapter2.html#independence"><i class="fa fa-check"></i><b>2.5.2</b> Independence</a></li>
+<li class="chapter" data-level="2.5.3" data-path="Chapter2.html"><a href="Chapter2.html#influential-observations"><i class="fa fa-check"></i><b>2.5.3</b> Influential observations</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="Chapter2.html"><a href="Chapter2.html#s2-6"><i class="fa fa-check"></i><b>2.6</b> Extending the GAM with more covariates</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
+<li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+<li class="chapter" data-level="2.6.3" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-third-implementation"><i class="fa fa-check"></i><b>2.6.3</b> GAM with interaction; third implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="Chapter2.html"><a href="Chapter2.html#transforming-the-density-data"><i class="fa fa-check"></i><b>2.7</b> Transforming the density data</a></li>
+<li class="chapter" data-level="2.8" data-path="Chapter2.html"><a href="Chapter2.html#allowing-for-heterogeneity"><i class="fa fa-check"></i><b>2.8</b> Allowing for heterogeneity</a></li>
+<li class="chapter" data-level="2.9" data-path="Chapter2.html"><a href="Chapter2.html#transforming-and-allowing-for-heterogeinity"><i class="fa fa-check"></i><b>2.9</b> Transforming and allowing for heterogeinity</a></li>
+<li class="chapter" data-level="2.10" data-path="Chapter2.html"><a href="Chapter2.html#s2-10"><i class="fa fa-check"></i><b>2.10</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Chapter3.html"><a href="Chapter3.html"><i class="fa fa-check"></i><b>3</b> Technical aspects of GAM using pelagic bioluminescent organisms</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="Chapter3.html"><a href="Chapter3.html#s3-1"><i class="fa fa-check"></i><b>3.1</b> Pelagic bioluminescent organism data</a></li>
+<li class="chapter" data-level="3.2" data-path="Chapter3.html"><a href="Chapter3.html#s3-2"><i class="fa fa-check"></i><b>3.2</b> Lineaar regression</a></li>
+<li class="chapter" data-level="3.3" data-path="Chapter3.html"><a href="Chapter3.html#polynomial-regression-model"><i class="fa fa-check"></i><b>3.3</b> Polynomial regression model</a></li>
+<li class="chapter" data-level="3.4" data-path="Chapter3.html"><a href="Chapter3.html#s3-4"><i class="fa fa-check"></i><b>3.4</b> Linear spline regression</a></li>
+<li class="chapter" data-level="3.5" data-path="Chapter3.html"><a href="Chapter3.html#s3-5"><i class="fa fa-check"></i><b>3.5</b> Quadratic spline regression</a></li>
+<li class="chapter" data-level="3.6" data-path="Chapter3.html"><a href="Chapter3.html#s3-6"><i class="fa fa-check"></i><b>3.6</b> Cubic regression splines</a></li>
+<li class="chapter" data-level="3.7" data-path="Chapter3.html"><a href="Chapter3.html#the-number-of-knots"><i class="fa fa-check"></i><b>3.7</b> The number of knots</a></li>
+<li class="chapter" data-level="3.8" data-path="Chapter3.html"><a href="Chapter3.html#s3-8"><i class="fa fa-check"></i><b>3.8</b> Penalized quadratic spline regression</a></li>
+<li class="chapter" data-level="3.9" data-path="Chapter3.html"><a href="Chapter3.html#other-smoothers"><i class="fa fa-check"></i><b>3.9</b> Other smoothers</a></li>
+<li class="chapter" data-level="3.10" data-path="Chapter3.html"><a href="Chapter3.html#s3-10"><i class="fa fa-check"></i><b>3.10</b> Cubic smoothing spline</a></li>
+<li class="chapter" data-level="3.11" data-path="Chapter3.html"><a href="Chapter3.html#summary-of-smoother-types"><i class="fa fa-check"></i><b>3.11</b> Summary of smoother types</a></li>
+<li class="chapter" data-level="3.12" data-path="Chapter3.html"><a href="Chapter3.html#degree-of-freedom-of-smoother"><i class="fa fa-check"></i><b>3.12</b> Degree of freedom of smoother</a></li>
+<li class="chapter" data-level="3.13" data-path="Chapter3.html"><a href="Chapter3.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>3.13</b> Bias-variance trade-off</a></li>
+<li class="chapter" data-level="3.14" data-path="Chapter3.html"><a href="Chapter3.html#confidence-intervals"><i class="fa fa-check"></i><b>3.14</b> Confidence intervals</a></li>
+<li class="chapter" data-level="3.15" data-path="Chapter3.html"><a href="Chapter3.html#using-the-function-gam-in-mgcv"><i class="fa fa-check"></i><b>3.15</b> Using the function gam in mgcv</a></li>
+<li class="chapter" data-level="3.16" data-path="Chapter3.html"><a href="Chapter3.html#the-danger-of-using-gam"><i class="fa fa-check"></i><b>3.16</b> The danger of using GAM</a></li>
+<li class="chapter" data-level="3.17" data-path="Chapter3.html"><a href="Chapter3.html#additive-models-with-multiple-smoothers"><i class="fa fa-check"></i><b>3.17</b> Additive models with multiple smoothers</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="Chapter4.html"><a href="Chapter4.html"><i class="fa fa-check"></i><b>4</b> Introducing generalized additive models using deep-sea fishery data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="Chapter4.html"><a href="Chapter4.html#from-additive-models-to-generalized-additive-models"><i class="fa fa-check"></i><b>4.1</b> From additive models to generalized additive models</a></li>
+<li class="chapter" data-level="4.2" data-path="Chapter4.html"><a href="Chapter4.html#review-of-glm"><i class="fa fa-check"></i><b>4.2</b> Review of GLM</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="Chapter4.html"><a href="Chapter4.html#distribution"><i class="fa fa-check"></i><b>4.2.1</b> Distribution</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chapter4.html"><a href="Chapter4.html#predictor-function"><i class="fa fa-check"></i><b>4.2.2</b> Predictor function</a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chapter4.html"><a href="Chapter4.html#link-function"><i class="fa fa-check"></i><b>4.2.3</b> Link function</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chapter4.html"><a href="Chapter4.html#start-with-glm-or-gam"><i class="fa fa-check"></i><b>4.3</b> Start with GLM or GAM ?</a></li>
+<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#results-of-poisson-and-negative-binomial-glm"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
+<li class="chapter" data-level="4.5" data-path="Chapter4.html"><a href="Chapter4.html#using-offset-in-a-glm-or-gam"><i class="fa fa-check"></i><b>4.5</b> Using offset in a GLM or GAM</a></li>
+<li class="chapter" data-level="4.6" data-path="Chapter4.html"><a href="Chapter4.html#poisson-glm-with-offset"><i class="fa fa-check"></i><b>4.6</b> Poisson GLM with offset</a></li>
+<li class="chapter" data-level="4.7" data-path="Chapter4.html"><a href="Chapter4.html#negative-binomial-glm-with-offset"><i class="fa fa-check"></i><b>4.7</b> Negative binomial GLM with offset</a></li>
+<li class="chapter" data-level="4.8" data-path="Chapter4.html"><a href="Chapter4.html#poisson-and-negative-binomial-gam-with-offset"><i class="fa fa-check"></i><b>4.8</b> Poisson and negative binomial GAM with offset</a></li>
+<li class="chapter" data-level="4.9" data-path="Chapter4.html"><a href="Chapter4.html#what-to-present-in-paper"><i class="fa fa-check"></i><b>4.9</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chapter5.html"><a href="Chapter5.html"><i class="fa fa-check"></i><b>5</b> Additive modelling applied on stable isotope ratios of ocean squid</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="Chapter5.html"><a href="Chapter5.html#stable-isotope-ratios-of-squid"><i class="fa fa-check"></i><b>5.1</b> Stable isotope ratios of squid</a></li>
+<li class="chapter" data-level="5.2" data-path="Chapter5.html"><a href="Chapter5.html#the-variables-1"><i class="fa fa-check"></i><b>5.2</b> The variables</a></li>
+<li class="chapter" data-level="5.3" data-path="Chapter5.html"><a href="Chapter5.html#data-exploration-2"><i class="fa fa-check"></i><b>5.3</b> Data exploration</a></li>
+<li class="chapter" data-level="5.4" data-path="Chapter5.html"><a href="Chapter5.html#brain-storming"><i class="fa fa-check"></i><b>5.4</b> Brain storming</a></li>
+<li class="chapter" data-level="5.5" data-path="Chapter5.html"><a href="Chapter5.html#applying-the-multiple-linear-regression-model"><i class="fa fa-check"></i><b>5.5</b> Applying the multiple linear regression model</a></li>
+<li class="chapter" data-level="5.6" data-path="Chapter5.html"><a href="Chapter5.html#applying-an-additive-model"><i class="fa fa-check"></i><b>5.6</b> Applying an additive model</a></li>
+<li class="chapter" data-level="5.7" data-path="Chapter5.html"><a href="Chapter5.html#testing-linearity-versus-non-linearity"><i class="fa fa-check"></i><b>5.7</b> Testing linearity versus non-linearity</a>
+<ul>
+<li class="chapter" data-level="5.7.1" data-path="Chapter5.html"><a href="Chapter5.html#programming-a-smoother-manually"><i class="fa fa-check"></i><b>5.7.1</b> Programming a smoother manually</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="Chapter5.html"><a href="Chapter5.html#s5-8"><i class="fa fa-check"></i><b>5.8</b> Consequence of ignoring collinearity in the additive model</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to GAM using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="c4" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Introducing generalized additive models using deep-sea fishery data<a href="Chapter4.html#c4" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="from-additive-models-to-generalized-additive-models" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> From additive models to generalized additive models<a href="Chapter4.html#from-additive-models-to-generalized-additive-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>前章までは目的変数の分布として正規分布のみを考えていた。本章では、こうした通常の加法モデル(additive model: AM)の目的変数の分布を正規分布以外に拡張した<strong>一般化加法モデル</strong>(generalized additive model)を解説する。GAMは一般化線形モデル(<strong>GLM</strong>)で1つ以上の変数がsmoother関数としてモデル化されたものである。</p>
+<p>使用するsmootherは前章までと基本的に同じだが、罰則付きスプラインの最適化基準や交差検証の仕方、自由度の計算方法などいくつかの異なる点もある。</p>
+</div>
+<div id="review-of-glm" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Review of GLM<a href="Chapter4.html#review-of-glm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>まずはGAMの解説に移る前にGLMについておさらいする。より詳細な説明については他の書籍<span class="citation">(<a href="#ref-Zuur2009">Zuur 2009</a>; <a href="#ref-Kubo2012">久保 2012</a>; <a href="#ref-Kasuya2012">松浦 2012</a>; <a href="#ref-Baba2015">馬場 2015</a>; <a href="#ref-Dunn2018">Dunn and Smyth 2018</a>)</span>を参照。</p>
+<p>第<a href="Chapter2.html#c2">2</a>で行った漁業データ<span class="citation">(<a href="#ref-Bailey2009">Bailey et al. 2009</a>)</span>に対するモデリングでは、分散の不均等性に対処するために変数変換を行ったり、特殊な分散構造をモデルに取り入れたりした。GLMはこうしたことをせずに分散の不均等性に対処することができる。また、第<a href="Chapter2.html#c2">2</a>章ではデータの非線形性に対処する際に変数変換や多項式回帰を適用したりした。<strong>GAMはGLMと同様に分散の不均等性に対処しつつ、こうしたデータの非線形性にも対処できる</strong>。</p>
+<p>GLMやGAMは以下の3つの要素からなる。</p>
+<ol style="list-style-type: decimal">
+<li>目的変数の分布。これによって目的変数の平均や分散が決まる。<br />
+</li>
+<li>共変量(説明変数)の関数(= 予測関数)<br />
+</li>
+<li>目的変数の平均と共変量(説明変数)をつなぐもの(= リンク関数)</li>
+</ol>
+<div id="distribution" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Distribution<a href="Chapter4.html#distribution" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>GLMでは、正規分布に加えて<strong>ポワソン分布</strong>や<strong>負の二項分布</strong>、<strong>二項分布</strong>、<strong>ガンマ分布</strong>、<strong>逆正規分布</strong>などが目的変数の分布として使われる。ポワソン分布と負の二項分布は0以上のカウントデータに対して、二項分布は二値データや0から1の間をとる割合データに対して、ガンマ分布は正の連続値に対して、正規分布は全ての範囲の連続値に対して用いられる。また、あまり一般的ではないが逆正規分布は正の連続値に対して用いられる。これら6つが<code>glm</code>関数の<code>family =</code>として使用できる通常の分布である。</p>
+<p>それでは、漁業データにはどの分布を当てはめるべきだろうか?魚の密度(<code>Dens</code>)は0以上の整数値である。0をとる可能性があるということはガンマ分布は適当ではない。</p>
+<p>魚の密度(<code>Dens</code>)は魚の総捕獲量(<code>TotAbund</code>)を探索面積(<code>SweptArea</code>)で割ったものである。モデルでは、魚の総捕獲量を目的変数として用いることもできる。この場合、捕獲量は0以上の整数になるのでポワソン分布か負の二項分布が適当である。実際の分析では探索努力(具体的には探索面積)を考慮する必要があるが、ここではひとまず置いておく。</p>
+<p>総捕獲量と探索面積のdotplot(第<a href="Chapter1.html#s1-4-2">1.4.2</a>節参照)を示したのが図<a href="Chapter4.html#fig:fig-fish-dotplot">4.1</a>である。</p>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="Chapter4.html#cb176-1" tabindex="-1"></a>fish <span class="sc">%&gt;%</span> </span>
+<span id="cb176-2"><a href="Chapter4.html#cb176-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sample_number =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb176-3"><a href="Chapter4.html#cb176-3" tabindex="-1"></a>  <span class="fu">select</span>(sample_number, SweptArea, TotAbund) <span class="sc">%&gt;%</span> </span>
+<span id="cb176-4"><a href="Chapter4.html#cb176-4" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb176-5"><a href="Chapter4.html#cb176-5" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y=</span> sample_number))<span class="sc">+</span></span>
+<span id="cb176-6"><a href="Chapter4.html#cb176-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb176-7"><a href="Chapter4.html#cb176-7" tabindex="-1"></a>  <span class="fu">facet_rep_wrap</span>(<span class="sc">~</span>name, <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb176-8"><a href="Chapter4.html#cb176-8" tabindex="-1"></a>                 <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>)<span class="sc">+</span></span>
+<span id="cb176-9"><a href="Chapter4.html#cb176-9" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb176-10"><a href="Chapter4.html#cb176-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>,</span>
+<span id="cb176-11"><a href="Chapter4.html#cb176-11" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb176-12"><a href="Chapter4.html#cb176-12" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>))<span class="sc">+</span></span>
+<span id="cb176-13"><a href="Chapter4.html#cb176-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Order of data&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fish-dotplot"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fish-dotplot-1.png" alt="Dotplot of Swept Area and TotAbund" width="864" />
+<p class="caption">
+図4.1: Dotplot of Swept Area and TotAbund
+</p>
+</div>
+<p>また、総捕獲量と探索面積それぞれと水深の関係をプロットしたのが図<a href="Chapter4.html#fig:fig-fish-scatter">4.2</a>である。</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="Chapter4.html#cb177-1" tabindex="-1"></a>fish <span class="sc">%&gt;%</span> </span>
+<span id="cb177-2"><a href="Chapter4.html#cb177-2" tabindex="-1"></a>  <span class="fu">select</span>(MeanDepth, SweptArea, TotAbund) <span class="sc">%&gt;%</span> </span>
+<span id="cb177-3"><a href="Chapter4.html#cb177-3" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb177-4"><a href="Chapter4.html#cb177-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MeanDepth, <span class="at">y=</span> value))<span class="sc">+</span></span>
+<span id="cb177-5"><a href="Chapter4.html#cb177-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb177-6"><a href="Chapter4.html#cb177-6" tabindex="-1"></a>  <span class="fu">facet_rep_wrap</span>(<span class="sc">~</span>name, <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb177-7"><a href="Chapter4.html#cb177-7" tabindex="-1"></a>                 <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>)<span class="sc">+</span></span>
+<span id="cb177-8"><a href="Chapter4.html#cb177-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb177-9"><a href="Chapter4.html#cb177-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>,</span>
+<span id="cb177-10"><a href="Chapter4.html#cb177-10" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb177-11"><a href="Chapter4.html#cb177-11" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>))<span class="sc">+</span></span>
+<span id="cb177-12"><a href="Chapter4.html#cb177-12" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;mean depth&quot;</span>, <span class="at">y =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fish-scatter"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fish-scatter-1.png" alt="Scatterplot of swept area and total abundance versus mean depth." width="864" />
+<p class="caption">
+図4.2: Scatterplot of swept area and total abundance versus mean depth.
+</p>
+</div>
+<p>さて、もし総捕獲量にポワソン分布を当てはめるとき、以下のように書ける(ポワソン分布では、期待値と分散が同じ値になる)。なお、<span class="math inline">\(TA_i\)</span>はi番目のデータの総捕獲量を表す。<span class="math inline">\(E()\)</span>は期待値を、<span class="math inline">\(var()\)</span>は分散を表す。</p>
+<p><span class="math display">\[
+\begin{aligned}
+TA_i &amp;\sim Poisson(\mu_i)\\
+E(TA_i) &amp;= \mu_i\\
+var(TA_i) &amp;= \mu_i
+\end{aligned}
+\]</span></p>
+<p>総捕獲量を負の二項分布に当てはめるとすれば、以下のように書ける。負の二項分布ではパラメータ<span class="math inline">\(k\)</span>(<span class="math inline">\(= 1/ \alpha\)</span>)を組み込むことでポワソン分布よりも大きな分散をとることを可能にしている。<span class="math inline">\(k\)</span>が大きくなるほど負の二項分布はポワソン分布に近づく。多くの文献では<span class="math inline">\(\alpha\)</span>が用いられているが、Rの<code>glm.nb</code>関数では<span class="math inline">\(k\)</span>が用いられている(<code>theta</code>として出力される)。<br />
+<span class="math display">\[
+\begin{aligned}
+TA_i &amp;\sim NB(\mu_i, k)\\
+E(TA_i) &amp;= \mu_i\\
+var(TA_i) &amp;= \mu_i + \frac{\mu_i^2}{k} = \mu_i + \alpha \times \mu_i^2
+\end{aligned}
+\]</span></p>
+</div>
+<div id="predictor-function" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Predictor function<a href="Chapter4.html#predictor-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>目的変数の分布を決定したら、どの変数を説明変数として含めるかを決め、GAMの場合はどの変数がsmootherとして用いられるかを決める。第<a href="Chapter2.html#c2">2</a>章では、次のような線形回帰モデルを考えた。GLMでも同じような予測関数を用いることができる。</p>
+<p><span class="math display">\[
+\eta_i = \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i  
+\]</span></p>
+<p>GAMの場合は、平滑化関数(smoother)を組み込むことができる。<br />
+<span class="math display">\[
+\eta_i = \alpha + f(Depth_i) + \beta_1 \times Period_i  
+\]</span></p>
+<p>期間によって異なるsmootherを適用することもできる。</p>
+</div>
+<div id="link-function" class="section level3 hasAnchor" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Link function<a href="Chapter4.html#link-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>リンク関数は、目的変数の期待値と予測関数をつなぐものである。リンク関数を様々に変化させることで、目的変数の期待値がある範囲に収まるように変化させる。</p>
+<p>例えば、例えば、ポワソン分布や負の二項分布の期待値は必ず正にならなくてはいけないので、これらのモデルではログ関数がリンク関数に用いられる。<br />
+<span class="math display">\[
+log(\mu_i) = \eta_i  
+\]</span></p>
+<p>両辺に指数変換を施すと以下のようになる。これからわかるように、リンク関数にログ関数を用いることで期待値(<span class="math inline">\(\mu_i\)</span>)が必ず正の値をとるようになる。<br />
+<span class="math display">\[
+\mu_i = e^{\eta_i}
+\]</span></p>
+<p>正規分布では恒等関数(<span class="math inline">\(\mu_i = \eta_i\)</span>)が、二項分布ではロジット関数がリンク関数に用いられるのが一般的である。ロジット関数をリンク関数にすることで、目的変数の期待値は0から1の範囲に収まるようになる。ロジット関数は以下の通り。</p>
+<p><span class="math display">\[
+log(\frac{\mu_i}{1-\mu_i}) = \eta_i
+\]</span></p>
+</div>
+</div>
+<div id="start-with-glm-or-gam" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Start with GLM or GAM ?<a href="Chapter4.html#start-with-glm-or-gam" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>それでは、最初の分析としてはGLMとGAMのどちらを適用すべきだろうか。もし、GLMを適用したモデルの残差と説明変数の間に非線形の関係が明確にみられるなら、GAMを適用するのは理にかなっている。また、事前にデータ探索を行ったときに変数間に非線形なパターンが見られたらまずGAMを適用し、変数間の関係が線形か非線形かを見てみるということもできる。もし線形な関係が見られたら、そこからGLMを適用することもできる。</p>
+</div>
+<div id="results-of-poisson-and-negative-binomial-glm" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Results of Poisson and negative binomial GLM<a href="Chapter4.html#results-of-poisson-and-negative-binomial-glm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>本章では、まずGLMを適用するところから始める。まずはポワソン分布のGLMを適用する。モデル式は以下の通り。</p>
+<p><span class="math display" id="eq:glm-pois">\[
+\begin{aligned}
+TA_i &amp;\sim Poisson(\mu_i)\\
+E(TA_i) &amp;= var(TA_i) = \mu_i \\
+log(\mu_i) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i
+\end{aligned} \tag{4.1}
+\]</span></p>
+<p>Rでは以下のように実行する。</p>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="Chapter4.html#cb178-1" tabindex="-1"></a>fish <span class="ot">&lt;-</span> <span class="fu">mutate</span>(fish, <span class="at">fPeriod =</span> <span class="fu">factor</span>(Period))</span>
+<span id="cb178-2"><a href="Chapter4.html#cb178-2" tabindex="-1"></a></span>
+<span id="cb178-3"><a href="Chapter4.html#cb178-3" tabindex="-1"></a>M4_1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(TotAbund <span class="sc">~</span> MeanDepth<span class="sc">*</span>fPeriod, <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> fish)</span></code></pre></div>
+<p>モデルを実行したら、<strong>過分散</strong>(overdispersion)の確認を行う必要がある。ポワソン分布は期待値と分散が一致すると仮定しているが、この前提が満たされていない可能性がある。過分散のチェックを行うためには、ピアソン残差(<span class="math inline">\(E_i\)</span>)を計算する必要がある。期待値(<span class="math inline">\(E(TA_i)\)</span>)と分散(<span class="math inline">\(var(TA_i)\)</span>)は式<a href="Chapter4.html#eq:glm-pois">(4.1)</a>から得られる。</p>
+<p><span class="math display">\[
+E_i = \frac{TA_i - E(TA_i)}{\sqrt{var(TA_i)}}
+\]</span></p>
+<p>過分散は以下のdispersion parameter(<span class="math inline">\(\phi\)</span>)を計算することで調べることができる。なお、<span class="math inline">\(N\)</span>はサンプル数、<span class="math inline">\(k\)</span>はパラメータ数である。もし<span class="math inline">\(\phi\)</span>が1を超えていれば過分散が生じており、1以下であれば過少分散である。通常、<span class="math inline">\(\phi = 1.5\)</span>くらいまでであれば問題ないと判断される<span class="citation">(<a href="#ref-Ohigashi2010">大東 2010</a>)</span>。<br />
+<span class="math display">\[
+\phi = \frac{\sum_{i=1}^k E_i}{N - k}
+\]</span></p>
+<p>今回のモデルでは、以下のように<span class="math inline">\(\phi = 110.5\)</span>となり、明確な過分散が存在する。よってモデルがデータにうまく当てはまっていないことが分かる。過分散が生じる原因には、(1)モデルに入れるべき共変量や交互作用が入っていない、(2)外れ値がある、(3)リンク関数がデータに合っていない、(4)非線形なパターンがモデルで説明できていない、(5)ゼロ過剰がある、(6)ポワソン分布で仮定されるよりデータの分散が大きい、などがある。</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="Chapter4.html#cb179-1" tabindex="-1"></a>E <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_1, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb179-2"><a href="Chapter4.html#cb179-2" tabindex="-1"></a>phi <span class="ot">&lt;-</span> <span class="fu">sum</span>(E<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_1)))</span>
+<span id="cb179-3"><a href="Chapter4.html#cb179-3" tabindex="-1"></a></span>
+<span id="cb179-4"><a href="Chapter4.html#cb179-4" tabindex="-1"></a>phi</span></code></pre></div>
+<pre><code>## [1] 110.5165</code></pre>
+<p>過分散の原因はモデルの結果を診断することで見つけることができる。図<a href="Chapter4.html#fig:fig-diagnosis-M4-1">4.3</a>はピアソン残差と水深の関係を期間ごとにプロットしたものである。水深の深いところでピアソン残差が0以下になる点が多いなど非線形なパターンがみられるので、ポワソン分布のGAMを適用した方がいいかもしれない。しかし、パターンはそこまで明確ではないので、GAMを適用するだけでは過分散の問題が解決されない可能性がある。総捕獲量にそもそも大きなばらつきがあることを考えると、負の二項分布を適用した方がいいだろう。よって、<strong>過分散とデータの非線形性という2つの問題に対処するため、負の二項分布のGAMを適用したほうがよい</strong>ということになる。</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="Chapter4.html#cb181-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M4_1, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb181-2"><a href="Chapter4.html#cb181-2" tabindex="-1"></a>           <span class="at">depth =</span> fish<span class="sc">$</span>MeanDepth,</span>
+<span id="cb181-3"><a href="Chapter4.html#cb181-3" tabindex="-1"></a>           <span class="at">Period =</span> fish<span class="sc">$</span>fPeriod) <span class="sc">%&gt;%</span> </span>
+<span id="cb181-4"><a href="Chapter4.html#cb181-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb181-5"><a href="Chapter4.html#cb181-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Period),</span>
+<span id="cb181-6"><a href="Chapter4.html#cb181-6" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>)<span class="sc">+</span></span>
+<span id="cb181-7"><a href="Chapter4.html#cb181-7" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb181-8"><a href="Chapter4.html#cb181-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb181-9"><a href="Chapter4.html#cb181-9" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;black&quot;</span>))<span class="sc">+</span></span>
+<span id="cb181-10"><a href="Chapter4.html#cb181-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb181-11"><a href="Chapter4.html#cb181-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mean sampling depth (m)&quot;</span>,</span>
+<span id="cb181-12"><a href="Chapter4.html#cb181-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-M4-1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-M4-1-1.png" alt="Pearson residuals obtained by the Poisson GLM plotted versus sampling depth. Filled circles are observations from the second sampling period." width="432" />
+<p class="caption">
+図4.3: Pearson residuals obtained by the Poisson GLM plotted versus sampling depth. Filled circles are observations from the second sampling period.
+</p>
+</div>
+<p>GAMを適用する前に、まずは負の二項分布のGLMを実行してみる。モデル式は以下の通り。<br />
+<span class="math display" id="eq:glm-nb">\[
+\begin{aligned}
+TA_i &amp;\sim NB(\mu_i, k)\\
+E(TA_i) &amp;= \mu_i , \; var(TA_i) = \mu_i + \frac{\mu_i^2}{k} \\
+log(\mu_i) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i
+\end{aligned} \tag{4.2}
+\]</span></p>
+<p>Rでは<code>MASS</code>パッケージの<code>glm.nb()</code>関数で実行できる。</p>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="Chapter4.html#cb182-1" tabindex="-1"></a>M4_2 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(TotAbund <span class="sc">~</span> MeanDepth<span class="sc">*</span>fPeriod, <span class="at">data =</span> fish)</span></code></pre></div>
+<p><span class="math inline">\(\phi\)</span>の推定値はほとんど0であり、過分散の問題が解決されたことが分かる。</p>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="Chapter4.html#cb183-1" tabindex="-1"></a>E2 <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_2, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb183-2"><a href="Chapter4.html#cb183-2" tabindex="-1"></a>phi2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(E2<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_2)))</span>
+<span id="cb183-3"><a href="Chapter4.html#cb183-3" tabindex="-1"></a></span>
+<span id="cb183-4"><a href="Chapter4.html#cb183-4" tabindex="-1"></a>phi2</span></code></pre></div>
+<pre><code>## [1] 0.9815648</code></pre>
+<p>図<a href="Chapter4.html#fig:fig-diagnosis-M4-2">4.4</a>はピアソン残差と水深の関係を期間ごとにプロットしたものである。ポワソン分布のGLMのときに存在したパターンはかなり解消されていることが分かる。</p>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="Chapter4.html#cb185-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M4_2, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb185-2"><a href="Chapter4.html#cb185-2" tabindex="-1"></a>           <span class="at">depth =</span> fish<span class="sc">$</span>MeanDepth,</span>
+<span id="cb185-3"><a href="Chapter4.html#cb185-3" tabindex="-1"></a>           <span class="at">Period =</span> fish<span class="sc">$</span>fPeriod) <span class="sc">%&gt;%</span> </span>
+<span id="cb185-4"><a href="Chapter4.html#cb185-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb185-5"><a href="Chapter4.html#cb185-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Period),</span>
+<span id="cb185-6"><a href="Chapter4.html#cb185-6" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>)<span class="sc">+</span></span>
+<span id="cb185-7"><a href="Chapter4.html#cb185-7" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb185-8"><a href="Chapter4.html#cb185-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb185-9"><a href="Chapter4.html#cb185-9" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;black&quot;</span>))<span class="sc">+</span></span>
+<span id="cb185-10"><a href="Chapter4.html#cb185-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb185-11"><a href="Chapter4.html#cb185-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mean sampling depth (m)&quot;</span>,</span>
+<span id="cb185-12"><a href="Chapter4.html#cb185-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-M4-2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-M4-2-1.png" alt="Pearson residuals obtained by the negative Binomial GLM plotted versus sampling depth. Filled circles are observations from the second sampling period." width="432" />
+<p class="caption">
+図4.4: Pearson residuals obtained by the negative Binomial GLM plotted versus sampling depth. Filled circles are observations from the second sampling period.
+</p>
+</div>
+<p>ただし、ここまでいずれのモデルにおいても探索面積の影響を考慮することはできていなかった。次節ではこれに対処する方法について学ぶ。</p>
+</div>
+<div id="using-offset-in-a-glm-or-gam" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Using offset in a GLM or GAM<a href="Chapter4.html#using-offset-in-a-glm-or-gam" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>ポワソン分布は、ある一定の時間<span class="math inline">\(\lambda\)</span>の間に事象が起こる回数<span class="math inline">\(y\)</span>を以下のように表すことができる。もし<span class="math inline">\(\lambda = 1\)</span>ならば、先ほどのポワソン分布と一致する。<span class="math inline">\(\lambda\)</span>あたりに発生する事象の回数の期待値は<span class="math inline">\(\mu \times \lambda\)</span>である。すなわち、<span class="math inline">\(\mu\)</span>は単位時間あたりに発生する事象の回数の期待値を表す。</p>
+<p><span class="math display">\[
+P(Y = y|\mu, \lambda) = \frac{e^{-\lambda \times \mu} \times (\lambda \times \mu)^y}{y!}
+\]</span></p>
+<p>漁業データにおいても同様に、探索面積<span class="math inline">\(SA_i\)</span>あたりの漁獲量<span class="math inline">\(TA_i\)</span>がポワソン分布に従うとき、以下のように書くことができる。<br />
+<span class="math display">\[
+P(TA_i = y_i|\mu_i, SA_i) = \frac{e^{-SA_i \times \mu_i} \times (SA_i \times \mu_i)^{y_{i}}}{y_i!}
+\]</span></p>
+<p>このとき、単位面積当たりの漁獲絵用の期待値は<span class="math inline">\(E(\frac{TA_i}{SA_i}) = \frac{\mu_i}{SA_i}\)</span>となる。ポワソン分布や負の二項分布モデルを考えるとき、ログ関数をリンク関数とし以下のように書くことができる。ここで、<span class="math inline">\(log(SA_i)\)</span>を<strong>オフセット項</strong>という。<u>ポワソン分布や負の二項分布モデルでもこのようにオフセット項を用いることで、割り算データを扱うことができるようになる</u>。</p>
+<p><span class="math display">\[
+\begin{aligned}
+log(\frac{\mu_i}{SA_i}) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i \Leftrightarrow \\
+log(\mu_i) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i + log(SA_i)
+\end{aligned}
+\]</span></p>
+<p>ここで、探索面積をオフセット項に含めるということは、探索面積を2倍にすれば漁獲量も2倍になると仮定しているということには注意が必要である。もしこれが成り立たないのであれば、探索面積を共変量(説明変数)としてモデルに含める必要がある。今回は単純に単位面積当たりの漁獲量(= 密度)を考えているので、オフセット項を使用するということで問題ない。</p>
+</div>
+<div id="poisson-glm-with-offset" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Poisson GLM with offset<a href="Chapter4.html#poisson-glm-with-offset" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>それでは、まずはオフセット項を含むポワソン分布のGLMを考えていく。モデル式は以下の通り。<br />
+<span class="math display" id="eq:glm-pois2">\[
+\begin{aligned}
+TA_i &amp;\sim Poisson(\mu_i)\\
+E(TA_i) &amp;= var(TA_i) = \mu_i \\
+log(\mu_i) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i + log(SA_i)
+\end{aligned} \tag{4.3}
+\]</span></p>
+<p>Rでは以下のように実行する。</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="Chapter4.html#cb186-1" tabindex="-1"></a>M4_3 <span class="ot">&lt;-</span> <span class="fu">glm</span>(TotAbund <span class="sc">~</span> MeanDepth<span class="sc">*</span>fPeriod <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(SweptArea)),</span>
+<span id="cb186-2"><a href="Chapter4.html#cb186-2" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>),</span>
+<span id="cb186-3"><a href="Chapter4.html#cb186-3" tabindex="-1"></a>            <span class="at">data =</span> fish)</span></code></pre></div>
+<p>このモデルはパラメータ<span class="math inline">\(\phi\)</span>が121.7もあり、オフセット項を含めても過分散の問題は解決しないことが分かる。</p>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="Chapter4.html#cb187-1" tabindex="-1"></a>E3 <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_3, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb187-2"><a href="Chapter4.html#cb187-2" tabindex="-1"></a>phi3 <span class="ot">&lt;-</span> <span class="fu">sum</span>(E3<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_3)))</span>
+<span id="cb187-3"><a href="Chapter4.html#cb187-3" tabindex="-1"></a></span>
+<span id="cb187-4"><a href="Chapter4.html#cb187-4" tabindex="-1"></a>phi3</span></code></pre></div>
+<pre><code>## [1] 121.6988</code></pre>
+</div>
+<div id="negative-binomial-glm-with-offset" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Negative binomial GLM with offset<a href="Chapter4.html#negative-binomial-glm-with-offset" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>そこで、オフセット項を含む負の二項分布モデルを考える。モデル式は以下の通り。<br />
+<span class="math display" id="eq:glm-nb2">\[
+\begin{aligned}
+TA_i &amp;\sim NB(\mu_i, k)\\
+E(TA_i) &amp;= \mu_i , \; var(TA_i) = \mu_i + \frac{\mu_i^2}{k} \\
+log(\mu_i) &amp;= \alpha + \beta_1 \times Depth_i + \beta_2 \times Period_i + \beta_3 \times Depth_i \times Period_i + log(SA_i)
+\end{aligned} \tag{4.4}
+\]</span></p>
+<p>Rでは以下のように実行する。</p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="Chapter4.html#cb189-1" tabindex="-1"></a>M4_4 <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(TotAbund <span class="sc">~</span> MeanDepth<span class="sc">*</span>fPeriod <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(SweptArea)), <span class="at">data =</span> fish)</span></code></pre></div>
+<p><span class="math inline">\(\phi\)</span>はほぼ1となり過分散の問題は生じていないことが分かる。</p>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="Chapter4.html#cb190-1" tabindex="-1"></a>E4 <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_4, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb190-2"><a href="Chapter4.html#cb190-2" tabindex="-1"></a>phi4 <span class="ot">&lt;-</span> <span class="fu">sum</span>(E4<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_4)))</span>
+<span id="cb190-3"><a href="Chapter4.html#cb190-3" tabindex="-1"></a></span>
+<span id="cb190-4"><a href="Chapter4.html#cb190-4" tabindex="-1"></a>phi4</span></code></pre></div>
+<pre><code>## [1] 0.9972456</code></pre>
+<p>ただし、ピアソン残差と水深の関係を期間ごとにプロットした図<a href="Chapter4.html#fig:fig-diagnosis-M4-4">4.5</a>をみると、わずかに非線形なパターンが見て取れる(とくに期間2)。よって、GAMを適用した方が適切だと考えられる。</p>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="Chapter4.html#cb192-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M4_4, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb192-2"><a href="Chapter4.html#cb192-2" tabindex="-1"></a>           <span class="at">depth =</span> fish<span class="sc">$</span>MeanDepth,</span>
+<span id="cb192-3"><a href="Chapter4.html#cb192-3" tabindex="-1"></a>           <span class="at">Period =</span> fish<span class="sc">$</span>fPeriod) <span class="sc">%&gt;%</span> </span>
+<span id="cb192-4"><a href="Chapter4.html#cb192-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb192-5"><a href="Chapter4.html#cb192-5" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Period),</span>
+<span id="cb192-6"><a href="Chapter4.html#cb192-6" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>)<span class="sc">+</span></span>
+<span id="cb192-7"><a href="Chapter4.html#cb192-7" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb192-8"><a href="Chapter4.html#cb192-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb192-9"><a href="Chapter4.html#cb192-9" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;black&quot;</span>))<span class="sc">+</span></span>
+<span id="cb192-10"><a href="Chapter4.html#cb192-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb192-11"><a href="Chapter4.html#cb192-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mean sampling depth (m)&quot;</span>,</span>
+<span id="cb192-12"><a href="Chapter4.html#cb192-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-M4-4"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-M4-4-1.png" alt="Pearson residuals obtained by the negative Binomial GLM with offset plotted versus sampling depth. Filled circles are observations from the second sampling period." width="432" />
+<p class="caption">
+図4.5: Pearson residuals obtained by the negative Binomial GLM with offset plotted versus sampling depth. Filled circles are observations from the second sampling period.
+</p>
+</div>
+</div>
+<div id="poisson-and-negative-binomial-gam-with-offset" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Poisson and negative binomial GAM with offset<a href="Chapter4.html#poisson-and-negative-binomial-gam-with-offset" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>まずはポワソン分布のGAMを適用する。smootherは第<a href="Chapter2.html#c2">2</a>章でやったように期間ごとに分けて推定する。モデル式は以下の通り。<br />
+<span class="math display" id="eq:gam-pois">\[
+\begin{aligned}
+TA_i &amp;\sim Poisson(\mu_i)\\
+E(TA_i) &amp;= var(TA_i) = \mu_i \\
+log(\mu_i) &amp;= \alpha + f_1(Depth_i) + f_2(Depth_i) + \beta_1 \times Period_i + log(SA_i)
+\end{aligned} \tag{4.5}
+\]</span></p>
+<p>Rでは以下のように実行する。</p>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="Chapter4.html#cb193-1" tabindex="-1"></a>M4_5 <span class="ot">&lt;-</span> <span class="fu">gam</span>(TotAbund <span class="sc">~</span> <span class="fu">s</span>(MeanDepth, <span class="at">by =</span> fPeriod) <span class="sc">+</span> fPeriod <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(SweptArea)),</span>
+<span id="cb193-2"><a href="Chapter4.html#cb193-2" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> fish)</span></code></pre></div>
+<p>過分散はGLMと同じように調べられる。<span class="math inline">\(\phi\)</span>はGLM同様に大きいので(100.6)、やはり負の二項分布を適用した方がよさそう。</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="Chapter4.html#cb194-1" tabindex="-1"></a>E5 <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_5, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb194-2"><a href="Chapter4.html#cb194-2" tabindex="-1"></a>phi5 <span class="ot">&lt;-</span> <span class="fu">sum</span>(E5<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_5)))</span>
+<span id="cb194-3"><a href="Chapter4.html#cb194-3" tabindex="-1"></a></span>
+<span id="cb194-4"><a href="Chapter4.html#cb194-4" tabindex="-1"></a>phi5</span></code></pre></div>
+<pre><code>## [1] 100.6062</code></pre>
+<p>結果に出てくる2つの自由度(<code>edf</code>と<code>Ref.df</code>)は自由度の定義の違いによるもの。<span class="math inline">\(\chi^2\)</span>検定が残差逸脱度を利用してsmootherの有意性を判定している。smootherの自由度は一般化交差検証(GCV)スコアを用いて決定される。</p>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="Chapter4.html#cb196-1" tabindex="-1"></a><span class="fu">summary</span>(M4_5)</span></code></pre></div>
+<pre><code>## 
+## Family: poisson 
+## Link function: log 
+## 
+## Formula:
+## TotAbund ~ s(MeanDepth, by = fPeriod) + fPeriod + offset(log(SweptArea))
+## 
+## Parametric coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -5.82135    0.01003 -580.39   &lt;2e-16 ***
+## fPeriod2    -0.49759    0.02043  -24.36   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##                         edf Ref.df Chi.sq p-value    
+## s(MeanDepth):fPeriod1 8.887  8.995  13849  &lt;2e-16 ***
+## s(MeanDepth):fPeriod2 8.891  8.995   4697  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =   0.35   Deviance explained = 73.7%
+## UBRE =   81.8  Scale est. = 1         n = 147</code></pre>
+<p>推定されたsmootherは以下の通り(図<a href="#fig:fig-smooth-gampois"><strong>??</strong></a>)。</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="Chapter4.html#cb198-1" tabindex="-1"></a><span class="fu">draw</span>(M4_5)</span></code></pre></div>
+<p><img src="Introduction-to-GAM-using-R_files/figure-html/fig-smooth-gampois-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>続いて、負の二項分布のGAMを実行する。モデル式は以下の通り。<br />
+<span class="math display" id="eq:gam-nb">\[
+\begin{aligned}
+TA_i &amp;\sim NB(\mu_i, k)\\
+E(TA_i) &amp;= \mu_i , \; var(TA_i) = \mu_i + \frac{\mu_i^2}{k} \\
+log(\mu_i) &amp;= \alpha + f_1(Depth_i) + f_2(Depth_i) + \beta_1 \times Period_i + log(SA_i)
+\end{aligned} \tag{4.6}
+\]</span></p>
+<p>Rでは以下のように実行する。<code>mgcv</code>パッケージで負の二項分布をフィットさせる方法は2つある(performance iterationとouter iteration)。詳しくは<code>?negbin</code>で検索。performance iterationを利用する場合は<code>family = negbin()</code>、outer iterationを利用する場合は<code>family = nb()</code>を使用するよう。</p>
+<p>前者ではまずsmootherのパラメータが推定され、<span class="math inline">\(\phi\)</span>が1になるように<span class="math inline">\(k\)</span>(Rでは<code>theta</code>)が推定される。この場合、一方で、後者は<span class="math inline">\(k\)</span>がsmootherのパラメータと一緒に最尤推定法または制限付き最尤推定法で推定される。</p>
+<p>今回は後者の方法で<code>theta</code>を推定する。Rでは以下の通り実行できる<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>。</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="Chapter4.html#cb199-1" tabindex="-1"></a>M4_6 <span class="ot">&lt;-</span> <span class="fu">gam</span>(TotAbund <span class="sc">~</span> <span class="fu">s</span>(MeanDepth, <span class="at">by =</span> fPeriod) <span class="sc">+</span> fPeriod <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(SweptArea)),</span>
+<span id="cb199-2"><a href="Chapter4.html#cb199-2" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">nb</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>), <span class="at">data =</span> fish)</span></code></pre></div>
+<p>モデルの結果は以下の通り。<span class="math inline">\(k = 2.048\)</span>と推定され、モデルはデータのばらつきの69.4%を説明している。</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="Chapter4.html#cb200-1" tabindex="-1"></a><span class="fu">summary</span>(M4_6)</span></code></pre></div>
+<pre><code>## 
+## Family: Negative Binomial(2.048) 
+## Link function: log 
+## 
+## Formula:
+## TotAbund ~ s(MeanDepth, by = fPeriod) + fPeriod + offset(log(SweptArea))
+## 
+## Parametric coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -5.77295    0.07181 -80.393  &lt; 2e-16 ***
+## fPeriod2    -0.45494    0.12417  -3.664 0.000249 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##                         edf Ref.df Chi.sq p-value    
+## s(MeanDepth):fPeriod1 2.810  3.493  324.9  &lt;2e-16 ***
+## s(MeanDepth):fPeriod2 3.019  3.739  158.4  &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.318   Deviance explained = 69.4%
+## -REML = 880.49  Scale est. = 1         n = 147</code></pre>
+<p><span class="math inline">\(\phi\)</span>は1.10であり、モデルに過分散の問題はないよう。</p>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="Chapter4.html#cb202-1" tabindex="-1"></a>E6 <span class="ot">&lt;-</span> <span class="fu">resid</span>(M4_6, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb202-2"><a href="Chapter4.html#cb202-2" tabindex="-1"></a>phi6 <span class="ot">&lt;-</span> <span class="fu">sum</span>(E6<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>(<span class="fu">nrow</span>(fish) <span class="sc">-</span> <span class="fu">length</span>(<span class="fu">coef</span>(M4_6)))</span>
+<span id="cb202-3"><a href="Chapter4.html#cb202-3" tabindex="-1"></a></span>
+<span id="cb202-4"><a href="Chapter4.html#cb202-4" tabindex="-1"></a>phi6</span></code></pre></div>
+<pre><code>## [1] 1.100135</code></pre>
+<p>smootherを期間ごとに分ける必要があるかを調べるため、期間ごとにsmootherを分けないモデルを作成して先ほどのモデルと比較する。<span class="math inline">\(k\)</span>(<code>theta</code>)の値を固定する必要があるため、</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="Chapter4.html#cb204-1" tabindex="-1"></a>M4_7 <span class="ot">&lt;-</span> <span class="fu">gam</span>(TotAbund <span class="sc">~</span> <span class="fu">s</span>(MeanDepth) <span class="sc">+</span> fPeriod <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">log</span>(SweptArea)),</span>
+<span id="cb204-2"><a href="Chapter4.html#cb204-2" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">nb</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>, <span class="at">theta =</span> <span class="fl">2.048</span>), <span class="at">data =</span> fish)</span></code></pre></div>
+<p>AICでモデル比較をしたところ、期間ごとにsmootherを分ける方がAICが低いことが分かる。</p>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="Chapter4.html#cb205-1" tabindex="-1"></a><span class="fu">AIC</span>(M4_6, M4_7)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["AIC"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"10.231117","2":"1758.083","_rn_":"M4_6"},{"1":"4.575905","2":"1758.619","_rn_":"M4_7"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><code>M4_6</code>によって推定されたパラメータを基にモデル式を描くと以下のようになる。<br />
+<span class="math display" id="eq:gam-nbest">\[
+\begin{aligned}
+TA_i &amp;\sim NB(\mu_i, 2.048)\\
+E(TA_i) &amp;= \mu_i , \; var(TA_i) = \mu_i + \frac{\mu_i^2}{2.048} \\
+Period1: log(\mu_i) &amp;= -5.77 + f_1(Depth_i) +  log(SA_i)\\
+Period2: log(\mu_i) &amp;= -5.77 -0.45 + f_2(Depth_i) + log(SA_i)
+\end{aligned} \tag{4.7}
+\]</span></p>
+<p>期間ごとに推定されたsmootherを描くと図<a href="Chapter4.html#fig:fig-smooth-gamnegbin">4.6</a>のようになる。</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="Chapter4.html#cb206-1" tabindex="-1"></a><span class="fu">draw</span>(M4_6)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smooth-gamnegbin"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smooth-gamnegbin-1.png" alt="Estimated smoother for depth" width="864" />
+<p class="caption">
+図4.6: Estimated smoother for depth
+</p>
+</div>
+<p><br/></p>
+<p>図<a href="Chapter4.html#fig:fig-fitted-gamnegbin">4.7</a>はモデルから推定された回帰曲線を実際のデータ上に描いたものである。</p>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="Chapter4.html#cb207-1" tabindex="-1"></a>nd_M4 <span class="ot">&lt;-</span> <span class="fu">crossing</span>(<span class="at">MeanDepth =</span> <span class="fu">seq</span>(<span class="fu">min</span>(fish<span class="sc">$</span>MeanDepth), <span class="fu">max</span>(fish<span class="sc">$</span>MeanDepth), <span class="at">length =</span> <span class="dv">100</span>),</span>
+<span id="cb207-2"><a href="Chapter4.html#cb207-2" tabindex="-1"></a>                    <span class="at">fPeriod =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb207-3"><a href="Chapter4.html#cb207-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">SweptArea =</span> <span class="fu">ifelse</span>(fPeriod <span class="sc">==</span> <span class="st">&quot;1&quot;</span>, <span class="fu">mean</span>(fish <span class="sc">%&gt;%</span> <span class="fu">filter</span>(fPeriod <span class="sc">==</span> <span class="st">&quot;1&quot;</span>) <span class="sc">%&gt;%</span>  .<span class="sc">$</span>SweptArea),</span>
+<span id="cb207-4"><a href="Chapter4.html#cb207-4" tabindex="-1"></a>                            <span class="fu">mean</span>(fish <span class="sc">%&gt;%</span> <span class="fu">filter</span>(fPeriod <span class="sc">==</span> <span class="st">&quot;2&quot;</span>) <span class="sc">%&gt;%</span>  .<span class="sc">$</span>SweptArea)))</span>
+<span id="cb207-5"><a href="Chapter4.html#cb207-5" tabindex="-1"></a></span>
+<span id="cb207-6"><a href="Chapter4.html#cb207-6" tabindex="-1"></a><span class="fu">fitted_values</span>(M4_6, <span class="at">data =</span> nd_M4) <span class="sc">%&gt;%</span> </span>
+<span id="cb207-7"><a href="Chapter4.html#cb207-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MeanDepth, <span class="at">y =</span> fitted))<span class="sc">+</span></span>
+<span id="cb207-8"><a href="Chapter4.html#cb207-8" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> fPeriod))<span class="sc">+</span></span>
+<span id="cb207-9"><a href="Chapter4.html#cb207-9" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper, <span class="at">fill =</span> fPeriod),</span>
+<span id="cb207-10"><a href="Chapter4.html#cb207-10" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.3</span>)<span class="sc">+</span></span>
+<span id="cb207-11"><a href="Chapter4.html#cb207-11" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;grey21&quot;</span>,<span class="st">&quot;grey65&quot;</span>))<span class="sc">+</span></span>
+<span id="cb207-12"><a href="Chapter4.html#cb207-12" tabindex="-1"></a>  <span class="fu">new_scale_fill</span>()<span class="sc">+</span></span>
+<span id="cb207-13"><a href="Chapter4.html#cb207-13" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> fish <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">fPriod =</span> <span class="fu">factor</span>(Period)),</span>
+<span id="cb207-14"><a href="Chapter4.html#cb207-14" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> TotAbund, <span class="at">fill =</span> fPeriod),</span>
+<span id="cb207-15"><a href="Chapter4.html#cb207-15" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>)<span class="sc">+</span></span>
+<span id="cb207-16"><a href="Chapter4.html#cb207-16" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;white&quot;</span>))<span class="sc">+</span></span>
+<span id="cb207-17"><a href="Chapter4.html#cb207-17" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;solid&quot;</span>, <span class="st">&quot;dashed&quot;</span>))<span class="sc">+</span></span>
+<span id="cb207-18"><a href="Chapter4.html#cb207-18" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Total abundance&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Mean depth (m)&quot;</span>)<span class="sc">+</span></span>
+<span id="cb207-19"><a href="Chapter4.html#cb207-19" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb207-20"><a href="Chapter4.html#cb207-20" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb207-21"><a href="Chapter4.html#cb207-21" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">3</span>)))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fitted-gamnegbin"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fitted-gamnegbin-1.png" alt="Fitted values for the negative binomial GAM with offset variable." width="432" />
+<p class="caption">
+図4.7: Fitted values for the negative binomial GAM with offset variable.
+</p>
+</div>
+<p><br/></p>
+<p>最後にモデル診断を行う。ピアソン残差とモデルから推定される予測値、水深、期間の関係とピアソン残差のヒストグラムをプロットしたのが図<a href="Chapter4.html#fig:fig-diagnosis-gamnegbin">4.8</a>である。明確なパターンは見られないよう。</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="Chapter4.html#cb208-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M4_6, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb208-2"><a href="Chapter4.html#cb208-2" tabindex="-1"></a>           <span class="at">MeanDepth =</span> fish<span class="sc">$</span>MeanDepth,</span>
+<span id="cb208-3"><a href="Chapter4.html#cb208-3" tabindex="-1"></a>           <span class="at">fitted =</span> <span class="fu">fitted</span>(M4_6),</span>
+<span id="cb208-4"><a href="Chapter4.html#cb208-4" tabindex="-1"></a>           <span class="at">Period =</span> fish<span class="sc">$</span>fPeriod) <span class="ot">-&gt;</span> dat_resid</span>
+<span id="cb208-5"><a href="Chapter4.html#cb208-5" tabindex="-1"></a></span>
+<span id="cb208-6"><a href="Chapter4.html#cb208-6" tabindex="-1"></a>dat_resid <span class="sc">%&gt;%</span> </span>
+<span id="cb208-7"><a href="Chapter4.html#cb208-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb208-8"><a href="Chapter4.html#cb208-8" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb208-9"><a href="Chapter4.html#cb208-9" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">fill =</span> Period))<span class="sc">+</span></span>
+<span id="cb208-10"><a href="Chapter4.html#cb208-10" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;white&quot;</span>))<span class="sc">+</span></span>
+<span id="cb208-11"><a href="Chapter4.html#cb208-11" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb208-12"><a href="Chapter4.html#cb208-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb208-13"><a href="Chapter4.html#cb208-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fitted values&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>,</span>
+<span id="cb208-14"><a href="Chapter4.html#cb208-14" tabindex="-1"></a>       <span class="at">title =</span><span class="st">&quot;A&quot;</span>) <span class="ot">-&gt;</span> p1</span>
+<span id="cb208-15"><a href="Chapter4.html#cb208-15" tabindex="-1"></a></span>
+<span id="cb208-16"><a href="Chapter4.html#cb208-16" tabindex="-1"></a>dat_resid <span class="sc">%&gt;%</span> </span>
+<span id="cb208-17"><a href="Chapter4.html#cb208-17" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> MeanDepth, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb208-18"><a href="Chapter4.html#cb208-18" tabindex="-1"></a>   <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>,</span>
+<span id="cb208-19"><a href="Chapter4.html#cb208-19" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">fill =</span> Period))<span class="sc">+</span></span>
+<span id="cb208-20"><a href="Chapter4.html#cb208-20" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;white&quot;</span>))<span class="sc">+</span></span>
+<span id="cb208-21"><a href="Chapter4.html#cb208-21" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>,</span>
+<span id="cb208-22"><a href="Chapter4.html#cb208-22" tabindex="-1"></a>             <span class="at">linetype =</span> <span class="st">&quot;dotted&quot;</span>)<span class="sc">+</span></span>
+<span id="cb208-23"><a href="Chapter4.html#cb208-23" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb208-24"><a href="Chapter4.html#cb208-24" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb208-25"><a href="Chapter4.html#cb208-25" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Mean depth (m)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>,</span>
+<span id="cb208-26"><a href="Chapter4.html#cb208-26" tabindex="-1"></a>       <span class="at">title =</span><span class="st">&quot;B&quot;</span>) <span class="ot">-&gt;</span> p2</span>
+<span id="cb208-27"><a href="Chapter4.html#cb208-27" tabindex="-1"></a></span>
+<span id="cb208-28"><a href="Chapter4.html#cb208-28" tabindex="-1"></a>dat_resid <span class="sc">%&gt;%</span> </span>
+<span id="cb208-29"><a href="Chapter4.html#cb208-29" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Period, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb208-30"><a href="Chapter4.html#cb208-30" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb208-31"><a href="Chapter4.html#cb208-31" tabindex="-1"></a>  <span class="fu">stat_boxplot</span>(<span class="at">geom =</span> <span class="st">&quot;errorbar&quot;</span>,</span>
+<span id="cb208-32"><a href="Chapter4.html#cb208-32" tabindex="-1"></a>               <span class="at">width =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb208-33"><a href="Chapter4.html#cb208-33" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb208-34"><a href="Chapter4.html#cb208-34" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb208-35"><a href="Chapter4.html#cb208-35" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Period&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>,</span>
+<span id="cb208-36"><a href="Chapter4.html#cb208-36" tabindex="-1"></a>       <span class="at">title =</span><span class="st">&quot;C&quot;</span>) <span class="ot">-&gt;</span> p3</span>
+<span id="cb208-37"><a href="Chapter4.html#cb208-37" tabindex="-1"></a></span>
+<span id="cb208-38"><a href="Chapter4.html#cb208-38" tabindex="-1"></a>dat_resid <span class="sc">%&gt;%</span> </span>
+<span id="cb208-39"><a href="Chapter4.html#cb208-39" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> resid))<span class="sc">+</span></span>
+<span id="cb208-40"><a href="Chapter4.html#cb208-40" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>)<span class="sc">+</span></span>
+<span id="cb208-41"><a href="Chapter4.html#cb208-41" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb208-42"><a href="Chapter4.html#cb208-42" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb208-43"><a href="Chapter4.html#cb208-43" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Pearson residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>,</span>
+<span id="cb208-44"><a href="Chapter4.html#cb208-44" tabindex="-1"></a>       <span class="at">title =</span><span class="st">&quot;D&quot;</span>) <span class="ot">-&gt;</span> p4</span>
+<span id="cb208-45"><a href="Chapter4.html#cb208-45" tabindex="-1"></a></span>
+<span id="cb208-46"><a href="Chapter4.html#cb208-46" tabindex="-1"></a>(p1 <span class="sc">+</span> p2)<span class="sc">/</span>(p3 <span class="sc">+</span> p4)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-diagnosis-gamnegbin"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-diagnosis-gamnegbin-1.png" alt="A: Pearson residuals versus fitted values. B: Pearson residuals versus mean depth. C: Pearson residuals versus period. D: Histogram of the Pearson residuals." width="960" />
+<p class="caption">
+図4.8: A: Pearson residuals versus fitted values. B: Pearson residuals versus mean depth. C: Pearson residuals versus period. D: Histogram of the Pearson residuals.
+</p>
+</div>
+<p>QQプロットもおおむねよく当てはまっている?</p>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="Chapter4.html#cb209-1" tabindex="-1"></a><span class="fu">qq_plot</span>(M4_6, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>)</span></code></pre></div>
+<p><img src="Introduction-to-GAM-using-R_files/figure-html/unnamed-chunk-96-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="what-to-present-in-paper" class="section level2 hasAnchor" number="4.9">
+<h2><span class="header-section-number">4.9</span> What to present in paper<a href="Chapter4.html#what-to-present-in-paper" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>第<a href="Chapter2.html#s2-10">2.10</a>を参照。</p>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bailey2009" class="csl-entry">
+Bailey DM, Collins MA, Gordon JDM, et al (2009) Long-term changes in deep-water fish populations in the northeast atlantic: A deeper reaching effect of fisheries? Proc Biol Sci 276:1965–1969
+</div>
+<div id="ref-Dunn2018" class="csl-entry">
+Dunn PK, Smyth GK (2018) Generalized linear models with examples in <span>R</span>. Springer New York
+</div>
+<div id="ref-Zuur2012" class="csl-entry">
+Zuur AF (2012) A beginner’s guide to generalized additive models with <span>R</span>. Highland Statistics, Newburgh, Scotland
+</div>
+<div id="ref-Zuur2009" class="csl-entry">
+Zuur AF (2009) Mixed effects models and extensions in ecology with <span>R</span>. Springer, New York, NY
+</div>
+<div id="ref-Kubo2012" class="csl-entry">
+久保拓弥 (2012) データ解析のための統計モデリング入門. 岩波書店
+</div>
+<div id="ref-Ohigashi2010" class="csl-entry">
+大東健太郎 (2010) <span>線形モデルから一般化線形モデル（GLM）へ</span>. 雑草研究 55:268–274
+</div>
+<div id="ref-Kasuya2012" class="csl-entry">
+松浦健太郎 (2012) StanとRでベイズ統計モデリング. 共立出版
+</div>
+<div id="ref-Baba2015" class="csl-entry">
+馬場真哉 (2015) 平均・分散から始める一般化線形モデル入門. プレアデス出版
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="4">
+<li id="fn4"><p><span class="citation">Zuur (<a href="#ref-Zuur2012">2012</a>)</span> では前者の方法で<code>family = negbin(theta = c(1,10))</code>としていたが、現在の<code>mgcv</code>パッケージではこのように<code>theta</code>の範囲を指定できないようだった。<a href="Chapter4.html#fnref4" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="Chapter3.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="Chapter5.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

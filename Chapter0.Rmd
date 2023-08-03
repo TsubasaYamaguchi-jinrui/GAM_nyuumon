@@ -16,6 +16,7 @@
 library(mgcv)
 library(gratia)
 library(gstat)
+library(MASS)
 ## データハンドリング
 library(tidyverse)
 library(easystats)

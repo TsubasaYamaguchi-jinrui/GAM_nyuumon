@@ -1,4 +1,4 @@
-# Introduction to additive models using deep-sea fisheries data  
+# Introduction to additive models using deep-sea fisheries data  {#c2}  
 本章では、正規分布に従う一般化加法モデル(GAM)の導入を行う。  
 
 ## Impact of deep-sea fisheries  
@@ -493,7 +493,7 @@ $$
 
 ## Model validation  
 ### Normality and homogeneity  
-GAMでは重回帰分析のときと同様に残差を抽出し、その正規性や等分散性、独立性、影響のある観察の有無を確認しなければならない。
+GAMでは重回帰分析のときと同様に残差を抽出し、その正規性や等分散性、独立性、影響のある観察の有無を確認しなければならない。  
 
 `gratia`パッケージでは、`appraise`関数でQQプロット、残差 vs 予測値、残差のヒストグラム、実測値 vs 予測値のプロットを作成してくれる(図\@ref(fig:fig-gam-diagnosis-M2-5-1))。なお、それぞれのグラフは`qq_plot()`、`residuals_linpred_plot()`、`residuals_hist_plot()`、`observed_fitted_plot`で個別に作成できる。  
 
@@ -994,7 +994,7 @@ fitted_values(M2_7, data = nd, scale = "response") %>%
                  scales = "free_y")
 ```
 
-## What to present in paper  
+## What to present in paper {#s2-10}   
 本章で行ったような分析を論文で記すとき、以下のものが含まれていなければいけない。  
 
 1. データを測定したサイトの場所を示した図(図\@ref(fig:fig-site))。  
