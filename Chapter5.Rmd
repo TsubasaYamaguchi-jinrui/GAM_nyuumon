@@ -245,6 +245,12 @@ data.frame(resid = resid(M5_2)) %>%
 (p1+p2+p3)/(p4+p5+p6)
 ```
 
+QQプロットもおおむねよく当てはまっている。  
+```{r, fig.dim = c(4.5,4.5)}
+qq_plot(M5_2)
+```
+
+
 ## Testing linearity versus non-linearity  
 加法モデルで推定されたsmootherの自由度は2.577であり、線形モデルの場合(= 1)と大きく違うわけではない。どのようなときに線形モデルではなく加法モデルを使った方がよいと判断すべきだろうか。  
 
@@ -290,7 +296,7 @@ $$
 \begin{aligned}
 d15N_i &= \alpha + \beta_0 \times Lat_i  +  \beta_1 \times ML_i + \beta_2 \times ML_i^2 + \sum_{j = 1}^K \beta_{1j} (ML_i - \kappa_j)_+^2 + \epsilon_i\\
 \epsilon_i &\sim N(0, \sigma^2)
-\end{aligned} (\#eq:gam5-2b)
+\end{aligned} (\#eq:gam5-7)
 $$
 
 ここから、式\@ref(eq:gam5-3)の線形モデルと加法モデル(式\@ref(eq:gam5-7))はネストしていることが分かる。よって、この2つのモデルにF検定をするとき、式\@ref(eq:gam5-7)で$\beta_2 = \beta_{11} = \beta_{12} = \cdots = 0$という帰無仮説を検定していることになっている。他の加法モデルについても基本的に同様のことが言える。  
@@ -366,7 +372,7 @@ smoother_center <- smoother - mean(smoother)
 
 smootherを図示すると以下のようになる(図\@ref(fig:fig-smoother-gam-5-4))。図\@ref(fig:fig-smoother-gam5-2)とよく似た曲線が推定された。  
 
-```{r fig-smoother-gam5-4, fig.dim = c(4.5,4.5), fig.cap = "Estimated cubic spline using our self-programmed code."}
+```{r fig-smoother-gam-5-4, fig.dim = c(4.5,4.5), fig.cap = "Estimated cubic spline using our self-programmed code."}
 data.frame(MLsc = Squid$MLsc, 
            fitted = smoother_center,
            resid = resid(M5_4) + smoother_center) %>% 
@@ -414,8 +420,26 @@ M5_6 <- gam(d15N ~ s(Lat)+ s(Depth) + s(ML), data = Squid)
 M5_6 <- gam(d15N ~ s(Lat, k = 4)+ s(Depth, k = 4) + s(ML), data = Squid)
 ```
 
-結果は以下の通り。  
+結果は以下の通り。水深のsmootherの自由度は1なので、有意ではないが線形であると推定されている。緯度のsmootherの自由度は1.49なので、わずかに非線形である。外套膜長のsmootherの自由度は先ほどとほとんど変わっていない。この結果は、この例では緯度と水深の多重共線性が加法モデルにおいてそこまで大きな問題を引き起こしていないことを示している。おそらく今回は外套膜長のみが窒素同位体比と強い関係を持っていたため、多重共線性の影響を受けることがなかったのだろう。いずれにしても、推定結果に大きな影響を及ぼすこともあるので多重共線性には常に注意を払う必要がある。  
+
 ```{r}
 summary(M5_6)
 ```
+
+## Discussion  
+加法モデルの結果は外套膜長と窒素同位体比の間に非線形的な関係があることを示し、緯度と炭素同位体比の間には明確な関係がみられなかった。この分析では同じ場所でサンプルされたデータを独立なものだとみなしたが、もしこれらが独立でないならば採集場所の情報をランダム効果に含める必要がある。なお、今回のデータはサンプルサイズも大きくないのでランダム効果を含めて混合モデルにするには適していない。  
+
+## What to present in a paper  
+実際の論文では以下のことに言及する必要がある。  
+
+1. 方法ではデータ探索を行い、外れ値や多重共線性、変数間の関係について調べたことに言及する必要がある。結果では緯度と水深の多重共線性に触れる必要がある。  
+
+2. 方法で加法モデルのモデル式を示し、データに独立性があることに言及する必要がある。結果では推定されたsmootherの情報と結果をプロットした図を示す必要がある。  
+
+3. 方法ではモデル診断を行ったこと、またその結果を報告する必要がある。ただし、論文中に図を含める必要はない(場合によってはsupplementaryに)。  
+
+4. モデルが序論で提示されたリサーチクエスチョンに合致しており、考察が結果に対応しているかを確認する。  
+
+5. 考察では、緯度に見られたわずかな効果が水深の効果である可能性にも言及する必要がある。これらは相関しているからである。  
+
 

@@ -1,0 +1,6 @@
+# Generalized Additive Models applied on parasites of Argentine hake  
+
+## Parasites of Argentine hake in the Argentine Sea  
+@Sardella2004 は、4か所のアルゼンチン沖に生息するメルルーサ(hake, Merluccius hubbsi)の寄生虫を調べ、それをもとにメルルーサの個体群を分別することができるかを調べた。メルルーサは乱獲によって激減しており、メルルーサがどの個体群から来たものなのかを識別することは個体群の維持にとって重要である。  
+
+魚334匹が4か所(アルゼンチン-ウルグアイ間、サン・ジョージ湾、パタゴニアン大陸棚、サン・マティアス湾)でトロール網によって捕獲され、26種の寄生虫が発見された。本章では、Elytrophalloides oatesiという吸虫の有無を二項分布のGAMによってモデリングする。リサーチクエスチョンは、**吸虫の有無が魚のサイズ、性別、捕獲場所によって影響を受けるか**である。

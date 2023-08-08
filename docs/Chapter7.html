@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7 Generalized Additive Models applied on parasites of Argentine hake | Introduction to GAM using R</title>
+  <meta name="description" content="7 Generalized Additive Models applied on parasites of Argentine hake | Introduction to GAM using R" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7 Generalized Additive Models applied on parasites of Argentine hake | Introduction to GAM using R" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7 Generalized Additive Models applied on parasites of Argentine hake | Introduction to GAM using R" />
+  
+  
+  
+
+<meta name="author" content="Tsubasa Yamaguchi" />
+
+
+<meta name="date" content="2023-08-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="Chapter6.html"/>
+<link rel="next" href="sessioninfo.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.27/datatables.js"></script>
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
+<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="custom_style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>本稿の目的</a></li>
+<li class="chapter" data-level="" data-path="Chapter0.html"><a href="Chapter0.html"><i class="fa fa-check"></i>0. パッケージの読み込み</a></li>
+<li class="chapter" data-level="1" data-path="Chapter1.html"><a href="Chapter1.html"><i class="fa fa-check"></i><b>1</b> Review of multiple linear regressions</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="Chapter1.html"><a href="Chapter1.html#light-levels-and-size-of-the-human-visual-system"><i class="fa fa-check"></i><b>1.1</b> Light levels and size of the human visual system</a></li>
+<li class="chapter" data-level="1.2" data-path="Chapter1.html"><a href="Chapter1.html#the-variables"><i class="fa fa-check"></i><b>1.2</b> The variables</a></li>
+<li class="chapter" data-level="1.3" data-path="Chapter1.html"><a href="Chapter1.html#protocol-for-the-analysis"><i class="fa fa-check"></i><b>1.3</b> Protocol for the analysis</a></li>
+<li class="chapter" data-level="1.4" data-path="Chapter1.html"><a href="Chapter1.html#data-exploration"><i class="fa fa-check"></i><b>1.4</b> Data exploration</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="Chapter1.html"><a href="Chapter1.html#欠損値の確認"><i class="fa fa-check"></i><b>1.4.1</b> 欠損値の確認</a></li>
+<li class="chapter" data-level="1.4.2" data-path="Chapter1.html"><a href="Chapter1.html#s1-4-2"><i class="fa fa-check"></i><b>1.4.2</b> 外れ値の確認</a></li>
+<li class="chapter" data-level="1.4.3" data-path="Chapter1.html"><a href="Chapter1.html#多重共線性の確認"><i class="fa fa-check"></i><b>1.4.3</b> 多重共線性の確認</a></li>
+<li class="chapter" data-level="1.4.4" data-path="Chapter1.html"><a href="Chapter1.html#目的変数と説明変数の関係の確認"><i class="fa fa-check"></i><b>1.4.4</b> 目的変数と説明変数の関係の確認</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression"><i class="fa fa-check"></i><b>1.5</b> Multiple linear regression</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="Chapter1.html"><a href="Chapter1.html#underlying-statistical-theory"><i class="fa fa-check"></i><b>1.5.1</b> Underlying statistical theory</a>
+<ul>
+<li class="chapter" data-level="1.5.1.1" data-path="Chapter1.html"><a href="Chapter1.html#外れ値のチェック"><i class="fa fa-check"></i><b>1.5.1.1</b> 外れ値のチェック</a></li>
+<li class="chapter" data-level="1.5.1.2" data-path="Chapter1.html"><a href="Chapter1.html#信頼区間と予測区間の算出"><i class="fa fa-check"></i><b>1.5.1.2</b> 95%信頼区間と予測区間の算出</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5.2" data-path="Chapter1.html"><a href="Chapter1.html#multiple-linear-regression-1"><i class="fa fa-check"></i><b>1.5.2</b> Multiple linear regression</a></li>
+<li class="chapter" data-level="1.5.3" data-path="Chapter1.html"><a href="Chapter1.html#fitting-the-model-in-r-and-estimate-parameters"><i class="fa fa-check"></i><b>1.5.3</b> Fitting the model in R and estimate parameters</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="Chapter1.html"><a href="Chapter1.html#finding-the-optimal-model"><i class="fa fa-check"></i><b>1.6</b> Finding the optimal model</a></li>
+<li class="chapter" data-level="1.7" data-path="Chapter1.html"><a href="Chapter1.html#degree-of-freedom"><i class="fa fa-check"></i><b>1.7</b> Degree of freedom</a></li>
+<li class="chapter" data-level="1.8" data-path="Chapter1.html"><a href="Chapter1.html#c1-8"><i class="fa fa-check"></i><b>1.8</b> Model validation</a></li>
+<li class="chapter" data-level="1.9" data-path="Chapter1.html"><a href="Chapter1.html#model-interpretation"><i class="fa fa-check"></i><b>1.9</b> Model interpretation</a></li>
+<li class="chapter" data-level="1.10" data-path="Chapter1.html"><a href="Chapter1.html#what-to-do-if-things-go-wrong"><i class="fa fa-check"></i><b>1.10</b> What to do if things go wrong</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chapter2.html"><a href="Chapter2.html"><i class="fa fa-check"></i><b>2</b> Introduction to additive models using deep-sea fisheries data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="Chapter2.html"><a href="Chapter2.html#impact-of-deep-sea-fisheries"><i class="fa fa-check"></i><b>2.1</b> Impact of deep-sea fisheries</a></li>
+<li class="chapter" data-level="2.2" data-path="Chapter2.html"><a href="Chapter2.html#first-encounter-with-smoothers"><i class="fa fa-check"></i><b>2.2</b> First encounter with smoothers</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="Chapter2.html"><a href="Chapter2.html#applying-linear-regression"><i class="fa fa-check"></i><b>2.2.1</b> Applying linear regression</a>
+<ul>
+<li class="chapter" data-level="2.2.1.1" data-path="Chapter2.html"><a href="Chapter2.html#当てはめるモデル"><i class="fa fa-check"></i><b>2.2.1.1</b> 当てはめるモデル</a></li>
+<li class="chapter" data-level="2.2.1.2" data-path="Chapter2.html"><a href="Chapter2.html#data-exploration-1"><i class="fa fa-check"></i><b>2.2.1.2</b> data exploration</a></li>
+<li class="chapter" data-level="2.2.1.3" data-path="Chapter2.html"><a href="Chapter2.html#model-diagnosis"><i class="fa fa-check"></i><b>2.2.1.3</b> model diagnosis</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.2" data-path="Chapter2.html"><a href="Chapter2.html#applying-cubic-polynomials"><i class="fa fa-check"></i><b>2.2.2</b> Applying cubic polynomials</a></li>
+<li class="chapter" data-level="2.2.3" data-path="Chapter2.html"><a href="Chapter2.html#a-simple-gam"><i class="fa fa-check"></i><b>2.2.3</b> A simple GAM</a></li>
+<li class="chapter" data-level="2.2.4" data-path="Chapter2.html"><a href="Chapter2.html#moving-average-and-loess-smoother"><i class="fa fa-check"></i><b>2.2.4</b> Moving average and LOESS smoother</a>
+<ul>
+<li class="chapter" data-level="2.2.4.1" data-path="Chapter2.html"><a href="Chapter2.html#移動平均"><i class="fa fa-check"></i><b>2.2.4.1</b> 移動平均</a></li>
+<li class="chapter" data-level="2.2.4.2" data-path="Chapter2.html"><a href="Chapter2.html#局所回帰loess"><i class="fa fa-check"></i><b>2.2.4.2</b> 局所回帰(LOESS)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2.5" data-path="Chapter2.html"><a href="Chapter2.html#packages-for-smoothing"><i class="fa fa-check"></i><b>2.2.5</b> Packages for smoothing</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chapter2.html"><a href="Chapter2.html#allpying-gam-in-r-using-the-mgcv-package"><i class="fa fa-check"></i><b>2.3</b> Allpying GAM in R using the mgcv package</a></li>
+<li class="chapter" data-level="2.4" data-path="Chapter2.html"><a href="Chapter2.html#s2-4"><i class="fa fa-check"></i><b>2.4</b> Cross validation</a></li>
+<li class="chapter" data-level="2.5" data-path="Chapter2.html"><a href="Chapter2.html#model-validation"><i class="fa fa-check"></i><b>2.5</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="Chapter2.html"><a href="Chapter2.html#normality-and-homogeneity"><i class="fa fa-check"></i><b>2.5.1</b> Normality and homogeneity</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chapter2.html"><a href="Chapter2.html#independence"><i class="fa fa-check"></i><b>2.5.2</b> Independence</a></li>
+<li class="chapter" data-level="2.5.3" data-path="Chapter2.html"><a href="Chapter2.html#influential-observations"><i class="fa fa-check"></i><b>2.5.3</b> Influential observations</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="Chapter2.html"><a href="Chapter2.html#s2-6"><i class="fa fa-check"></i><b>2.6</b> Extending the GAM with more covariates</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-smoother-and-a-normal-covariate"><i class="fa fa-check"></i><b>2.6.1</b> GAM with smoother and a normal covariate</a></li>
+<li class="chapter" data-level="2.6.2" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-terms-first-implement"><i class="fa fa-check"></i><b>2.6.2</b> GAM with interaction terms; first implement</a></li>
+<li class="chapter" data-level="2.6.3" data-path="Chapter2.html"><a href="Chapter2.html#gam-with-interaction-third-implementation"><i class="fa fa-check"></i><b>2.6.3</b> GAM with interaction; third implementation</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="Chapter2.html"><a href="Chapter2.html#transforming-the-density-data"><i class="fa fa-check"></i><b>2.7</b> Transforming the density data</a></li>
+<li class="chapter" data-level="2.8" data-path="Chapter2.html"><a href="Chapter2.html#allowing-for-heterogeneity"><i class="fa fa-check"></i><b>2.8</b> Allowing for heterogeneity</a></li>
+<li class="chapter" data-level="2.9" data-path="Chapter2.html"><a href="Chapter2.html#transforming-and-allowing-for-heterogeinity"><i class="fa fa-check"></i><b>2.9</b> Transforming and allowing for heterogeinity</a></li>
+<li class="chapter" data-level="2.10" data-path="Chapter2.html"><a href="Chapter2.html#s2-10"><i class="fa fa-check"></i><b>2.10</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Chapter3.html"><a href="Chapter3.html"><i class="fa fa-check"></i><b>3</b> Technical aspects of GAM using pelagic bioluminescent organisms</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="Chapter3.html"><a href="Chapter3.html#s3-1"><i class="fa fa-check"></i><b>3.1</b> Pelagic bioluminescent organism data</a></li>
+<li class="chapter" data-level="3.2" data-path="Chapter3.html"><a href="Chapter3.html#s3-2"><i class="fa fa-check"></i><b>3.2</b> Lineaar regression</a></li>
+<li class="chapter" data-level="3.3" data-path="Chapter3.html"><a href="Chapter3.html#polynomial-regression-model"><i class="fa fa-check"></i><b>3.3</b> Polynomial regression model</a></li>
+<li class="chapter" data-level="3.4" data-path="Chapter3.html"><a href="Chapter3.html#s3-4"><i class="fa fa-check"></i><b>3.4</b> Linear spline regression</a></li>
+<li class="chapter" data-level="3.5" data-path="Chapter3.html"><a href="Chapter3.html#s3-5"><i class="fa fa-check"></i><b>3.5</b> Quadratic spline regression</a></li>
+<li class="chapter" data-level="3.6" data-path="Chapter3.html"><a href="Chapter3.html#s3-6"><i class="fa fa-check"></i><b>3.6</b> Cubic regression splines</a></li>
+<li class="chapter" data-level="3.7" data-path="Chapter3.html"><a href="Chapter3.html#the-number-of-knots"><i class="fa fa-check"></i><b>3.7</b> The number of knots</a></li>
+<li class="chapter" data-level="3.8" data-path="Chapter3.html"><a href="Chapter3.html#s3-8"><i class="fa fa-check"></i><b>3.8</b> Penalized quadratic spline regression</a></li>
+<li class="chapter" data-level="3.9" data-path="Chapter3.html"><a href="Chapter3.html#other-smoothers"><i class="fa fa-check"></i><b>3.9</b> Other smoothers</a></li>
+<li class="chapter" data-level="3.10" data-path="Chapter3.html"><a href="Chapter3.html#s3-10"><i class="fa fa-check"></i><b>3.10</b> Cubic smoothing spline</a></li>
+<li class="chapter" data-level="3.11" data-path="Chapter3.html"><a href="Chapter3.html#summary-of-smoother-types"><i class="fa fa-check"></i><b>3.11</b> Summary of smoother types</a></li>
+<li class="chapter" data-level="3.12" data-path="Chapter3.html"><a href="Chapter3.html#degree-of-freedom-of-smoother"><i class="fa fa-check"></i><b>3.12</b> Degree of freedom of smoother</a></li>
+<li class="chapter" data-level="3.13" data-path="Chapter3.html"><a href="Chapter3.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>3.13</b> Bias-variance trade-off</a></li>
+<li class="chapter" data-level="3.14" data-path="Chapter3.html"><a href="Chapter3.html#confidence-intervals"><i class="fa fa-check"></i><b>3.14</b> Confidence intervals</a></li>
+<li class="chapter" data-level="3.15" data-path="Chapter3.html"><a href="Chapter3.html#using-the-function-gam-in-mgcv"><i class="fa fa-check"></i><b>3.15</b> Using the function gam in mgcv</a></li>
+<li class="chapter" data-level="3.16" data-path="Chapter3.html"><a href="Chapter3.html#the-danger-of-using-gam"><i class="fa fa-check"></i><b>3.16</b> The danger of using GAM</a></li>
+<li class="chapter" data-level="3.17" data-path="Chapter3.html"><a href="Chapter3.html#additive-models-with-multiple-smoothers"><i class="fa fa-check"></i><b>3.17</b> Additive models with multiple smoothers</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="Chapter4.html"><a href="Chapter4.html"><i class="fa fa-check"></i><b>4</b> Introducing generalized additive models using deep-sea fishery data</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="Chapter4.html"><a href="Chapter4.html#from-additive-models-to-generalized-additive-models"><i class="fa fa-check"></i><b>4.1</b> From additive models to generalized additive models</a></li>
+<li class="chapter" data-level="4.2" data-path="Chapter4.html"><a href="Chapter4.html#review-of-glm"><i class="fa fa-check"></i><b>4.2</b> Review of GLM</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="Chapter4.html"><a href="Chapter4.html#distribution"><i class="fa fa-check"></i><b>4.2.1</b> Distribution</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chapter4.html"><a href="Chapter4.html#predictor-function"><i class="fa fa-check"></i><b>4.2.2</b> Predictor function</a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chapter4.html"><a href="Chapter4.html#link-function"><i class="fa fa-check"></i><b>4.2.3</b> Link function</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chapter4.html"><a href="Chapter4.html#start-with-glm-or-gam"><i class="fa fa-check"></i><b>4.3</b> Start with GLM or GAM ?</a></li>
+<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#s4-4"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
+<li class="chapter" data-level="4.5" data-path="Chapter4.html"><a href="Chapter4.html#using-offset-in-a-glm-or-gam"><i class="fa fa-check"></i><b>4.5</b> Using offset in a GLM or GAM</a></li>
+<li class="chapter" data-level="4.6" data-path="Chapter4.html"><a href="Chapter4.html#poisson-glm-with-offset"><i class="fa fa-check"></i><b>4.6</b> Poisson GLM with offset</a></li>
+<li class="chapter" data-level="4.7" data-path="Chapter4.html"><a href="Chapter4.html#negative-binomial-glm-with-offset"><i class="fa fa-check"></i><b>4.7</b> Negative binomial GLM with offset</a></li>
+<li class="chapter" data-level="4.8" data-path="Chapter4.html"><a href="Chapter4.html#poisson-and-negative-binomial-gam-with-offset"><i class="fa fa-check"></i><b>4.8</b> Poisson and negative binomial GAM with offset</a></li>
+<li class="chapter" data-level="4.9" data-path="Chapter4.html"><a href="Chapter4.html#what-to-present-in-paper"><i class="fa fa-check"></i><b>4.9</b> What to present in paper</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chapter5.html"><a href="Chapter5.html"><i class="fa fa-check"></i><b>5</b> Additive modelling applied on stable isotope ratios of ocean squid</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="Chapter5.html"><a href="Chapter5.html#stable-isotope-ratios-of-squid"><i class="fa fa-check"></i><b>5.1</b> Stable isotope ratios of squid</a></li>
+<li class="chapter" data-level="5.2" data-path="Chapter5.html"><a href="Chapter5.html#the-variables-1"><i class="fa fa-check"></i><b>5.2</b> The variables</a></li>
+<li class="chapter" data-level="5.3" data-path="Chapter5.html"><a href="Chapter5.html#data-exploration-2"><i class="fa fa-check"></i><b>5.3</b> Data exploration</a></li>
+<li class="chapter" data-level="5.4" data-path="Chapter5.html"><a href="Chapter5.html#brain-storming"><i class="fa fa-check"></i><b>5.4</b> Brain storming</a></li>
+<li class="chapter" data-level="5.5" data-path="Chapter5.html"><a href="Chapter5.html#applying-the-multiple-linear-regression-model"><i class="fa fa-check"></i><b>5.5</b> Applying the multiple linear regression model</a></li>
+<li class="chapter" data-level="5.6" data-path="Chapter5.html"><a href="Chapter5.html#applying-an-additive-model"><i class="fa fa-check"></i><b>5.6</b> Applying an additive model</a></li>
+<li class="chapter" data-level="5.7" data-path="Chapter5.html"><a href="Chapter5.html#testing-linearity-versus-non-linearity"><i class="fa fa-check"></i><b>5.7</b> Testing linearity versus non-linearity</a>
+<ul>
+<li class="chapter" data-level="5.7.1" data-path="Chapter5.html"><a href="Chapter5.html#programming-a-smoother-manually"><i class="fa fa-check"></i><b>5.7.1</b> Programming a smoother manually</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="Chapter5.html"><a href="Chapter5.html#s5-8"><i class="fa fa-check"></i><b>5.8</b> Consequence of ignoring collinearity in the additive model</a></li>
+<li class="chapter" data-level="5.9" data-path="Chapter5.html"><a href="Chapter5.html#discussion"><i class="fa fa-check"></i><b>5.9</b> Discussion</a></li>
+<li class="chapter" data-level="5.10" data-path="Chapter5.html"><a href="Chapter5.html#what-to-present-in-a-paper"><i class="fa fa-check"></i><b>5.10</b> What to present in a paper</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chapter6.html"><a href="Chapter6.html"><i class="fa fa-check"></i><b>6</b> Generalized Additive Models applied on northern gannets</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="Chapter6.html"><a href="Chapter6.html#northern-gannet-in-the-north-sea"><i class="fa fa-check"></i><b>6.1</b> Northern Gannet in the north sea</a></li>
+<li class="chapter" data-level="6.2" data-path="Chapter6.html"><a href="Chapter6.html#the-variables-2"><i class="fa fa-check"></i><b>6.2</b> The variables</a></li>
+<li class="chapter" data-level="6.3" data-path="Chapter6.html"><a href="Chapter6.html#brainstorming"><i class="fa fa-check"></i><b>6.3</b> Brainstorming</a></li>
+<li class="chapter" data-level="6.4" data-path="Chapter6.html"><a href="Chapter6.html#data-exploration-3"><i class="fa fa-check"></i><b>6.4</b> Data exploration</a></li>
+<li class="chapter" data-level="6.5" data-path="Chapter6.html"><a href="Chapter6.html#building-up-the-complexity-of-the-gams"><i class="fa fa-check"></i><b>6.5</b> Building up the complexity of the GAMs</a></li>
+<li class="chapter" data-level="6.6" data-path="Chapter6.html"><a href="Chapter6.html#zero-inflated-gam"><i class="fa fa-check"></i><b>6.6</b> Zero-inflated GAM</a>
+<ul>
+<li class="chapter" data-level="6.6.1" data-path="Chapter6.html"><a href="Chapter6.html#a-zero-inflated-model-for-the-gannet-data"><i class="fa fa-check"></i><b>6.6.1</b> A zero-inflated model for the gannet data</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chapter6.html"><a href="Chapter6.html#zip-gam-using-gamlss"><i class="fa fa-check"></i><b>6.6.2</b> ZIP GAM using gamlss</a></li>
+</ul></li>
+<li class="chapter" data-level="6.7" data-path="Chapter6.html"><a href="Chapter6.html#discussion-1"><i class="fa fa-check"></i><b>6.7</b> Discussion</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="Chapter7.html"><a href="Chapter7.html"><i class="fa fa-check"></i><b>7</b> Generalized Additive Models applied on parasites of Argentine hake</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="Chapter7.html"><a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea"><i class="fa fa-check"></i><b>7.1</b> Parasites of Argentine hake in the Argentine Sea</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to GAM using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="generalized-additive-models-applied-on-parasites-of-argentine-hake" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">7</span> Generalized Additive Models applied on parasites of Argentine hake<a href="Chapter7.html#generalized-additive-models-applied-on-parasites-of-argentine-hake" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="parasites-of-argentine-hake-in-the-argentine-sea" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Parasites of Argentine hake in the Argentine Sea<a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><span class="citation">Sardella and Timi (<a href="#ref-Sardella2004">2004</a>)</span> は、4か所のアルゼンチン沖に生息するメルルーサ(hake, Merluccius hubbsi)の寄生虫を調べ、それをもとにメルルーサの個体群を分別することができるかを調べた。メルルーサは乱獲によって激減しており、メルルーサがどの個体群から来たものなのかを識別することは個体群の維持にとって重要である。</p>
+<p>魚334匹が4か所(アルゼンチン-ウルグアイ間、サン・ジョージ湾、パタゴニアン大陸棚、サン・マティアス湾)でトロール網によって捕獲され、26種の寄生虫が発見された。本章では、Elytrophalloides oatesiという吸虫の有無を二項分布のGAMによってモデリングする。リサーチクエスチョンは、<strong>吸虫の有無が魚のサイズ、性別、捕獲場所によって影響を受けるか</strong>である。</p>
+
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Sardella2004" class="csl-entry">
+Sardella NH, Timi JT (2004) Parasites of argentine hake in the argentine sea: Population and infracommunity structure as evidence for host stock discrimination. J Fish Biol 65:1472–1488
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="Chapter6.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sessioninfo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

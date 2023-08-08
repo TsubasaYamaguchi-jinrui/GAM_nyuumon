@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-08-03" />
+<meta name="date" content="2023-08-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -276,7 +276,7 @@ div.csl-indent {
 <li class="chapter" data-level="4.2.3" data-path="Chapter4.html"><a href="Chapter4.html#link-function"><i class="fa fa-check"></i><b>4.2.3</b> Link function</a></li>
 </ul></li>
 <li class="chapter" data-level="4.3" data-path="Chapter4.html"><a href="Chapter4.html#start-with-glm-or-gam"><i class="fa fa-check"></i><b>4.3</b> Start with GLM or GAM ?</a></li>
-<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#results-of-poisson-and-negative-binomial-glm"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
+<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#s4-4"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
 <li class="chapter" data-level="4.5" data-path="Chapter4.html"><a href="Chapter4.html#using-offset-in-a-glm-or-gam"><i class="fa fa-check"></i><b>4.5</b> Using offset in a GLM or GAM</a></li>
 <li class="chapter" data-level="4.6" data-path="Chapter4.html"><a href="Chapter4.html#poisson-glm-with-offset"><i class="fa fa-check"></i><b>4.6</b> Poisson GLM with offset</a></li>
 <li class="chapter" data-level="4.7" data-path="Chapter4.html"><a href="Chapter4.html#negative-binomial-glm-with-offset"><i class="fa fa-check"></i><b>4.7</b> Negative binomial GLM with offset</a></li>
@@ -296,6 +296,26 @@ div.csl-indent {
 <li class="chapter" data-level="5.7.1" data-path="Chapter5.html"><a href="Chapter5.html#programming-a-smoother-manually"><i class="fa fa-check"></i><b>5.7.1</b> Programming a smoother manually</a></li>
 </ul></li>
 <li class="chapter" data-level="5.8" data-path="Chapter5.html"><a href="Chapter5.html#s5-8"><i class="fa fa-check"></i><b>5.8</b> Consequence of ignoring collinearity in the additive model</a></li>
+<li class="chapter" data-level="5.9" data-path="Chapter5.html"><a href="Chapter5.html#discussion"><i class="fa fa-check"></i><b>5.9</b> Discussion</a></li>
+<li class="chapter" data-level="5.10" data-path="Chapter5.html"><a href="Chapter5.html#what-to-present-in-a-paper"><i class="fa fa-check"></i><b>5.10</b> What to present in a paper</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chapter6.html"><a href="Chapter6.html"><i class="fa fa-check"></i><b>6</b> Generalized Additive Models applied on northern gannets</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="Chapter6.html"><a href="Chapter6.html#northern-gannet-in-the-north-sea"><i class="fa fa-check"></i><b>6.1</b> Northern Gannet in the north sea</a></li>
+<li class="chapter" data-level="6.2" data-path="Chapter6.html"><a href="Chapter6.html#the-variables-2"><i class="fa fa-check"></i><b>6.2</b> The variables</a></li>
+<li class="chapter" data-level="6.3" data-path="Chapter6.html"><a href="Chapter6.html#brainstorming"><i class="fa fa-check"></i><b>6.3</b> Brainstorming</a></li>
+<li class="chapter" data-level="6.4" data-path="Chapter6.html"><a href="Chapter6.html#data-exploration-3"><i class="fa fa-check"></i><b>6.4</b> Data exploration</a></li>
+<li class="chapter" data-level="6.5" data-path="Chapter6.html"><a href="Chapter6.html#building-up-the-complexity-of-the-gams"><i class="fa fa-check"></i><b>6.5</b> Building up the complexity of the GAMs</a></li>
+<li class="chapter" data-level="6.6" data-path="Chapter6.html"><a href="Chapter6.html#zero-inflated-gam"><i class="fa fa-check"></i><b>6.6</b> Zero-inflated GAM</a>
+<ul>
+<li class="chapter" data-level="6.6.1" data-path="Chapter6.html"><a href="Chapter6.html#a-zero-inflated-model-for-the-gannet-data"><i class="fa fa-check"></i><b>6.6.1</b> A zero-inflated model for the gannet data</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chapter6.html"><a href="Chapter6.html#zip-gam-using-gamlss"><i class="fa fa-check"></i><b>6.6.2</b> ZIP GAM using gamlss</a></li>
+</ul></li>
+<li class="chapter" data-level="6.7" data-path="Chapter6.html"><a href="Chapter6.html#discussion-1"><i class="fa fa-check"></i><b>6.7</b> Discussion</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="Chapter7.html"><a href="Chapter7.html"><i class="fa fa-check"></i><b>7</b> Generalized Additive Models applied on parasites of Argentine hake</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="Chapter7.html"><a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea"><i class="fa fa-check"></i><b>7.1</b> Parasites of Argentine hake in the Argentine Sea</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -318,7 +338,7 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">Introduction to GAM using R</h1>
 <p class="author"><em>Tsubasa Yamaguchi</em></p>
-<p class="date"><em>2023-08-03</em></p>
+<p class="date"><em>2023-08-09</em></p>
 </div>
 <div id="本稿の目的" class="section level1 unnumbered hasAnchor">
 <h1>本稿の目的<a href="index.html#本稿の目的" class="anchor-section" aria-label="Anchor link to header"></a></h1>

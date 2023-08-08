@@ -1,7 +1,18 @@
 nlme
 mgcv
+gamlss.data
+MASS
+gamlss.dist
+gamlss
 gratia
 gstat
+Rcpp
+brms
+StanHeaders
+rstan
+cmdstanr
+DHARMa
+DHARMa.helpers
 tidyverse
 ggplot2
 tibble
@@ -38,7 +49,7 @@ ggforce
 concaveman
 ggsci
 lemon
+gganimate
 extrafont
 systemfonts
 fontregisterer
-MASS

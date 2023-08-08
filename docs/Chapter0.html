@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-08-03" />
+<meta name="date" content="2023-08-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -276,7 +276,7 @@ div.csl-indent {
 <li class="chapter" data-level="4.2.3" data-path="Chapter4.html"><a href="Chapter4.html#link-function"><i class="fa fa-check"></i><b>4.2.3</b> Link function</a></li>
 </ul></li>
 <li class="chapter" data-level="4.3" data-path="Chapter4.html"><a href="Chapter4.html#start-with-glm-or-gam"><i class="fa fa-check"></i><b>4.3</b> Start with GLM or GAM ?</a></li>
-<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#results-of-poisson-and-negative-binomial-glm"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
+<li class="chapter" data-level="4.4" data-path="Chapter4.html"><a href="Chapter4.html#s4-4"><i class="fa fa-check"></i><b>4.4</b> Results of Poisson and negative binomial GLM</a></li>
 <li class="chapter" data-level="4.5" data-path="Chapter4.html"><a href="Chapter4.html#using-offset-in-a-glm-or-gam"><i class="fa fa-check"></i><b>4.5</b> Using offset in a GLM or GAM</a></li>
 <li class="chapter" data-level="4.6" data-path="Chapter4.html"><a href="Chapter4.html#poisson-glm-with-offset"><i class="fa fa-check"></i><b>4.6</b> Poisson GLM with offset</a></li>
 <li class="chapter" data-level="4.7" data-path="Chapter4.html"><a href="Chapter4.html#negative-binomial-glm-with-offset"><i class="fa fa-check"></i><b>4.7</b> Negative binomial GLM with offset</a></li>
@@ -296,6 +296,26 @@ div.csl-indent {
 <li class="chapter" data-level="5.7.1" data-path="Chapter5.html"><a href="Chapter5.html#programming-a-smoother-manually"><i class="fa fa-check"></i><b>5.7.1</b> Programming a smoother manually</a></li>
 </ul></li>
 <li class="chapter" data-level="5.8" data-path="Chapter5.html"><a href="Chapter5.html#s5-8"><i class="fa fa-check"></i><b>5.8</b> Consequence of ignoring collinearity in the additive model</a></li>
+<li class="chapter" data-level="5.9" data-path="Chapter5.html"><a href="Chapter5.html#discussion"><i class="fa fa-check"></i><b>5.9</b> Discussion</a></li>
+<li class="chapter" data-level="5.10" data-path="Chapter5.html"><a href="Chapter5.html#what-to-present-in-a-paper"><i class="fa fa-check"></i><b>5.10</b> What to present in a paper</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chapter6.html"><a href="Chapter6.html"><i class="fa fa-check"></i><b>6</b> Generalized Additive Models applied on northern gannets</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="Chapter6.html"><a href="Chapter6.html#northern-gannet-in-the-north-sea"><i class="fa fa-check"></i><b>6.1</b> Northern Gannet in the north sea</a></li>
+<li class="chapter" data-level="6.2" data-path="Chapter6.html"><a href="Chapter6.html#the-variables-2"><i class="fa fa-check"></i><b>6.2</b> The variables</a></li>
+<li class="chapter" data-level="6.3" data-path="Chapter6.html"><a href="Chapter6.html#brainstorming"><i class="fa fa-check"></i><b>6.3</b> Brainstorming</a></li>
+<li class="chapter" data-level="6.4" data-path="Chapter6.html"><a href="Chapter6.html#data-exploration-3"><i class="fa fa-check"></i><b>6.4</b> Data exploration</a></li>
+<li class="chapter" data-level="6.5" data-path="Chapter6.html"><a href="Chapter6.html#building-up-the-complexity-of-the-gams"><i class="fa fa-check"></i><b>6.5</b> Building up the complexity of the GAMs</a></li>
+<li class="chapter" data-level="6.6" data-path="Chapter6.html"><a href="Chapter6.html#zero-inflated-gam"><i class="fa fa-check"></i><b>6.6</b> Zero-inflated GAM</a>
+<ul>
+<li class="chapter" data-level="6.6.1" data-path="Chapter6.html"><a href="Chapter6.html#a-zero-inflated-model-for-the-gannet-data"><i class="fa fa-check"></i><b>6.6.1</b> A zero-inflated model for the gannet data</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chapter6.html"><a href="Chapter6.html#zip-gam-using-gamlss"><i class="fa fa-check"></i><b>6.6.2</b> ZIP GAM using gamlss</a></li>
+</ul></li>
+<li class="chapter" data-level="6.7" data-path="Chapter6.html"><a href="Chapter6.html#discussion-1"><i class="fa fa-check"></i><b>6.7</b> Discussion</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="Chapter7.html"><a href="Chapter7.html"><i class="fa fa-check"></i><b>7</b> Generalized Additive Models applied on parasites of Argentine hake</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="Chapter7.html"><a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea"><i class="fa fa-check"></i><b>7.1</b> Parasites of Argentine hake in the Argentine Sea</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -328,33 +348,40 @@ div.csl-indent {
 <p>使用するパッケージは以下のとおりである。GAMの実行は主に<code>gam</code>パッケージ<span class="citation">(<a href="#ref-Hastie2018">Hastie and Hastie 2018</a>)</span>を用い、結果の作図についてはggplotパッケージでGAMの結果を可視化することに特化した<code>gratia</code><a href="https://gavinsimpson.github.io/gratia/">パッケージ</a>を用いる。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="Chapter0.html#cb1-1" tabindex="-1"></a><span class="do">## GAM</span></span>
 <span id="cb1-2"><a href="Chapter0.html#cb1-2" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
-<span id="cb1-3"><a href="Chapter0.html#cb1-3" tabindex="-1"></a><span class="fu">library</span>(gratia)</span>
-<span id="cb1-4"><a href="Chapter0.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
-<span id="cb1-5"><a href="Chapter0.html#cb1-5" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb1-6"><a href="Chapter0.html#cb1-6" tabindex="-1"></a><span class="do">## データハンドリング</span></span>
-<span id="cb1-7"><a href="Chapter0.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-8"><a href="Chapter0.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
-<span id="cb1-9"><a href="Chapter0.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
-<span id="cb1-10"><a href="Chapter0.html#cb1-10" tabindex="-1"></a><span class="do">## グラフや表関連</span></span>
-<span id="cb1-11"><a href="Chapter0.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
-<span id="cb1-12"><a href="Chapter0.html#cb1-12" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
-<span id="cb1-13"><a href="Chapter0.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
-<span id="cb1-14"><a href="Chapter0.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
-<span id="cb1-15"><a href="Chapter0.html#cb1-15" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
-<span id="cb1-16"><a href="Chapter0.html#cb1-16" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
-<span id="cb1-17"><a href="Chapter0.html#cb1-17" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
-<span id="cb1-18"><a href="Chapter0.html#cb1-18" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb1-19"><a href="Chapter0.html#cb1-19" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-20"><a href="Chapter0.html#cb1-20" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
-<span id="cb1-21"><a href="Chapter0.html#cb1-21" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
-<span id="cb1-22"><a href="Chapter0.html#cb1-22" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
-<span id="cb1-23"><a href="Chapter0.html#cb1-23" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
-<span id="cb1-24"><a href="Chapter0.html#cb1-24" tabindex="-1"></a><span class="fu">library</span>(ggsci)</span>
-<span id="cb1-25"><a href="Chapter0.html#cb1-25" tabindex="-1"></a><span class="fu">library</span>(lemon)</span>
-<span id="cb1-26"><a href="Chapter0.html#cb1-26" tabindex="-1"></a><span class="do">## フォント関連</span></span>
-<span id="cb1-27"><a href="Chapter0.html#cb1-27" tabindex="-1"></a><span class="fu">library</span>(extrafont)</span>
-<span id="cb1-28"><a href="Chapter0.html#cb1-28" tabindex="-1"></a><span class="fu">require</span>(systemfonts)</span>
-<span id="cb1-29"><a href="Chapter0.html#cb1-29" tabindex="-1"></a><span class="fu">require</span>(fontregisterer)</span></code></pre></div>
+<span id="cb1-3"><a href="Chapter0.html#cb1-3" tabindex="-1"></a><span class="fu">library</span>(gamlss)</span>
+<span id="cb1-4"><a href="Chapter0.html#cb1-4" tabindex="-1"></a><span class="fu">library</span>(gratia)</span>
+<span id="cb1-5"><a href="Chapter0.html#cb1-5" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb1-6"><a href="Chapter0.html#cb1-6" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-7"><a href="Chapter0.html#cb1-7" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb1-8"><a href="Chapter0.html#cb1-8" tabindex="-1"></a><span class="fu">library</span>(rstan)</span>
+<span id="cb1-9"><a href="Chapter0.html#cb1-9" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb1-10"><a href="Chapter0.html#cb1-10" tabindex="-1"></a><span class="fu">library</span>(DHARMa)</span>
+<span id="cb1-11"><a href="Chapter0.html#cb1-11" tabindex="-1"></a><span class="fu">library</span>(DHARMa.helpers)</span>
+<span id="cb1-12"><a href="Chapter0.html#cb1-12" tabindex="-1"></a><span class="do">## データハンドリング</span></span>
+<span id="cb1-13"><a href="Chapter0.html#cb1-13" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-14"><a href="Chapter0.html#cb1-14" tabindex="-1"></a><span class="fu">library</span>(easystats)</span>
+<span id="cb1-15"><a href="Chapter0.html#cb1-15" tabindex="-1"></a><span class="fu">library</span>(data.table)</span>
+<span id="cb1-16"><a href="Chapter0.html#cb1-16" tabindex="-1"></a><span class="do">## グラフや表関連</span></span>
+<span id="cb1-17"><a href="Chapter0.html#cb1-17" tabindex="-1"></a><span class="fu">library</span>(sp)</span>
+<span id="cb1-18"><a href="Chapter0.html#cb1-18" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-19"><a href="Chapter0.html#cb1-19" tabindex="-1"></a><span class="fu">library</span>(htmlwidgets)</span>
+<span id="cb1-20"><a href="Chapter0.html#cb1-20" tabindex="-1"></a><span class="fu">library</span>(ggnewscale)</span>
+<span id="cb1-21"><a href="Chapter0.html#cb1-21" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-22"><a href="Chapter0.html#cb1-22" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-23"><a href="Chapter0.html#cb1-23" tabindex="-1"></a><span class="fu">library</span>(DT)</span>
+<span id="cb1-24"><a href="Chapter0.html#cb1-24" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-25"><a href="Chapter0.html#cb1-25" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-26"><a href="Chapter0.html#cb1-26" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb1-27"><a href="Chapter0.html#cb1-27" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb1-28"><a href="Chapter0.html#cb1-28" tabindex="-1"></a><span class="fu">library</span>(ggforce)</span>
+<span id="cb1-29"><a href="Chapter0.html#cb1-29" tabindex="-1"></a><span class="fu">library</span>(concaveman)</span>
+<span id="cb1-30"><a href="Chapter0.html#cb1-30" tabindex="-1"></a><span class="fu">library</span>(ggsci)</span>
+<span id="cb1-31"><a href="Chapter0.html#cb1-31" tabindex="-1"></a><span class="fu">library</span>(lemon)</span>
+<span id="cb1-32"><a href="Chapter0.html#cb1-32" tabindex="-1"></a><span class="fu">library</span>(gganimate)</span>
+<span id="cb1-33"><a href="Chapter0.html#cb1-33" tabindex="-1"></a><span class="do">## フォント関連</span></span>
+<span id="cb1-34"><a href="Chapter0.html#cb1-34" tabindex="-1"></a><span class="fu">library</span>(extrafont)</span>
+<span id="cb1-35"><a href="Chapter0.html#cb1-35" tabindex="-1"></a><span class="fu">require</span>(systemfonts)</span>
+<span id="cb1-36"><a href="Chapter0.html#cb1-36" tabindex="-1"></a><span class="fu">require</span>(fontregisterer)</span></code></pre></div>
 
 </div>
 <h3>References</h3>

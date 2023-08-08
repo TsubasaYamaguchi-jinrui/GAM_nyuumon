@@ -1,0 +1,615 @@
+# Generalized Additive Models applied on northern gannets {#c6}  
+## Northern Gannet in the north sea  
+@Camphuysen2011 は北海のキタカツオドリ(*Morus bassanus*)を対象に探索採食戦術の研究を行った。研究では300m幅のトランゼクトで確認された個体数が記録されている。リサーチクエスチョンは、カツオドリはいつコロニーの近くで採食をするのかである。  
+
+## The variables  
+データは以下の通り。各行のデータが各トランゼクトのデータを表している。目的変数はトランゼクト内のカツオドリの数である。      
+
+- `Day`: 観察した日  
+- `Month`: 観察した月  
+- `Year`: 観察した年  
+- `Hours`: 観察時の時間  
+- `Minutes`: 観察時の分  
+- `Latitude`、`Y`: 緯度  
+- `Longtitude`、`X`: 経度  
+- `Area_surveyedkm2`: 探索エリアの面積  
+- `Seastate`: 海の状態  
+- `Gannets_in_transect`: トランゼクト内のカツオドリの数  
+
+```{r}
+Gannets <- read_delim("data/Gannets2.txt")
+
+datatable(Gannets,
+          options = list(scrollX = 20),
+          filter = "top")
+```
+
+## Brainstorming  
+まず、データを収集したトランゼクトの場所が年ごとに違っていないかを確かめる。図\@ref(fig:fig-transect)を見る限りは概ね同じエリアでデータが採集されていたことが分かる。    
+
+```{r fig-transect, fig.dim = c(12,6), fig.cap = "Spatial position of each transect per year."}
+Gannets %>% 
+  ggplot(aes(x = Longitude, y = Latitude))+
+  geom_count(alpha = 0.5)+
+  theme_bw()+
+  theme(aspect.ratio = 1.5)+
+  facet_rep_wrap(~Year, repeat.tick.labels = TRUE,
+                 ncol = 5)
+```
+<br/>  
+
+最初に考えなければならないのは、トランゼクトごとに探索努力が異なるということである。探索努力はトランゼクトのサイズとして定量化されている。図\@ref(fig:fig-dotplot-gannet)を見るとトランゼクトのサイズは大きくばらついているので、これを考慮する必要がある。  
+
+```{r fig-dotplot-gannet, fig.dim = c(4.5,4.5), fig.cap = "Clevela nd dotplot illustrating the sizes of the transects."}
+Gannets %>% 
+  mutate(no_samples = 1:n()) %>% 
+  ggplot(aes(x = Area_surveyedkm2, y = no_samples))+
+  geom_point(alpha = 0.5)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Area", y = "Order of the data")
+```
+<br/>  
+
+第\@ref(c4)章で見たように、もしトランゼクトサイズが10倍になったら確認できる鳥の数も10倍になると考えられるなら、トランゼクトサイズの対数をオフセット項として含めることができる。一方で、もしそうでないならばトランゼクトサイズは共変量として説明変数に含める必要がある。今回はオフセット項で用いるが、サイズが0のもの(定点観測を行ったデータ)も存在するので、それは除外する。また、時刻を表す列も作成する。また、1年の中でのユリウス通日(1月1日からの経過日数)と1991年1月1日からの経過日数も算出する。      
+
+```{r}
+Gannets %>% 
+  filter(Area_surveyedkm2 > 0) %>% 
+  mutate(LArea = log(Area_surveyedkm2)) %>% 
+  mutate(Time = Hours + Minutes/60) %>%
+  mutate(Xkm = X/1000, Ykm = Y/1000) %>% 
+  mutate(Date = as.POSIXct(str_c(Year,"-",Month,"-",Day))) %>%
+  ## 年内のユリウス通日
+  mutate(DayInYear = strptime(Date, "%Y-%m-%d")$yday + 1) %>% 
+  ## 1991年1月1日からの経過日数
+  mutate(DaySince0 = ceiling(julian(strptime(Date, format = "%Y-%m-%d"), orogin = as.Date("1991-01-01")))) %>% 
+  rename(G = Gannets_in_transect) -> Gannets2
+```
+
+データは1991年から2004年の6から7月、4時から20時間に収集されている。カツオドリの数は年と日付、時間、トランゼクトの位置によって異なる。そこで、以下のモデル式を考える。このモデルは日付の効果は年に依らず同じで、時間の効果は年や月に依らずに同じで、トランゼクトの位置の効果は時間によって変化しないことを仮定している(= 交互作用を入れていない)。調査は6月と7月にしか行われていないので、日付の効果が時間によって変わらないという仮定は妥当だろう。これは、$f(Day_i, Hour_i)$を含めないということを意味する。    
+
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year) + f_2(Day_i) + f_3(Hours_i) + f_4(X_i,Y_i) + \beta \times SeaState_i + log(Area_i)
+\end{aligned}
+$$
+
+もしトランゼクトの場所の効果が年によって異なると仮定するなら、以下のようなモデルになる。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year, X_i, Y_i) + f_2(Day_i) + f_3(Hours_i) + \beta \times SeaState_i + log(Area_i)
+\end{aligned}
+$$
+
+ひとまず、以下ではデータ探索を行ったうえで、最も適切だと思えるモデルを考えていく。  
+
+## Data exploration  
+図\@ref(fig:fig-transect2)は、地点ごとのカツオドリの密度を点の大きさで表したものである。年によって密度が高い場所は異なっているように見える。これは、$f(Priod_1, X_i, Y_i)$という3次元smootherが必要であることを示唆している。
+
+```{r fig-transect2, fig.dim = c(12,8), fig.cap = "Gannet density plotted versus spatial coordinates and year. The size of a dot is proportional to the gannet density."}
+Gannets2 %>% 
+  mutate(Density = G/Area_surveyedkm2) %>% 
+  ggplot(aes(x = Xkm, y = Ykm))+
+  geom_point(aes(size = Density),
+             alpha = 0.7)+
+  scale_size(range = c(0,12))+
+  theme_bw()+
+  theme(aspect.ratio = 1.5)+
+  facet_rep_wrap(~Year, repeat.tick.labels = TRUE,
+                 ncol = 4)+
+  labs(x = "Xkm", y = "Ykm")
+```
+<br/>  
+
+図\@ref(fig:fig-transect3)は、時間とその年の1月1日からの経過日数によって密度がどのように異なるかを年ごとに可視化したものである。年によって密度が高い日や時間帯が異なっていることが分かる。  
+
+```{r fig-transect3, fig.dim = c(12,8), fig.cap = "Gannet density plotted versus hour, day, and year. The size of a dot is proportional to the gannet density."}
+Gannets2 %>% 
+  mutate(Density = G/Area_surveyedkm2) %>% 
+  ggplot(aes(x = Hours, y = DayInYear))+
+  geom_point(aes(size = Density),
+             alpha = 0.7)+
+  scale_size(range = c(0,12))+
+  theme_bw()+
+  theme(aspect.ratio = 1.5)+
+  facet_rep_wrap(~Year, repeat.tick.labels = TRUE,
+                 ncol = 4)+
+  labs(x = "Hour", y = "Day")
+```
+<br/>  
+
+
+また、データにゼロ過剰がないかも確認する必要がある。カツオドリの数が0のデータは全体の`r sprintf("%.2f", mean(Gannets2$G == "0"))`に及ぶ。もしモデルが仮定するよりも過剰にゼロがあると過分散の問題を引き起こすので、ゼロ過剰モデルを適用する必要がある。まずは普通のポワソン分布を適用し、ゼロ過剰でないかを確認する。      
+
+多重共線性の問題も考える必要がある。例えば、時刻や日付が海の状態と関連している可能性はあるが、図\@ref(fig:fig-seastate)を見る限りは問題なさそう。    
+
+```{r fig-seastate, fig.dim = c(11,5), fig.cap = "Boxplot of Time conditional on Seastate and DayInYear conditional on Seastate."}
+Gannets2 %>% 
+  dplyr::select(Time, DayInYear, Seastate) %>% 
+  pivot_longer(1:2) %>%
+  mutate(Seastate = as.factor(Seastate)) %>% 
+  ggplot(aes(x = Seastate, y = value))+
+  geom_boxplot()+
+  facet_rep_wrap(~name, repeat.tick.labels = TRUE, scales = "free_y")+
+  theme_bw()+
+  theme(aspect.ratio = 1.2)
+```
+
+確認されたカツオドリの数を見てみると、いくつかかなり大きいものがあることが分かる。また、前述したように0が多い。次節ではまずポワソン分布のGAMから入るが、おそらくゼロ過剰負の二項分布のGAMを適用する必要があると思われる。    
+```{r fig-gannets, fig.dim = c(4.5,4.5), fig.cap = "Cleveland dotplot of gannet abundance."}
+Gannets2 %>% 
+  mutate(no_samples = 1:n()) %>% 
+  ggplot(aes(x = G, y = no_samples))+
+  geom_point(alpha = 0.5)+
+  theme_bw()+
+  theme(aspect.ratio = 1)
+```
+
+## Building up the complexity of the GAMs  
+まずはポワソン分布のGAMを適用する。GLMではなくGAMを適用するのは、日付や月、年による変化は明確に非線形だからである。まずは年のsmootherだけを含む以下のモデルを考える。$G_i$は確認されたカツオドリの数、$LSA_i$はトランゼクトのサイズの対数である。  
+
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + LSA_i \\
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_1 <- gam(G ~ s(Year) + offset(LArea),
+            family = poisson, data = Gannets2)
+```
+
+まずは過分散を確認する。分散パラメータ$\phi$を算出すると(第\@ref(s4-4)節参照)、高い数値をとっており、過分散が生じていることが分かる。  
+
+```{r}
+E1 <- resid(M6_1, type = "pearson")
+sum(E1^2)/M6_1$df.residual
+```
+
+
+ゼロ過剰モデルや負の二項分布モデルを考える前に、他の共変量を加えることで過分散が解決するかを確認する。次は海の状態を加えた以下のモデルを考える。  
+
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_2 <- gam(G ~ s(Year) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E2 <- resid(M6_2, type = "pearson")
+sum(E2^2)/M6_2$df.residual
+```
+
+
+続いて、時刻のsmootherも追加したモデルを考える。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_3 <- gam(G ~ s(Year) + s(Time) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E3 <- resid(M6_3, type = "pearson")
+sum(E3^2)/M6_3$df.residual
+```
+
+続いて、1年の中での経過年数のsmootherもモデルに加える。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i) + f_3(DayInYear_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_4 <- gam(G ~ s(Year) + s(Time) + s(DayInYear) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E4 <- resid(M6_4, type = "pearson")
+sum(E4^2)/M6_4$df.residual
+```
+
+次に、緯度と経度の2次元smootherも追加する。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i) + f_3(DayInYear_i) + f_4(X_i,Y_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned} (\#eq:gam6-5)
+$$
+
+Rでは以下のように実行する。GAMではそれぞれのsmootherに罰則が与えられているが、**2次元smootherの2つの共変量はそれぞれ同様に罰則を与えられるべきである。**特に、二つの共変量が異なるスケールを持つときにはこれに気を付ける必要がある。このようなときは、いわゆる**非等方性スムーザー(non-isotopic smoother)**を用いるべきである。ここでは、テンソル積smoother(`te()`)を用いる。これについては、[こちら](https://stats.stackexchange.com/questions/45446/intuition-behind-tensor-product-interactions-in-gams-mgcv-package-in-r)が詳しい。テンソル積smootherは、異なるスケールを持つ共変量の2次元smootherを用いる場合に有用である。ただし、**2つの共変量が同じスケールを持つ場合には`s()`を用いる**方がよいようである。今回は`Xkm`と`Ykm`が異なるスケールを持つため、テンソル積smootherを用いる。      
+
+Rでは以下のように実行する。  
+```{r}
+M6_5 <- gam(G ~ s(Year) + s(Time) + s(DayInYear) + te(Xkm, Ykm) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E5 <- resid(M6_5, type = "pearson")
+sum(E5^2)/M6_5$df.residual
+```
+
+モデルに多重共演性や独立性などの問題がないかを確かめるには、ここまでの全てのモデルで同じようなsmootherが推定されているかを確かめればよい。図\@ref(fig:fit-smoother-gam6)は2つ以上のモデルによって推定されたsmootherを図示したものである。それぞれのモデルのsmootherは非常に似たパターンを示していることが分かる。  
+
+```{r fit-smoother-gam6, fig.dim = c(12,10), fig.cap = "Smoothers estimated by GAM"}
+smooth_estimates(M6_1, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_1") %>% 
+  bind_rows(smooth_estimates(M6_2, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_2")) %>% 
+  bind_rows(smooth_estimates(M6_3, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_3")) %>% 
+  bind_rows(smooth_estimates(M6_4, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_4")) %>% 
+  bind_rows(smooth_estimates(M6_5, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_5")) %>% 
+  ggplot(aes(x = Year, y = est))+
+  geom_line(aes(color = model))+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci,fill = model), alpha = 0.4)+
+  scale_color_nejm()+
+  scale_fill_nejm()+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  scale_x_continuous(breaks = seq(1991,2004,2)) -> p_year
+
+smooth_estimates(M6_3, smooth = "s(Time)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_3") %>% 
+  bind_rows(smooth_estimates(M6_4, smooth = "s(Time)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_4")) %>% 
+  bind_rows(smooth_estimates(M6_5, smooth = "s(Time)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_5")) %>% 
+  ggplot(aes(x = Time, y = est))+
+  geom_line(aes(color = model))+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci,fill = model), alpha = 0.4)+
+  scale_color_nejm()+
+  scale_fill_nejm()+
+  theme_bw()+
+  theme(aspect.ratio = 1) -> p_time
+
+smooth_estimates(M6_4, smooth = "s(DayInYear)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_4") %>% 
+  bind_rows(smooth_estimates(M6_5, smooth = "s(DayInYear)") %>% 
+  add_confint() %>% 
+  mutate(model = "M6_5")) %>% 
+  ggplot(aes(x = DayInYear, y = est))+
+  geom_line(aes(color = model))+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci,fill = model), alpha = 0.4)+
+  scale_color_nejm()+
+  scale_fill_nejm()+
+  theme_bw()+ 
+  theme(aspect.ratio = 1) -> p_day
+
+p_year + p_time + p_day + plot_layout(ncol = 2)
+```
+<br/>  
+
+さて、次に以下のような3次元smootherを含めたモデルを考える。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha +  f_1(Times_i) + f_2(DayInYear_i) + f_3(X_i,Y_i, Year_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned}
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_6 <- gam(G ~  s(Time) + s(DayInYear) + te(Xkm, Ykm, Year) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+このモデルでは、3次元smootherの自由度は123とかなり大きくなる。
+```{r}
+summary(M6_6)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E6 <- resid(M6_6, type = "pearson")
+sum(E6^2)/M6_6$df.residual
+```
+
+次に、式\@ref(eq:gam6-5)の拡張として、`Time`と`DayInYear`の2次元smootherを考えることもできる。  
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i, DayInYear_i) + f_3(X_i,Y_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned} (\#eq:gam6-7)
+$$
+
+Rでは以下のように実行する。  
+```{r}
+M6_7 <- gam(G ~  s(Year) + te(Time, DayInYear) + te(Xkm, Ykm) + offset(LArea) + factor(Seastate),
+            family = poisson, data = Gannets2)
+```
+
+分散パラメータ$\phi$を計算すると、まだ過分散は解決されていない。  
+```{r}
+E7 <- resid(M6_7, type = "pearson")
+sum(E7^2)/M6_7$df.residual
+```
+
+モデル`M6_7`の残差と予測値の関係を図示したのが図\@ref(fig:fig-resid-fitted-M6-7)である。いくつか残差の大きなデータがあることが分かり、図\@ref(fig:fig-gannets)と合わせるとこれらのデータが過分散の原因になっているのではないかと思われる。    
+```{r fig-resid-fitted-M6-7, fig.dim = c(4.5,4.5), fig.cap = "Pearson residuals plotted versus fitted values for the Poisson GAM in Equation (6.7)."}
+data.frame(resid = resid(M6_7, type = "pearson"),
+           fitted = fitted(M6_7)) %>% 
+  ggplot(aes(x = fitted, y = resid))+
+  geom_point(shape = 1)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Fitted values", y = "Pearson residuals")
+```
+<br/>  
+
+そのため、次のステップとして自然なのはポワソン分布よりも大きな分散をとりうる**負の二項分布**を目的変数の分布として仮定することである。  
+
+$$
+\begin{aligned}
+G_i &\sim Poisson(\mu_i)\\
+E(G_i) &= \mu_i \;\; and \;\;var(G_i) = \mu_i + \frac{\mu_i^2}{k} \\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i, DayInYear_i) + f_3(X_i,Y_i) + \beta \times Seastate_i + LSA_i \\
+\end{aligned} (\#eq:gam6-8)
+$$
+
+Rではパラメータ$k$が`theta`として推定される。以下のように実行できる。  
+```{r}
+M6_8 <- gam(G ~  s(Year) + te(Time, DayInYear) + te(Xkm, Ykm) + offset(LArea) + factor(Seastate),
+            family = nb, data = Gannets2)
+```
+
+モデルの分散パラメータ$\phi$は3.44である。  
+```{r}
+E8 <- resid(M6_8, type = "pearson")
+sum(E8^2)/M6_8$df.residual
+```
+
+結果は以下のとおりである。モデルのsmootherは全て有意であり、$k$(`theta`)は0.151と推定された。smootherの自由度はUBRE(unbiased risk estimator)に基づいて推定されている。  
+```{r}
+print(summary(M6_8), digits = 3)
+```
+
+残差と予測値の関係を図示したのが図\@ref(fig:fig-resid-fitted-M6-7)である。赤い点はカツオドリの数が25以上のポイントである。この図から、モデルはカツオドリの数が大きいポイントをうまくフィットできていないことが示唆される。  
+```{r fig-resid-fitted-M6-8, fig.dim = c(4.5,4.5), fig.cap = "Pearson residuals plotted versus fitted values for the negative binomial GAM in Equation (6.8). The values plotted with a red dot are observations for which the gannet abundance exceeds 25."}
+data.frame(resid = resid(M6_8, type = "pearson"),
+           fitted = fitted(M6_8),
+           G = Gannets2$G) %>% 
+  ggplot(aes(x = fitted, y = resid))+
+  geom_point(shape = 1,
+             aes(color = G >= 25),
+             stroke = 1.1,
+             alpha = 0.3)+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(x = "Fitted values", y = "Pearson residuals")+
+  scale_color_manual(values = c("black", "red3"))
+```
+<br/>  
+
+また、残差に空間的な相関がないかを確かめるため、ピアソン残差を利用したバリオグラムを描いたのが図\@ref(fig:fig-variogram-M6-8)である。図からは、深刻な空間的相関があるようには見えない。  
+
+```{r fig-variogram-M6-8, fig.dim = c(4.5,4.5), fig.cap = "Sample variogram of Pearson residuals from the negative binomial GAM. Point size is proportional to the number of combinations of sites used for calculating the sample variogram at a particular distance."}
+mydata <- data.frame(resid = resid(M6_8, type = "pearson"),
+                     Xkm = Gannets2$Xkm,
+                     Ykm = Gannets2$Ykm)
+
+sp::coordinates(mydata) <- c("Xkm","Ykm")
+
+Vario_M6_8 <- variogram(resid ~ 1, mydata, cutoff = 5, robust = TRUE)
+
+Vario_M6_8 %>% 
+  ggplot(aes(x = dist, y = gamma))+
+  geom_point(aes(size = np))+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  labs(y = "Semi-variogram", x = "Distance (km)")
+```
+<br/>  
+
+推定された`te(DayInYear, Time)`のsmootherは以下のとおりである(図\@ref(fig:fig-smoother-M6-8-a)。解釈は難しいが、日付や時刻によってばらつきがかなりあることが分かる。  
+```{r fig-smoother-M6-8-a, fig.dim = c(5,5), fig.cap = "Estimated sm oothers te(DayInYear, TimeH) for the negative binomial GAM."}
+smooth_estimates(M6_8, smooth = "te(Time,DayInYear)") %>% 
+  plot_ly() %>% 
+  add_trace(x = ~DayInYear,
+          y = ~Time,
+          z = ~est,
+          type = "mesh3d")
+```
+<br/>  
+
+推定された`te(Xkm, Ykm)`のsmootherは以下のとおりである図\@ref(fig:fig-smoother-M6-8-b))。こちらは、南西のエリアでカツオドリがよく目撃されていることを示している。  
+```{r fig-smoother-M6-8-b, fig.dim = c(5,5), fig.cap = "Estimated smoot hers te(Xkm, Ykm) for the negative binomial GAM."}
+smooth_estimates(M6_8, smooth = "te(Xkm,Ykm)") %>% 
+  plot_ly() %>% 
+  add_trace(x = ~Xkm,
+          y = ~Ykm,
+          z = ~est,
+          type = "mesh3d") 
+```
+<br/>  
+
+観察年(`Year`)のsmootherは図\@ref(fig:fig-smoother-M6-8-c)の通り。カツオドリの数は1993年から1997年ごろにかけて急増し、その後減少したが2000年ごろからもう一度増加するというパターンをとっていた。  
+
+```{r fig-smoother-M6-8-c, fig.dim = c(5,5), fig.cap = "Estimated smoothers s(Y ear) for the negative binomial GAM."}
+smooth_estimates(M6_8, smooth = "s(Year)") %>% 
+  add_confint() %>% 
+  ggplot(aes(x = Year, y = est))+
+  geom_line()+
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),
+              alpha = 0, linetype = "dashed", color = "black")+
+  theme_bw()+
+  theme(aspect.ratio = 1)+
+  scale_x_continuous(breaks = seq(1991,2006,by=2))
+```
+
+## Zero-inflated GAM  
+前節で適用した負の二項分布モデルは依然として過分散であった。過分散には様々な原因があるが、 @Zuur2012b は**外れ値、必要な共変量が入っていない、交互作用がひっていない、リンク関数が誤っている、目的変数のばらつきが大きすぎる、時空間的な相関がモデルで考慮されていない、ゼロ過剰**などが過分散の要因の大部分を占めると論じている。  
+
+空間的な相関とゼロ過剰はしばしば交絡しやすい(隣のトランゼクトが0を持つ確率が高くなるなど)[Zuur2012b]。そのため、空間的な構造を考慮したGAMをモデリングすることも可能である(e.g., CARモデルなど)。一方で、ゼロ過剰モデルを作ることも可能である。両方を適用すると問題が生じることが多いので、**生物学的な知識に基づいてどちらを適用すべきか決める必要がある**。  
+
+空間的な相関を取り入れるモデルはベイズ統計を必要とし、本稿の範囲を超えるので今回はゼロ過剰モデルを適用する。  
+
+### A zero-inflated model for the gannet data  
+ゼロ過剰モデルにはいくつかの種類があるが、ここではいわゆる**混合モデル(mixture model)**を適用する。混合モデルは偽物のゼロと真のゼロを区別する。偽物のゼロは、サンプリングが間違ったときに行われた(e.g., カツオドリがいない冬に観察を行った)、観察エラー(e.g., 天候などで視界が悪い)、動物のエラー(e.g., カツオドリがいるはずだがいなかった)などのときに生じる。真のゼロはそうした要因以外に動物がいないときに生じる。  
+
+混合ゼロ過剰モデルでは2つのGLM(またはGAM)がくっつけられている。真のゼロとゼロより大きい値に対して適用するポワソンまたは負の二項GLM(GAM)とそれでは説明できない偽物のゼロに対して適用される二項分布モデルである。詳しくは[こちら](https://tsubasayamaguchi-jinrui.github.io/Zeroinflation/)や @Zuur2012b も参照。  
+
+混合ゼロ過剰モデルでは、まず偽物のゼロが得られる確率$\pi_i$を二項分布モデルでモデリングする。ここでは、$\pi_i$が一つのパラメータ$\gamma$のみで決まると仮定しているが、様々な共変量によって変化するとモデリングすることも可能である(e.g., $logit(\pi_i) = \gamma_0 + \gamma_1 \times Seastate_i + f_\gamma(Year)$)。これは、生物学的知識に基づいて行われる必要がある。      
+
+$$
+\begin{aligned}
+logit(\pi_i) &= \gamma\\
+\end{aligned}
+$$
+
+そのうえで、ゼロ過剰モデルでは偽物のゼロ以外(真のゼロと0より大きい値)についてポワソン分布または負の二項分布を適用する。例えばポワソン分布を適用するとき、平均$\mu_i$のポワソン分布で値$Y_i$をとる確率は$P(Y_i|\mu_i) = \frac{\mu_i^{Y_i} \times r^{-\mu_i}}{Y_i!}$なので、真のゼロが得られる確率は以下のようになる。  
+
+$$
+\frac{\mu_i^0 \times e^{-\mu_i}}{0!} = e^{-\mu_i}
+$$
+
+よって、ゼロ過剰モデルでゼロ(偽物+真)が得られる確率は、偽物のゼロ以外が得られる確率が$1-\pi_i$であることを考えると以下のようになる。    
+
+$$
+\pi_i + (1-\pi_i) \times e^{-\mu_i}  
+$$
+
+ゼロ以外の値についてはポワソン分布や負の二項分布が通常通り適用される。合わせると、ゼロ過剰ポワソンGAMのモデル式は以下のように書ける。なお、$G_i \sim ZIP(\mu_i, \pi_i)$はポワソン分布の平均が$\mu_i$、偽物のゼロが得られる確率が$\pi_i$の混合モデルからカツオドリの数が得られることを指す。    
+
+$$
+\begin{aligned}
+G_i &\sim ZIP(\mu_i, \pi_i)\\
+log(\mu_i) &= \alpha + f_1(Year_i) + f_2(Times_i, DayInYear_i) + f_3(X_i,Y_i) + \beta \times Seastate_i + LSA_i \\
+logit(\pi_i) &= \gamma\\
+E(G_i) &= (1-\pi_i) \times \mu_i \;\; and \;\;var(G_i) = (1-\pi_i) \times(\mu_i + \pi_i \times \mu_i)\\
+\end{aligned}
+(\#eq:M6-9)
+$$
+
+ゼロ過剰GAMを実行できるRパッケージは`COZIGAM`、`VGAM`、`gamlss`などがあるが、本章では`gamlss`パッケージを用いて実行する。  
+⇒ 現在では`mgvc`パッケージでもゼロ過剰ポワソン分布がサポートされているが、リンク関数は恒等関数しかないよう。  
+
+### ZIP GAM using gamlss  
+2次元smootherを導入するためには、`gamlss`のヘルパーパッケージである`gamlss.add`も読み込む必要がある。以下、式\@ref(eq:M6-9)のモデル式をRで実行したものである。`gamlss`では`mgcv`のように交差検証による自由度の選択は行ってくれず、使用者が上限を指定する必要がある。以下のモデルでは、`M6_8`の結果をもとに自由度を$k =$で指定している。2次元smootherは`ga(~te(Time, DayInYear))`のように式に加える。座標の2次元smootherは`te(Xkm,Ykm)`とするとエラーが出て実行できなかったので、`s(Xkm,Ykm)`。これらの変数は異なるスケールを持つため、前述したようにこれは問題になりうる。  
+
+モデルは収束せず...。 
+```{r}
+## iterationの数を設定  
+con <- gamlss.control(n.cyc = 200)
+
+#M6_9 <- gamlss(G ~ cs(Year, df = 8) + ga(~te(Time, DayInYear, fx = TRUE, k = 28)) + 
+ #               ga(~s(Xkm,Ykm, fx = TRUE, k=28)) + factor(Seastate) + offset(LArea), 
+  #              family = ZIP(), data = Gannets2, control = con)
+```
+
+ベイズモデリングでの実装は`brms`[パッケージ](https://github.com/paul-buerkner/brms)でできる。`brms`ではテンソル積smootherとして`te()`は実装していないが、代わりに`t2()`が使える。詳しくは[こちら](https://paul-buerkner.github.io/brms/reference/s.html)。  
+
+以下のように実行できる。こちらもかなり長い時間を要する。  
+```{r}
+## 高速化オプション
+rstan_options(auto_write = TRUE) 
+options(mc.cores = parallel::detectCores()) 
+
+M6_9 <- brm(G ~  s(Year) + t2(Time, DayInYear) + t2(Xkm, Ykm) + offset(LArea) + factor(Seastate),
+            family = "zero_inflated_poisson", data = Gannets2,
+            backend = "cmdstanr",
+            control=list(adapt_delta = 0.99, max_treedepth = 15),
+            file = "result/M6_9")
+```
+
+結果は以下の通り。`Population Effect Level`として推定されているのは回帰係数のようだ。`sds`の部分はsmootherの自由度のようなものを推定しているよう。詳しい見方は不明である。偽物のゼロが得られる確率(`zi`)は0.75と推定された。  
+```{r}
+summary(M6_9)
+```
+
+`DHARMa`パッケージを用いて過分散の検定を行うことができる。その結果、過分散はまだ解消されていないようだ。    
+```{r, fig.dim = c(4.5,4.5)}
+testDispersion(dh_check_brms(M6_9, plot = FALSE))
+```
+<br/>  
+
+次のオプションとして、ゼロ過剰負の二項分布のGAMを用いることができる。`brms`のみで実装できるようだ。こちらも長い時間を要する。    
+```{r}
+Gannets2 <- Gannets2 %>% mutate(fSeastate = factor(Seastate))
+
+M6_10 <- brm(G ~  s(Year) + t2(Time, DayInYear) + t2(Xkm, Ykm) + offset(LArea) + fSeastate,
+            family = "zero_inflated_negbinomial", data = Gannets2,
+            backend = "cmdstanr",
+            control=list(adapt_delta = 0.99, max_treedepth = 15),
+            file = "result/M6_10")
+```
+
+結果は以下の通り。偽物のゼロが得られる確率はほとんどない(0.01)と推定されている。    
+```{r}
+summary(M6_10)
+```
+
+`DHARMa`パッケージを用いて過分散の検定を行うことができる。過分散はかなり改善されたがまだ少し残っているようだ。   
+```{r, fig.dim = c(4.5,4.5)}
+testDispersion(dh_check_brms(M6_10, plot = FALSE))
+```
+<br/>  
+
+年のsmoother(`s(Year)`)の推定結果は以下のようになる(図\@ref(fig:fig-smooth-gam6-10-year))。M6_8とほとんど変わらない。    
+```{r fig-smooth-gam6-10-year, fig.dim = c(4.5,4.5), fig.cap = "Estimated smoother of s(Year) based on M6_10"}
+plot(conditional_smooths(M6_10, smooths = "s(Year)")) -> p_Year
+```
+<br/>  
+
+緯度と経度の2次元smoother(`t2(Xkm,Ykm)`)の推定結果は以下のようになる(図\@ref(fig:fit-smooth-gam6-10-XY))。  
+```{r fit-smooth-gam6-10-XY, fig.dim = c(4.5,4.5), fig.cap = "Estimated smoother of t2(Xkm,Ykm) based on M6_10"}
+conditional_effects(M6_10, effects = "Xkm:Ykm")[[1]] %>% 
+  plot_ly() %>% 
+  add_trace(x = ~Xkm,
+          y = ~Ykm,
+          z = ~estimate__,
+          type = "mesh3d")
+```
+<br/>  
+
+最後に、時刻と日付の2次元smoother(`t2(Time,DayInYear)`)の推定結果は以下のようになる(図\@ref(fig:fit-smooth-gam6-10-XY))。  
+```{r fit-smooth-gam6-10-Time, fig.dim = c(4.5,4.5), fig.cap = "Estimated smoother of t2(Time,DayInYear) based on M6_10"}
+conditional_effects(M6_10, effects = "Time:DayInYear")[[1]] %>% 
+  plot_ly() %>% 
+  add_trace(x = ~Time,
+          y = ~DayInYear,
+          z = ~estimate__,
+          type = "mesh3d")
+```
+
+## Discussion  
+ここまで様々なモデルを適用してきたが、過分散は解消できなかった。過分散の要因としては、共変量やその交互作用が不足しているものが考えられる。しかし、モデルに交互作用を加えると推定にかなり時間を要することになるだろう。  
+

@@ -14,9 +14,15 @@
 ```{r}
 ## GAM
 library(mgcv)
+library(gamlss)
 library(gratia)
 library(gstat)
 library(MASS)
+library(brms)
+library(rstan)
+library(cmdstanr)
+library(DHARMa)
+library(DHARMa.helpers)
 ## データハンドリング
 library(tidyverse)
 library(easystats)
@@ -37,6 +43,7 @@ library(ggforce)
 library(concaveman)
 library(ggsci)
 library(lemon)
+library(gganimate)
 ## フォント関連
 library(extrafont)
 require(systemfonts)

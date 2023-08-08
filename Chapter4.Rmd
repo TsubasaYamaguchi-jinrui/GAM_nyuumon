@@ -111,7 +111,7 @@ $$
 ## Start with GLM or GAM ?  
 それでは、最初の分析としてはGLMとGAMのどちらを適用すべきだろうか。もし、GLMを適用したモデルの残差と説明変数の間に非線形の関係が明確にみられるなら、GAMを適用するのは理にかなっている。また、事前にデータ探索を行ったときに変数間に非線形なパターンが見られたらまずGAMを適用し、変数間の関係が線形か非線形かを見てみるということもできる。もし線形な関係が見られたら、そこからGLMを適用することもできる。  
 
-## Results of Poisson and negative binomial GLM  
+## Results of Poisson and negative binomial GLM {#s4-4}   
 本章では、まずGLMを適用するところから始める。まずはポワソン分布のGLMを適用する。モデル式は以下の通り。  
 
 $$
@@ -324,8 +324,9 @@ phi5
 summary(M4_5)
 ```
 
-推定されたsmootherは以下の通り(図\@ref(fig:fig-smooth-gampois))。  
-```{r fig-smooth-gampois}
+推定されたsmootherは以下の通り(図\@ref(fig:fig-smooth-gampoisson))。  
+
+```{r fig-smooth-gampoisson, fig.dim = c(4.5,4.5)}
 draw(M4_5)
 ```
 
@@ -467,7 +468,7 @@ dat_resid %>%
 ```
 
 QQプロットもおおむねよく当てはまっている?  
-```{r}
+```{r, fig.dim = c(4.5,4.5)}
 qq_plot(M4_6, type = "pearson")
 ```
 
