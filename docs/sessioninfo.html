@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-08-09" />
+<meta name="date" content="2023-08-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -316,6 +316,12 @@ div.csl-indent {
 <li class="chapter" data-level="7" data-path="Chapter7.html"><a href="Chapter7.html"><i class="fa fa-check"></i><b>7</b> Generalized Additive Models applied on parasites of Argentine hake</a>
 <ul>
 <li class="chapter" data-level="7.1" data-path="Chapter7.html"><a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea"><i class="fa fa-check"></i><b>7.1</b> Parasites of Argentine hake in the Argentine Sea</a></li>
+<li class="chapter" data-level="7.2" data-path="Chapter7.html"><a href="Chapter7.html#the-variables-3"><i class="fa fa-check"></i><b>7.2</b> The variables</a></li>
+<li class="chapter" data-level="7.3" data-path="Chapter7.html"><a href="Chapter7.html#s7-3"><i class="fa fa-check"></i><b>7.3</b> Data exploration</a></li>
+<li class="chapter" data-level="7.4" data-path="Chapter7.html"><a href="Chapter7.html#brainstorming-1"><i class="fa fa-check"></i><b>7.4</b> Brainstorming</a></li>
+<li class="chapter" data-level="7.5" data-path="Chapter7.html"><a href="Chapter7.html#applying-binomial-gam"><i class="fa fa-check"></i><b>7.5</b> Applying binomial GAM</a></li>
+<li class="chapter" data-level="7.6" data-path="Chapter7.html"><a href="Chapter7.html#discussion-2"><i class="fa fa-check"></i><b>7.6</b> Discussion</a></li>
+<li class="chapter" data-level="7.7" data-path="Chapter7.html"><a href="Chapter7.html#what-to-present-in-a-paper-1"><i class="fa fa-check"></i><b>7.7</b> What to present in a paper</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -337,7 +343,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="実行環境" class="section level1 unnumbered hasAnchor">
 <h1>実行環境<a href="sessioninfo.html#実行環境" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="sessioninfo.html#cb306-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="sessioninfo.html#cb333-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>## R version 4.2.2 (2022-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 22621)
@@ -354,83 +360,85 @@ div.csl-indent {
 ## [8] methods   base     
 ## 
 ## other attached packages:
-##  [1] fontregisterer_0.3        systemfonts_1.0.4        
-##  [3] extrafont_0.18            gganimate_1.0.8          
-##  [5] lemon_0.4.6               ggsci_2.9                
-##  [7] concaveman_1.1.0          ggforce_0.4.1            
-##  [9] ggdag_0.2.7               dagitty_0.3-1            
-## [11] kableExtra_1.3.4          knitr_1.43               
-## [13] DT_0.27                   patchwork_1.1.2          
-## [15] GGally_2.1.2              ggnewscale_0.4.9         
-## [17] htmlwidgets_1.6.2         plotly_4.10.1            
-## [19] sp_1.5-1                  data.table_1.14.6        
-## [21] see_0.7.5.5               report_0.5.7.4           
-## [23] parameters_0.20.3         performance_0.10.3       
-## [25] modelbased_0.8.6.3        insight_0.19.1.4         
-## [27] effectsize_0.8.3.6        datawizard_0.7.1.1       
-## [29] correlation_0.8.4         bayestestR_0.13.1        
-## [31] easystats_0.6.0.8         forcats_1.0.0            
-## [33] stringr_1.5.0             dplyr_1.1.2              
-## [35] purrr_1.0.0               readr_2.1.3              
-## [37] tidyr_1.2.1               tibble_3.2.1             
-## [39] ggplot2_3.4.2             tidyverse_1.3.2          
-## [41] DHARMa.helpers_0.0.0.9000 DHARMa_0.4.6             
-## [43] cmdstanr_0.5.3            rstan_2.26.13            
-## [45] StanHeaders_2.26.13       brms_2.18.0              
-## [47] Rcpp_1.0.11               gstat_2.1-1              
-## [49] gratia_0.8.1.34           gamlss_5.4-12            
-## [51] gamlss.dist_6.0-5         MASS_7.3-58.1            
-## [53] gamlss.data_6.0-2         mgcv_1.8-41              
-## [55] nlme_3.1-160             
+##  [1] ggeffects_1.1.4           fontregisterer_0.3       
+##  [3] systemfonts_1.0.4         extrafont_0.18           
+##  [5] gganimate_1.0.8           lemon_0.4.6              
+##  [7] ggsci_2.9                 concaveman_1.1.0         
+##  [9] ggforce_0.4.1             ggdag_0.2.7              
+## [11] dagitty_0.3-1             kableExtra_1.3.4         
+## [13] knitr_1.43                DT_0.27                  
+## [15] patchwork_1.1.2           GGally_2.1.2             
+## [17] ggnewscale_0.4.9          htmlwidgets_1.6.2        
+## [19] plotly_4.10.1             sp_1.5-1                 
+## [21] data.table_1.14.6         see_0.7.5.5              
+## [23] report_0.5.7.4            parameters_0.20.3        
+## [25] performance_0.10.3        modelbased_0.8.6.3       
+## [27] insight_0.19.1.4          effectsize_0.8.3.6       
+## [29] datawizard_0.7.1.1        correlation_0.8.4        
+## [31] bayestestR_0.13.1         easystats_0.6.0.8        
+## [33] forcats_1.0.0             stringr_1.5.0            
+## [35] dplyr_1.1.2               purrr_1.0.0              
+## [37] readr_2.1.3               tidyr_1.2.1              
+## [39] tibble_3.2.1              ggplot2_3.4.2            
+## [41] tidyverse_1.3.2           DHARMa.helpers_0.0.0.9000
+## [43] DHARMa_0.4.6              cmdstanr_0.5.3           
+## [45] rstan_2.26.13             StanHeaders_2.26.13      
+## [47] brms_2.18.0               Rcpp_1.0.11              
+## [49] gstat_2.1-1               gratia_0.8.1.34          
+## [51] gamlss_5.4-12             gamlss.dist_6.0-5        
+## [53] MASS_7.3-58.1             gamlss.data_6.0-2        
+## [55] mgcv_1.8-41               nlme_3.1-160             
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] utf8_1.2.2           tidyselect_1.2.0     lme4_1.1-31         
-##   [4] grid_4.2.2           munsell_0.5.0        codetools_0.2-18    
-##   [7] miniUI_0.1.1.1       withr_2.5.0          Brobdingnag_1.2-9   
-##  [10] colorspace_2.0-3     highr_0.10           rstudioapi_0.15.0   
-##  [13] stats4_4.2.2         Rttf2pt1_1.3.8       bayesplot_1.10.0    
-##  [16] labeling_0.4.2       emmeans_1.8.3        polyclip_1.10-4     
-##  [19] bit64_4.0.5          farver_2.1.1         bridgesampling_1.1-2
-##  [22] coda_0.19-4          vctrs_0.6.2          generics_0.1.3      
-##  [25] xfun_0.39            timechange_0.1.1     R6_2.5.1            
-##  [28] markdown_1.7         reshape_0.8.9        cachem_1.0.6        
-##  [31] assertthat_0.2.1     vroom_1.6.0          promises_1.2.0.1    
-##  [34] scales_1.2.1         googlesheets4_1.0.1  gtable_0.3.3        
-##  [37] processx_3.8.0       ggokabeito_0.1.0     tidygraph_1.2.2     
-##  [40] rlang_1.1.1          extrafontdb_1.0      lazyeval_0.2.2      
-##  [43] gargle_1.2.1         broom_1.0.2          checkmate_2.1.0     
-##  [46] inline_0.3.19        yaml_2.3.7           reshape2_1.4.4      
-##  [49] abind_1.4-5          modelr_0.1.10        threejs_0.3.3       
-##  [52] crosstalk_1.2.0      backports_1.4.1      httpuv_1.6.7        
-##  [55] tensorA_0.36.2       tools_4.2.2          bookdown_0.34       
-##  [58] ellipsis_0.3.2       RColorBrewer_1.1-3   jquerylib_0.1.4     
-##  [61] posterior_1.3.1      plyr_1.8.8           progress_1.2.2      
-##  [64] base64enc_0.1-3      ps_1.7.2             prettyunits_1.1.1   
-##  [67] zoo_1.8-11           haven_2.5.1          fs_1.5.2            
-##  [70] magrittr_2.0.3       magick_2.7.4         spacetime_1.3-0     
-##  [73] colourpicker_1.2.0   reprex_2.0.2         mvnfast_0.2.8       
-##  [76] googledrive_2.0.0    mvtnorm_1.1-3        matrixStats_0.63.0  
-##  [79] hms_1.1.3            shinyjs_2.1.0        mime_0.12           
-##  [82] evaluate_0.20        xtable_1.8-4         shinystan_2.6.0     
-##  [85] readxl_1.4.1         gridExtra_2.3        rstantools_2.2.0    
-##  [88] compiler_4.2.2       V8_4.2.2             crayon_1.5.2        
-##  [91] minqa_1.2.5          htmltools_0.5.4      later_1.3.0         
-##  [94] tzdb_0.3.0           RcppParallel_5.1.6   lubridate_1.9.0     
-##  [97] DBI_1.1.3            tweenr_2.0.2         dbplyr_2.2.1        
-## [100] boot_1.3-28          Matrix_1.5-1         cli_3.6.0           
-## [103] igraph_1.3.5         pkgconfig_2.0.3      xml2_1.3.3          
-## [106] svglite_2.1.1        dygraphs_1.1.1.6     bslib_0.4.2         
-## [109] webshot_0.5.4        estimability_1.4.1   rvest_1.0.3         
-## [112] distributional_0.3.2 callr_3.7.3          digest_0.6.31       
-## [115] rmarkdown_2.23       cellranger_1.1.0     intervals_0.15.4    
-## [118] curl_4.3.3           shiny_1.7.4          gtools_3.9.4        
-## [121] nloptr_2.0.3         lifecycle_1.0.3      jsonlite_1.8.4      
-## [124] viridisLite_0.4.2    fansi_1.0.3          pillar_1.9.0        
-## [127] lattice_0.20-45      loo_2.5.1            fastmap_1.1.0       
-## [130] httr_1.4.4           pkgbuild_1.4.0       survival_3.5-5      
-## [133] glue_1.6.2           xts_0.12.2           FNN_1.1.3.2         
-## [136] shinythemes_1.2.0    bit_4.0.5            stringi_1.7.8       
-## [139] sass_0.4.5</code></pre>
+##   [1] estimability_1.4.1   spacetime_1.3-0      coda_0.19-4         
+##   [4] intervals_0.15.4     bit64_4.0.5          dygraphs_1.1.1.6    
+##   [7] inline_0.3.19        doParallel_1.0.17    generics_0.1.3      
+##  [10] callr_3.7.3          mvnfast_0.2.8        bit_4.0.5           
+##  [13] tzdb_0.3.0           webshot_0.5.4        xml2_1.3.3          
+##  [16] lubridate_1.9.0      httpuv_1.6.7         assertthat_0.2.1    
+##  [19] gargle_1.2.1         xfun_0.39            hms_1.1.3           
+##  [22] jquerylib_0.1.4      bayesplot_1.10.0     evaluate_0.20       
+##  [25] promises_1.2.0.1     fansi_1.0.3          progress_1.2.2      
+##  [28] dbplyr_2.2.1         readxl_1.4.1         igraph_1.3.5        
+##  [31] DBI_1.1.3            reshape_0.8.9        tensorA_0.36.2      
+##  [34] googledrive_2.0.0    stats4_4.2.2         ellipsis_0.3.2      
+##  [37] crosstalk_1.2.0      backports_1.4.1      V8_4.2.2            
+##  [40] bookdown_0.34        markdown_1.7         RcppParallel_5.1.6  
+##  [43] vctrs_0.6.2          abind_1.4-5          cachem_1.0.6        
+##  [46] withr_2.5.0          checkmate_2.1.0      vroom_1.6.0         
+##  [49] emmeans_1.8.3        xts_0.12.2           prettyunits_1.1.1   
+##  [52] svglite_2.1.1        lazyeval_0.2.2       crayon_1.5.2        
+##  [55] pkgconfig_2.0.3      labeling_0.4.2       tweenr_2.0.2        
+##  [58] rlang_1.1.1          lifecycle_1.0.3      miniUI_0.1.1.1      
+##  [61] colourpicker_1.2.0   extrafontdb_1.0      modelr_0.1.10       
+##  [64] cellranger_1.1.0     distributional_0.3.2 polyclip_1.10-4     
+##  [67] matrixStats_0.63.0   Matrix_1.5-1         loo_2.5.1           
+##  [70] boot_1.3-28          zoo_1.8-11           reprex_2.0.2        
+##  [73] base64enc_0.1-3      processx_3.8.0       googlesheets4_1.0.1 
+##  [76] viridisLite_0.4.2    gap.datasets_0.0.5   shinystan_2.6.0     
+##  [79] scales_1.2.1         magrittr_2.0.3       plyr_1.8.8          
+##  [82] threejs_0.3.3        compiler_4.2.2       rstantools_2.2.0    
+##  [85] RColorBrewer_1.1-3   lme4_1.1-31          cli_3.6.0           
+##  [88] ps_1.7.2             Brobdingnag_1.2-9    tidyselect_1.2.0    
+##  [91] stringi_1.7.8        highr_0.10           yaml_2.3.7          
+##  [94] bridgesampling_1.1-2 grid_4.2.2           sass_0.4.5          
+##  [97] tools_4.2.2          timechange_0.1.1     rstudioapi_0.15.0   
+## [100] foreach_1.5.2        gridExtra_2.3        posterior_1.3.1     
+## [103] farver_2.1.1         digest_0.6.31        FNN_1.1.3.2         
+## [106] shiny_1.7.4          qgam_1.3.4           broom_1.0.2         
+## [109] later_1.3.0          httr_1.4.4           colorspace_2.0-3    
+## [112] rvest_1.0.3          fs_1.5.2             shinythemes_1.2.0   
+## [115] xtable_1.8-4         jsonlite_1.8.4       nloptr_2.0.3        
+## [118] tidygraph_1.2.2      gap_1.4-2            R6_2.5.1            
+## [121] pillar_1.9.0         htmltools_0.5.4      mime_0.12           
+## [124] glue_1.6.2           fastmap_1.1.0        minqa_1.2.5         
+## [127] codetools_0.2-18     ggokabeito_0.1.0     pkgbuild_1.4.0      
+## [130] mvtnorm_1.1-3        utf8_1.2.2           lattice_0.20-45     
+## [133] bslib_0.4.2          curl_4.3.3           gtools_3.9.4        
+## [136] magick_2.7.4         shinyjs_2.1.0        Rttf2pt1_1.3.8      
+## [139] survival_3.5-5       rmarkdown_2.23       munsell_0.5.0       
+## [142] iterators_1.0.14     haven_2.5.1          reshape2_1.4.4      
+## [145] gtable_0.3.3</code></pre>
 <p><strong>References</strong></p>
 
 <div id="refs" class="references csl-bib-body hanging-indent">

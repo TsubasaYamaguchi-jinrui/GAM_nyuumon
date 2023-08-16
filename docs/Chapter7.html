@@ -23,7 +23,7 @@
 <meta name="author" content="Tsubasa Yamaguchi" />
 
 
-<meta name="date" content="2023-08-09" />
+<meta name="date" content="2023-08-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -316,6 +316,12 @@ div.csl-indent {
 <li class="chapter" data-level="7" data-path="Chapter7.html"><a href="Chapter7.html"><i class="fa fa-check"></i><b>7</b> Generalized Additive Models applied on parasites of Argentine hake</a>
 <ul>
 <li class="chapter" data-level="7.1" data-path="Chapter7.html"><a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea"><i class="fa fa-check"></i><b>7.1</b> Parasites of Argentine hake in the Argentine Sea</a></li>
+<li class="chapter" data-level="7.2" data-path="Chapter7.html"><a href="Chapter7.html#the-variables-3"><i class="fa fa-check"></i><b>7.2</b> The variables</a></li>
+<li class="chapter" data-level="7.3" data-path="Chapter7.html"><a href="Chapter7.html#s7-3"><i class="fa fa-check"></i><b>7.3</b> Data exploration</a></li>
+<li class="chapter" data-level="7.4" data-path="Chapter7.html"><a href="Chapter7.html#brainstorming-1"><i class="fa fa-check"></i><b>7.4</b> Brainstorming</a></li>
+<li class="chapter" data-level="7.5" data-path="Chapter7.html"><a href="Chapter7.html#applying-binomial-gam"><i class="fa fa-check"></i><b>7.5</b> Applying binomial GAM</a></li>
+<li class="chapter" data-level="7.6" data-path="Chapter7.html"><a href="Chapter7.html#discussion-2"><i class="fa fa-check"></i><b>7.6</b> Discussion</a></li>
+<li class="chapter" data-level="7.7" data-path="Chapter7.html"><a href="Chapter7.html#what-to-present-in-a-paper-1"><i class="fa fa-check"></i><b>7.7</b> What to present in a paper</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i>実行環境</a></li>
 </ul>
@@ -341,6 +347,448 @@ div.csl-indent {
 <h2><span class="header-section-number">7.1</span> Parasites of Argentine hake in the Argentine Sea<a href="Chapter7.html#parasites-of-argentine-hake-in-the-argentine-sea" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span class="citation">Sardella and Timi (<a href="#ref-Sardella2004">2004</a>)</span> は、4か所のアルゼンチン沖に生息するメルルーサ(hake, Merluccius hubbsi)の寄生虫を調べ、それをもとにメルルーサの個体群を分別することができるかを調べた。メルルーサは乱獲によって激減しており、メルルーサがどの個体群から来たものなのかを識別することは個体群の維持にとって重要である。</p>
 <p>魚334匹が4か所(アルゼンチン-ウルグアイ間、サン・ジョージ湾、パタゴニアン大陸棚、サン・マティアス湾)でトロール網によって捕獲され、26種の寄生虫が発見された。本章では、Elytrophalloides oatesiという吸虫の有無を二項分布のGAMによってモデリングする。リサーチクエスチョンは、<strong>吸虫の有無が魚のサイズ、性別、捕獲場所によって影響を受けるか</strong>である。</p>
+</div>
+<div id="the-variables-3" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> The variables<a href="Chapter7.html#the-variables-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>データに含まれる変数は以下のとおりである。今回は南にある3箇所(アルゼンチン-ウルグアイ間以外)のみのデータを用い、分析対象とした魚は278匹である。</p>
+<ul>
+<li><code>Month</code>: 捕獲した月<br />
+</li>
+<li><code>Year</code>: 捕獲した年<br />
+</li>
+<li><code>Area</code>: 捕獲した場所<br />
+</li>
+<li><code>ID</code>: 個体ID<br />
+</li>
+<li><code>Length</code>: 全長<br />
+</li>
+<li><code>Weight</code>: 重さ<br />
+</li>
+<li><code>Sex</code>: 性別<br />
+</li>
+<li><code>Worms</code>: 寄生虫の有無</li>
+</ul>
+<p>データは以下の通り。</p>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="Chapter7.html#cb306-1" tabindex="-1"></a>Par <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">&quot;data/Parasites3.txt&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb306-2"><a href="Chapter7.html#cb306-2" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Worms =</span> Elytrophalloides_oatesi) <span class="sc">%&gt;%</span> </span>
+<span id="cb306-3"><a href="Chapter7.html#cb306-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Sex =</span> <span class="fu">as.factor</span>(Sex),</span>
+<span id="cb306-4"><a href="Chapter7.html#cb306-4" tabindex="-1"></a>         <span class="at">Area =</span> <span class="fu">as.factor</span>(Area))</span>
+<span id="cb306-5"><a href="Chapter7.html#cb306-5" tabindex="-1"></a></span>
+<span id="cb306-6"><a href="Chapter7.html#cb306-6" tabindex="-1"></a><span class="fu">datatable</span>(Par,</span>
+<span id="cb306-7"><a href="Chapter7.html#cb306-7" tabindex="-1"></a>          <span class="at">options =</span> <span class="fu">list</span>(<span class="at">scrollX =</span> <span class="dv">20</span>),</span>
+<span id="cb306-8"><a href="Chapter7.html#cb306-8" tabindex="-1"></a>          <span class="at">filter =</span> <span class="st">&quot;top&quot;</span>)</span></code></pre></div>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7f8b7fab3dc450d9b3ec" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7f8b7fab3dc450d9b3ec">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1998\" data-max=\"1999\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;PatagonianShelf&quot;,&quot;SanJorge&quot;,&quot;SanMatias&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"115\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"29.5\" data-max=\"57\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"174\" data-max=\"1144\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Female&quot;,&quot;Male&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","221","222","223","224","225","226","227","228","229","230","231","232","233","234","235","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","266","267","268","269","270","271","272","273","274","275","276","277","278"],["JulSep","JulSep","JulSep","JulSep","JulSep","July","July","July","July","July","July","July","July","July","July","JulSep","JulSep","JulSep","JulSep","July","July","July","July","July","July","July","July","July","JulSep","JulSep","JulSep","JulSep","JulSep","July","July","July","July","July","July","July","July","July","July","July","July","JulSep","JulSep","July","JulSep","JulSep","July","July","JulSep","July","July","July","July","July","July","July","July","July","July","JulSep","JulSep","JulSep","July","JulSep","July","July","JulSep","JulSep","JulSep","July","July","JulSep","JulSep","July","JulSep","July","July","July","July","July","July","JulSep","JulSep","July","JulSep","JulSep","July","July","July","July","JulSep","July","July","July","JulSep","JulSep","JulSep","JulSep","July","July","July","July","July","July","July","JulSep","JulSep","July","JulSep","July","July","July","JulSep","July","July","July","July","JulSep","JulSep","JulSep","July","July","July","July","JulSep","JulSep","JulSep","JulSep","JulSep","July","July","JulSep","July","July","JulSep","JulSep","July","July","JulSep","July","JulSep","JulSep","JulSep","July","JulSep","JulSep","July","July","July","July","July","July","July","July","July","July","JulSep","July","JulSep","July","July","July","JulSep","July","July","July","JulSep","JulSep","JulSep","July","JulSep","JulSep","JulSep","JulSep","July","July","July","July","July","July","July","JulSep","July","July","July","JulSep","July","July","July","July","July","JulSep","JulSep","JulSep","July","JulSep","July","JulSep","JulSep","JulSep","JulSep","JulSep","July","July","July","July","JulSep","July","JulSep","July","July","July","JulSep","JulSep","JulSep","JulSep","July","JulSep","JulSep","July","JulSep","July","July","July","July","JulSep","JulSep","July","JulSep","JulSep","July","July","JulSep","JulSep","JulSep","July","July","July","July","July","JulSep","July","JulSep","JulSep","July","JulSep","July","July","July","July","JulSep","July","JulSep","JulSep","July","July","JulSep","JulSep","July","JulSep","JulSep","JulSep","JulSep","JulSep","JulSep","July","July","JulSep","July","July","JulSep","July","JulSep","JulSep"],[1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1999,1999,1998,1998,1999,1998,1998,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1998,1999,1999,1999,1998,1998,1999,1999,1998,1999,1998,1999,1999,1999,1999,1998,1999,1999,1998,1999,1999,1998,1998,1998,1998,1999,1998,1998,1998,1999,1999,1999,1999,1998,1998,1998,1998,1998,1999,1999,1999,1999,1998,1999,1998,1998,1998,1999,1998,1998,1998,1999,1999,1999,1999,1998,1999,1999,1999,1999,1999,1999,1999,1999,1998,1998,1999,1998,1998,1999,1999,1998,1998,1999,1998,1999,1999,1999,1998,1999,1999,1998,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1999,1998,1998,1998,1999,1998,1998,1998,1999,1999,1999,1998,1999,1999,1999,1999,1998,1999,1999,1999,1999,1998,1998,1999,1998,1998,1998,1999,1998,1999,1999,1999,1998,1999,1999,1999,1998,1999,1998,1999,1999,1999,1999,1999,1998,1999,1999,1999,1999,1999,1999,1998,1998,1998,1999,1999,1999,1999,1998,1999,1999,1998,1999,1999,1999,1999,1999,1999,1999,1998,1999,1999,1998,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1998,1999,1999,1999,1999,1999,1999,1999,1999,1999,1998,1998,1999,1999,1998,1999,1998,1999,1999],["PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanMatias","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","SanJorge","SanMatias","SanMatias","SanMatias","SanMatias","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","SanJorge","SanJorge","SanJorge","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanMatias","SanMatias","SanMatias","SanMatias","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","SanJorge","SanMatias","SanMatias","SanMatias","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanMatias","SanMatias","SanMatias","PatagonianShelf","SanMatias","PatagonianShelf","SanJorge","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanMatias","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","SanMatias","PatagonianShelf","PatagonianShelf","SanJorge","PatagonianShelf","SanMatias","SanMatias","SanMatias","SanMatias","PatagonianShelf","SanMatias","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","PatagonianShelf","SanMatias","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","PatagonianShelf","SanJorge","SanJorge","PatagonianShelf","SanMatias","SanJorge","PatagonianShelf","SanJorge","PatagonianShelf","PatagonianShelf"],[7,62,16,37,111,28,59,60,93,20,31,44,46,53,87,33,24,4,55,53,76,37,14,23,45,65,82,98,35,38,115,31,54,24,29,71,78,7,9,17,30,54,55,85,95,20,51,59,74,2,8,9,34,56,13,49,4,81,97,101,50,94,100,91,1,75,63,89,43,80,76,57,114,36,42,32,59,73,21,72,12,19,47,90,18,46,14,65,69,104,41,48,37,46,39,79,40,29,15,26,45,113,6,52,30,47,68,1,57,23,36,4,41,55,54,38,10,10,12,71,18,100,110,53,32,13,40,76,19,40,84,105,86,24,3,43,62,14,78,70,69,17,90,39,60,107,6,21,8,25,5,15,8,42,68,77,84,27,48,89,58,28,29,20,26,77,28,75,7,44,5,98,61,61,3,112,65,99,50,38,39,49,56,23,66,87,19,64,25,108,51,10,66,3,45,52,77,92,35,47,34,9,83,42,64,103,74,16,80,36,109,91,18,57,33,22,50,73,81,66,16,97,88,27,11,67,75,21,99,85,48,2,80,82,60,63,12,22,56,32,41,61,70,79,63,25,101,96,11,106,5,62,73,83,30,22,17,71,31,70,27,95,72,102,44,68,79,13,67,67,58,93,74,78,94,1,72,49],[29.5,31,32,32,32,33,33,33,33,33,33,33,33,33,33,33,34,34,34,34,34,34,34,34,34,34,34,34,34.5,34.5,34.5,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35.5,35.5,35.5,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36.5,36.5,36.5,36.5,36.5,36.5,36.5,36.5,37,37,37,37,37,37,37,37,37,37,37,37.5,37.5,37.5,37.5,37.5,37.5,37.5,37.5,37.5,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38.5,38.5,38.5,38.5,38.5,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39,39.5,39.5,39.5,39.5,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40.5,40.5,40.5,40.5,41,41,41,41,41,41,41,41,41,41,41,41,41.5,41.5,41.5,42,42,42,42,42,42,42,42,42,42,42,42,42.5,42.5,43,43,43,43,43,43,43,43,43,43,43,43,43,43,43,43,43,43,43.5,43.5,43.5,44,44,44,44,44,44,44,44,44,44.5,44.5,44.5,45,45,45,45,45,45,45,45,45,45,45,45.5,45.5,46,46,46,46,46,46,46,46,46,46,46.5,47,47,47,47,47,47,47,47.5,48,48,48.5,49,50,52,53,53,53,57],[174,182,212,204,304,300,268,294,286,266,288,276,286,250,274,288,260,372,310,200,250,322,276,282,284,322,284,306,306,286,348,276,350,386,282,394,310,324,310,302,326,300,364,334,328,260,286,250,272,310,250,300,324,300,300,325,342,358,360,348,370,362,354,328,338,286,394,245,300,275,270,334,396,300,325,316,328,300,308,325,350,400,368,386,300,328,266,300,350,308,300,300,325,325,370,300,300,375,290,340,344,484,375,350,350,350,375,400,382,336,358,375,298,350,325,350,352,350,350,350,416,370,444,388,325,434,458,434,396,398,356,398,364,375,350,318,475,400,364,380,350,400,354,400,400,516,408,400,432,420,425,350,460,488,500,538,536,456,494,470,424,400,356,400,375,425,394,400,450,400,456,434,426,400,392,618,376,450,425,470,514,476,484,400,425,368,450,425,400,652,450,548,518,598,500,434,408,494,450,502,450,470,420,482,438,500,475,540,542,522,654,566,512,400,500,475,470,440,216,482,650,516,386,525,476,584,728,586,572,488,494,500,524,444,525,575,624,572,534,588,648,653,404,664,536,672,540,606,575,694,752,698,704,658,572,704,556,558,650,650,534,618,828,592,498,646,648,652,584,600,875,742,1042,800,876,1120,832,1144],["Male","Female","Male","Male","Male","Female","Female","Female","Female","Male","Male","Male","Male","Male","Male","Male","Female","Male","Male","Male","Male","Female","Male","Male","Male","Male","Male","Male","Female","Male","Male","Female","Female","Female","Female","Female","Female","Male","Male","Male","Male","Male","Male","Male","Male","Female","Male","Female","Female","Male","Female","Male","Female","Female","Male","Male","Female","Female","Female","Female","Male","Male","Male","Female","Male","Male","Female","Female","Male","Female","Female","Male","Male","Male","Male","Male","Male","Male","Female","Female","Female","Female","Female","Male","Female","Female","Male","Female","Female","Female","Female","Female","Female","Female","Male","Male","Male","Male","Female","Female","Female","Female","Female","Female","Male","Male","Male","Male","Male","Male","Female","Female","Male","Male","Male","Female","Male","Female","Male","Male","Female","Female","Female","Male","Male","Female","Female","Female","Female","Female","Female","Female","Male","Female","Female","Male","Male","Male","Female","Male","Male","Male","Female","Male","Female","Female","Male","Female","Female","Female","Female","Male","Female","Female","Female","Female","Female","Male","Male","Male","Female","Female","Male","Male","Female","Male","Male","Female","Male","Female","Female","Female","Male","Female","Female","Female","Male","Male","Male","Female","Male","Male","Male","Male","Female","Male","Female","Female","Male","Male","Male","Female","Female","Male","Female","Male","Male","Female","Female","Female","Male","Female","Female","Female","Female","Male","Female","Female","Female","Male","Female","Male","Female","Female","Male","Female","Male","Female","Male","Female","Female","Female","Female","Female","Female","Female","Female","Male","Male","Female","Female","Female","Female","Male","Female","Female","Female","Female","Female","Female","Female","Female","Male","Male","Female","Male","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Male","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Female","Male","Female","Female","Female","Female","Female"],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Month<\/th>\n      <th>Year<\/th>\n      <th>Area<\/th>\n      <th>ID<\/th>\n      <th>Length<\/th>\n      <th>Weight<\/th>\n      <th>Sex<\/th>\n      <th>Worms<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":20,"columnDefs":[{"className":"dt-right","targets":[2,4,5,6,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="s7-3" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Data exploration<a href="Chapter7.html#s7-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>モデルでは、<strong>月、年、場所、魚の全長と重さ、性別が寄生虫の有無に影響するか</strong>を調べたい。</p>
+<p>図<a href="Chapter7.html#fig:dataexplore-par">7.1</a>は月と年以外の変数の関係を図示したものである。魚の全長と重さは非常に強い相関(0.894)があることが分かる。多重共線性の問題を避けるため、本章では全長のみを用いることにする。また、性別と体長、捕獲場所と体長に強い関連がある可能性もあるが、本データではそこまで顕著ではない。</p>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="Chapter7.html#cb307-1" tabindex="-1"></a>Par <span class="sc">%&gt;%</span> </span>
+<span id="cb307-2"><a href="Chapter7.html#cb307-2" tabindex="-1"></a>  <span class="fu">select</span>(Area, Length, Weight, Sex) <span class="sc">%&gt;%</span> </span>
+<span id="cb307-3"><a href="Chapter7.html#cb307-3" tabindex="-1"></a>  <span class="fu">ggpairs</span>()</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:dataexplore-par"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/dataexplore-par-1.png" alt="Pairwise plot of variables." width="720" />
+<p class="caption">
+図7.1: Pairwise plot of variables.
+</p>
+</div>
+<p><br/></p>
+<p>観察年と捕獲場所の関係を見ると、サンジョージ湾は1998年のみで、パタゴニアン大陸棚とサンマティアス湾は1999年のみで捕獲されていることが分かる。これは、年と捕獲場所の両方を説明変数として含めることが適切でないことを示している。今回は捕獲場所のみを用いる。</p>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="Chapter7.html#cb308-1" tabindex="-1"></a>Par <span class="sc">%&gt;%</span> </span>
+<span id="cb308-2"><a href="Chapter7.html#cb308-2" tabindex="-1"></a>  <span class="fu">expand</span>(Area, Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb308-3"><a href="Chapter7.html#cb308-3" tabindex="-1"></a>  <span class="fu">left_join</span>(Par <span class="sc">%&gt;%</span> </span>
+<span id="cb308-4"><a href="Chapter7.html#cb308-4" tabindex="-1"></a>              <span class="fu">group_by</span>(Area, Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb308-5"><a href="Chapter7.html#cb308-5" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">N =</span> <span class="fu">n</span>())) <span class="sc">%&gt;%</span> </span>
+<span id="cb308-6"><a href="Chapter7.html#cb308-6" tabindex="-1"></a>  <span class="fu">replace_na</span>(<span class="fu">list</span>(<span class="at">N =</span> <span class="dv">0</span>))</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Area"],"name":[1],"type":["fct"],"align":["left"]},{"label":["Year"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["N"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"PatagonianShelf","2":"1998","3":"0"},{"1":"PatagonianShelf","2":"1999","3":"115"},{"1":"SanJorge","2":"1998","3":"80"},{"1":"SanJorge","2":"1999","3":"0"},{"1":"SanMatias","2":"1998","3":"0"},{"1":"SanMatias","2":"1999","3":"83"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><br/></p>
+<p>体長、捕獲場所、性別の3次の交互作用がある可能性もあるためこれらの関係を図示する(図<a href="Chapter7.html#fig:dataexplore-par2">7.2</a>)。図から、サンマティアス湾では4個体しか寄生虫に感染していないことが分かり、3次の交互作用を入れるにはサンプルサイズが少ないことが分かる。</p>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="Chapter7.html#cb309-1" tabindex="-1"></a>Par <span class="sc">%&gt;%</span> </span>
+<span id="cb309-2"><a href="Chapter7.html#cb309-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> Worms))<span class="sc">+</span></span>
+<span id="cb309-3"><a href="Chapter7.html#cb309-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">stroke =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb309-4"><a href="Chapter7.html#cb309-4" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb309-5"><a href="Chapter7.html#cb309-5" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb309-6"><a href="Chapter7.html#cb309-6" tabindex="-1"></a>  <span class="fu">facet_rep_grid</span>(Sex<span class="sc">~</span>Area, <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:dataexplore-par2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/dataexplore-par2-1.png" alt="Prevalence  of  E.  oatesi  plotted  versus length for  both   sexes   and  all zones." width="1056" />
+<p class="caption">
+図7.2: Prevalence of E. oatesi plotted versus length for both sexes and all zones.
+</p>
+</div>
+<p><br/></p>
+</div>
+<div id="brainstorming-1" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Brainstorming<a href="Chapter7.html#brainstorming-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>以上から、ここでは寄生虫の有無に体長、捕獲場所、性別が及ぼす影響を検討する。目的変数は二値変数なので二項分布(正確にはベルヌーイ分布)に従うとするモデリングをする。</p>
+<p>まず、交互作用を含まない一般化線形モデル(GLM)を考える。モデル式は以下のようになる。なお、<span class="math inline">\(logit(\pi_i) = log \Bigl( \frac{\pi_i}{1-\pi_i} \Bigl)\)</span>である。</p>
+<p><span class="math display" id="eq:eq7-1">\[
+\begin{aligned}
+Worms_i &amp;\sim Bin(\pi_i)\\
+E(Worms_i) &amp;= \pi_i, \;\; var(Worms_i) = (1-\pi_i) \times \pi_i\\
+logit(\pi_i) &amp;= \alpha + \beta_1 \times Length_i + \beta_2 \times Sex_i + \beta_3 \times Area_i
+\end{aligned} \tag{7.1}
+\]</span></p>
+<p>また、体長と性別の交互作用項を含むGLMを考えることもできる。</p>
+<p><span class="math display" id="eq:eq7-2">\[
+\begin{aligned}
+Worms_i &amp;\sim Bin(\pi_i)\\
+E(Worms_i) &amp;= \pi_i, \;\; var(Worms_i) = (1-\pi_i) \times \pi_i\\
+logit(\pi_i) &amp;= \alpha + \beta_1 \times Length_i + \beta_2 \times Sex_i + \beta_3 \times Length_i \times Sex_i + \beta_4 \times Area_i
+\end{aligned} \tag{7.2}
+\]</span></p>
+<p>続いて、寄生虫の有無に対する体長の効果が非線形であるかを検討するため、体長のsmootherを含むGAMを考えることができる。</p>
+<p><span class="math display" id="eq:eq7-3">\[
+\begin{aligned}
+Worms_i &amp;\sim Bin(\pi_i)\\
+E(Worms_i) &amp;= \pi_i, \;\; var(Worms_i) = (1-\pi_i) \times \pi_i\\
+logit(\pi_i) &amp;= \alpha + f(Length_i) + \beta_1 \times Sex_i + \beta_2 \times Area_i
+\end{aligned} \tag{7.3}
+\]</span></p>
+<p>また、性別によってsmootherが異なるモデルを考えることもできる。<br />
+<span class="math display" id="eq:eq7-4">\[
+\begin{aligned}
+Worms_i &amp;\sim Bin(\pi_i)\\
+E(Worms_i) &amp;= \pi_i, \;\; var(Worms_i) = (1-\pi_i) \times \pi_i\\
+logit(\pi_i) &amp;= \alpha + f_1(Length_i) + f_2(Length_i) + \beta_1 \times Sex_i + \beta_2 \times Area_i
+\end{aligned} \tag{7.4}
+\]</span>
+以下では、式<a href="Chapter7.html#eq:eq7-3">(7.3)</a>や式<a href="Chapter7.html#eq:eq7-4">(7.4)</a>のモデリングを行う前に、まずは体長のsmootherのみを含むモデル(<span class="math inline">\(M_1\)</span>)を実行し、他の説明変数を含めたり性別ごとのsmootherを仮定するモデル(<span class="math inline">\(M_2\)</span>、<span class="math inline">\(M_3\)</span>、<span class="math inline">\(M_4\)</span>)と比較を行うことで、他の変数を加えたときにsmootherがどのように変わっていくかを検討する。</p>
+<p><span class="math display" id="eq:eq7-5">\[
+\begin{aligned}
+M_1: logit(\pi_i) &amp;= \alpha + f(Length_i)\\
+M_2: logit(\pi_i) &amp;= \alpha + f(Length_i) +  \beta_1 \times Sex_i \\
+M_3: logit(\pi_i) &amp;= \alpha + f_1(Length_i) + f_2(Length_i) + \beta_1 \times Sex_i  \\
+M_4: logit(\pi_i) &amp;= \alpha + f_1(Length_i) + f_2(Length_i) + \beta_1 \times Sex_i + \beta_2 \times Area_i
+\end{aligned} \tag{7.5}
+\]</span></p>
+</div>
+<div id="applying-binomial-gam" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Applying binomial GAM<a href="Chapter7.html#applying-binomial-gam" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>まずはsmootherのみを含む<span class="math inline">\(M_1\)</span>(<code>M7_1</code>)のモデリングを行う。</p>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="Chapter7.html#cb310-1" tabindex="-1"></a>M7_1 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Worms <span class="sc">~</span> <span class="fu">s</span>(Length), <span class="at">data =</span> Par,</span>
+<span id="cb310-2"><a href="Chapter7.html#cb310-2" tabindex="-1"></a>            <span class="at">family =</span> binomial)</span></code></pre></div>
+<p>モデルの結果は以下の通り。smootherは自由度6.81であり、5%水準で有意である。モデルが説明できている逸脱度はわずか10.6%である。</p>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="Chapter7.html#cb311-1" tabindex="-1"></a><span class="fu">summary</span>(M7_1)</span></code></pre></div>
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## Worms ~ s(Length)
+## 
+## Parametric coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept)  -0.2886     0.1346  -2.145   0.0319 *
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##             edf Ref.df Chi.sq  p-value    
+## s(Length) 6.814  7.909  27.41 0.000511 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.109   Deviance explained = 10.6%
+## UBRE = 0.28497  Scale est. = 1         n = 278</code></pre>
+<p>ベルヌーイ分布のモデルでは残差とモデルの予測値をプロットしたときに以下のような2本のバンドのようなプロットが得られる(図<a href="Chapter7.html#fig:fig-resid-M7-1">7.3</a>)。それぞれの線は目的変数の0/1に対応する。これをもとにパターンを検出することは難しい。</p>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="Chapter7.html#cb313-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">resid</span>(M7_1, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb313-2"><a href="Chapter7.html#cb313-2" tabindex="-1"></a>           <span class="at">fitted =</span> <span class="fu">fitted</span>(M7_1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb313-3"><a href="Chapter7.html#cb313-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb313-4"><a href="Chapter7.html#cb313-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb313-5"><a href="Chapter7.html#cb313-5" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb313-6"><a href="Chapter7.html#cb313-6" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb313-7"><a href="Chapter7.html#cb313-7" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb313-8"><a href="Chapter7.html#cb313-8" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb313-9"><a href="Chapter7.html#cb313-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Fitted values&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-resid-M7-1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-resid-M7-1-1.png" alt="Fitted values versus Pearson residuals for M7_1" width="384" />
+<p class="caption">
+図7.3: Fitted values versus Pearson residuals for M7_1
+</p>
+</div>
+<p><br/></p>
+<p>体長や性別、捕獲場所と残差の関係をプロットしたのが図<a href="Chapter7.html#fig:fig-resid-M7-1-2">7.4</a>である。体長、捕獲場所と残差の関係には明確なパターンがありそう。</p>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="Chapter7.html#cb314-1" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">resid =</span> M7_1<span class="sc">$</span>resid,</span>
+<span id="cb314-2"><a href="Chapter7.html#cb314-2" tabindex="-1"></a>           <span class="at">Length =</span> Par<span class="sc">$</span>Length,</span>
+<span id="cb314-3"><a href="Chapter7.html#cb314-3" tabindex="-1"></a>           <span class="at">Sex =</span> Par<span class="sc">$</span>Sex,</span>
+<span id="cb314-4"><a href="Chapter7.html#cb314-4" tabindex="-1"></a>           <span class="at">Area =</span> Par<span class="sc">$</span>Area) <span class="ot">-&gt;</span> resid7_1</span>
+<span id="cb314-5"><a href="Chapter7.html#cb314-5" tabindex="-1"></a>  </span>
+<span id="cb314-6"><a href="Chapter7.html#cb314-6" tabindex="-1"></a>resid7_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb314-7"><a href="Chapter7.html#cb314-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb314-8"><a href="Chapter7.html#cb314-8" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb314-9"><a href="Chapter7.html#cb314-9" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb314-10"><a href="Chapter7.html#cb314-10" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb314-11"><a href="Chapter7.html#cb314-11" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb314-12"><a href="Chapter7.html#cb314-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb314-13"><a href="Chapter7.html#cb314-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Length&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>) <span class="ot">-&gt;</span> p1</span>
+<span id="cb314-14"><a href="Chapter7.html#cb314-14" tabindex="-1"></a></span>
+<span id="cb314-15"><a href="Chapter7.html#cb314-15" tabindex="-1"></a>resid7_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb314-16"><a href="Chapter7.html#cb314-16" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Sex, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb314-17"><a href="Chapter7.html#cb314-17" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb314-18"><a href="Chapter7.html#cb314-18" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb314-19"><a href="Chapter7.html#cb314-19" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb314-20"><a href="Chapter7.html#cb314-20" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb314-21"><a href="Chapter7.html#cb314-21" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb314-22"><a href="Chapter7.html#cb314-22" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>) <span class="ot">-&gt;</span> p2</span>
+<span id="cb314-23"><a href="Chapter7.html#cb314-23" tabindex="-1"></a></span>
+<span id="cb314-24"><a href="Chapter7.html#cb314-24" tabindex="-1"></a>resid7_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb314-25"><a href="Chapter7.html#cb314-25" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Area, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb314-26"><a href="Chapter7.html#cb314-26" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb314-27"><a href="Chapter7.html#cb314-27" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>)<span class="sc">+</span></span>
+<span id="cb314-28"><a href="Chapter7.html#cb314-28" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>,<span class="dv">12</span>,<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb314-29"><a href="Chapter7.html#cb314-29" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb314-30"><a href="Chapter7.html#cb314-30" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb314-31"><a href="Chapter7.html#cb314-31" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Pearson residuals&quot;</span>) <span class="ot">-&gt;</span> p3</span>
+<span id="cb314-32"><a href="Chapter7.html#cb314-32" tabindex="-1"></a></span>
+<span id="cb314-33"><a href="Chapter7.html#cb314-33" tabindex="-1"></a>(p1<span class="sc">+</span>p2)<span class="sc">/</span>p3 <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="dv">12</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-resid-M7-1-2"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-resid-M7-1-2-1.png" alt="Pearson residuals versus covariates." width="960" />
+<p class="caption">
+図7.4: Pearson residuals versus covariates.
+</p>
+</div>
+<p><br/></p>
+<p>推定されたsmootherは以下の通り(図<a href="Chapter7.html#fig:fig-smooth-m7-1">7.5</a>)。</p>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="Chapter7.html#cb315-1" tabindex="-1"></a>residM7_1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">resid =</span> <span class="fu">smooth_estimates</span>(M7_1, <span class="at">data =</span> Par)<span class="sc">$</span>est</span>
+<span id="cb315-2"><a href="Chapter7.html#cb315-2" tabindex="-1"></a>                        <span class="sc">+</span> <span class="fu">resid</span>(M7_1, <span class="at">type =</span> <span class="st">&quot;pearson&quot;</span>),</span>
+<span id="cb315-3"><a href="Chapter7.html#cb315-3" tabindex="-1"></a>                        <span class="at">Length =</span> Par<span class="sc">$</span>Length) </span>
+<span id="cb315-4"><a href="Chapter7.html#cb315-4" tabindex="-1"></a></span>
+<span id="cb315-5"><a href="Chapter7.html#cb315-5" tabindex="-1"></a><span class="fu">draw</span>(M7_1)<span class="sc">+</span> </span>
+<span id="cb315-6"><a href="Chapter7.html#cb315-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> residM7_1,</span>
+<span id="cb315-7"><a href="Chapter7.html#cb315-7" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> resid))<span class="sc">+</span></span>
+<span id="cb315-8"><a href="Chapter7.html#cb315-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb315-9"><a href="Chapter7.html#cb315-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smooth-m7-1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smooth-m7-1-1.png" alt="Estimated smoother for length obtained by model M7_1. The grey area is the 95% point-wise confidence interval." width="384" />
+<p class="caption">
+図7.5: Estimated smoother for length obtained by model M7_1. The grey area is the 95% point-wise confidence interval.
+</p>
+</div>
+<p><br/></p>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="Chapter7.html#cb316-1" tabindex="-1"></a><span class="fu">fitted_values</span>(M7_1, <span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">Length =</span> <span class="fu">seq</span>(<span class="fl">29.5</span>, <span class="dv">57</span>, <span class="at">length =</span> <span class="dv">100</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb316-2"><a href="Chapter7.html#cb316-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> fitted))<span class="sc">+</span></span>
+<span id="cb316-3"><a href="Chapter7.html#cb316-3" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb316-4"><a href="Chapter7.html#cb316-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper),</span>
+<span id="cb316-5"><a href="Chapter7.html#cb316-5" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)<span class="sc">+</span></span>
+<span id="cb316-6"><a href="Chapter7.html#cb316-6" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Par,</span>
+<span id="cb316-7"><a href="Chapter7.html#cb316-7" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> Worms))<span class="sc">+</span></span>
+<span id="cb316-8"><a href="Chapter7.html#cb316-8" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb316-9"><a href="Chapter7.html#cb316-9" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb316-10"><a href="Chapter7.html#cb316-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Probability of presence of worms&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fitted-M7-1"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fitted-M7-1-1.png" alt="Estimated smoother for length obtained by model M1.  The smoother is plotted on the predictor scale  (between 0 and 1). The dots are the observed values for the response variable." width="384" />
+<p class="caption">
+図7.6: Estimated smoother for length obtained by model M1. The smoother is plotted on the predictor scale (between 0 and 1). The dots are the observed values for the response variable.
+</p>
+</div>
+<p><br/></p>
+<p>同様に、式<a href="Chapter7.html#eq:eq7-5">(7.5)</a>の<span class="math inline">\(M_2\)</span>(<code>M7_2</code>)から<span class="math inline">\(M_4\)</span>(<code>M7_4</code>)もモデリングする。</p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="Chapter7.html#cb317-1" tabindex="-1"></a>M7_2 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Worms <span class="sc">~</span> <span class="fu">s</span>(Length) <span class="sc">+</span> Sex, <span class="at">data =</span> Par,</span>
+<span id="cb317-2"><a href="Chapter7.html#cb317-2" tabindex="-1"></a>            <span class="at">family =</span> binomial)</span>
+<span id="cb317-3"><a href="Chapter7.html#cb317-3" tabindex="-1"></a></span>
+<span id="cb317-4"><a href="Chapter7.html#cb317-4" tabindex="-1"></a>M7_3 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Worms <span class="sc">~</span> <span class="fu">s</span>(Length, <span class="at">by =</span> Sex) <span class="sc">+</span> Sex,  </span>
+<span id="cb317-5"><a href="Chapter7.html#cb317-5" tabindex="-1"></a>            <span class="at">data =</span> Par,  <span class="at">family =</span> binomial)</span>
+<span id="cb317-6"><a href="Chapter7.html#cb317-6" tabindex="-1"></a></span>
+<span id="cb317-7"><a href="Chapter7.html#cb317-7" tabindex="-1"></a>M7_4 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Worms <span class="sc">~</span> <span class="fu">s</span>(Length, <span class="at">by =</span> Sex) <span class="sc">+</span> Sex <span class="sc">+</span> Area,  </span>
+<span id="cb317-8"><a href="Chapter7.html#cb317-8" tabindex="-1"></a>            <span class="at">data =</span> Par,  <span class="at">family =</span> binomial)</span></code></pre></div>
+<p>まず、<span class="math inline">\(M_2\)</span>(<code>M7_2</code>)でもsmotherは変わらず5%水準で有意である。自由度も6.81で<code>M7_1</code>とほぼ同じである。一方で、性別は有意に影響していない。</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="Chapter7.html#cb318-1" tabindex="-1"></a><span class="fu">summary</span>(M7_2)</span></code></pre></div>
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## Worms ~ s(Length) + Sex
+## 
+## Parametric coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)  -0.2284     0.1763  -1.295    0.195
+## SexMale      -0.1448     0.2751  -0.526    0.599
+## 
+## Approximate significance of smooth terms:
+##            edf Ref.df Chi.sq p-value   
+## s(Length) 6.81  7.906   25.3 0.00117 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.105   Deviance explained = 10.7%
+## UBRE = 0.29118  Scale est. = 1         n = 278</code></pre>
+<p>続いて、<span class="math inline">\(M_3\)</span>(<code>M7_3</code>)では、メスのsmootherが自由度8.21、オスのsmootherが自由度2.75でオスのみ5%水準で有意だった。性別は変わらず有意に影響していない。</p>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="Chapter7.html#cb320-1" tabindex="-1"></a><span class="fu">summary</span>(M7_3)</span></code></pre></div>
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## Worms ~ s(Length, by = Sex) + Sex
+## 
+## Parametric coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) -0.05606    0.36973  -0.152    0.879
+## SexMale     -0.45125    0.44143  -1.022    0.307
+## 
+## Approximate significance of smooth terms:
+##                       edf Ref.df Chi.sq p-value   
+## s(Length):SexFemale 8.215  8.569  11.73 0.18414   
+## s(Length):SexMale   2.752  3.468  14.15 0.00421 **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.123   Deviance explained =   14%
+## UBRE = 0.27561  Scale est. = 1         n = 278</code></pre>
+<p><code>M7_3</code>で推定されたsmootherは以下の通り(図<a href="Chapter7.html#fig:fig-smooth-M7-3">7.7</a>)。オスのsmootherはメスのsmootherと大きく異なることが見て取れる。</p>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="Chapter7.html#cb322-1" tabindex="-1"></a><span class="fu">draw</span>(M7_3)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smooth-M7-3"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smooth-M7-3-1.png" alt="Estimated length smoothers obtained by model M7_3 for the females (left) and males (right)." width="768" />
+<p class="caption">
+図7.7: Estimated length smoothers obtained by model M7_3 for the females (left) and males (right).
+</p>
+</div>
+<p><br/></p>
+<p>最後に、捕獲場所を追加した<code>M7_4</code>では<strong>いずれの性のsmootherも自由度が1</strong>だと推定された。</p>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="Chapter7.html#cb323-1" tabindex="-1"></a><span class="fu">summary</span>(M7_4)</span></code></pre></div>
+<pre><code>## 
+## Family: binomial 
+## Link function: logit 
+## 
+## Formula:
+## Worms ~ s(Length, by = Sex) + Sex + Area
+## 
+## Parametric coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)    0.32148    0.23127   1.390   0.1645    
+## SexMale        0.03758    0.32636   0.115   0.9083    
+## AreaSanJorge   0.57227    0.32169   1.779   0.0752 .  
+## AreaSanMatias -3.42020    0.59121  -5.785 7.25e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Approximate significance of smooth terms:
+##                     edf Ref.df Chi.sq  p-value    
+## s(Length):SexFemale   1      1  3.672 0.055336 .  
+## s(Length):SexMale     1      1 11.815 0.000587 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-sq.(adj) =  0.323   Deviance explained = 29.6%
+## UBRE = 0.011251  Scale est. = 1         n = 278</code></pre>
+<p>推定されたsmootherを見ても、直線的であることが分かる。</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="Chapter7.html#cb325-1" tabindex="-1"></a><span class="fu">draw</span>(M7_4)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-smooth-M7-4"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-smooth-M7-4-1.png" alt="Estimated length smoothers obtained by model M7_4 for the females (left) and males (right)." width="768" />
+<p class="caption">
+図7.8: Estimated length smoothers obtained by model M7_4 for the females (left) and males (right).
+</p>
+</div>
+<p>AICでモデル比較を行うと、<code>M7_4</code>が最も予測がよいことが分かる。</p>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="Chapter7.html#cb326-1" tabindex="-1"></a><span class="fu">AIC</span>(M7_1, M7_2, M7_3, M7_4)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["AIC"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"7.814306","2":"357.2206","_rn_":"M7_1"},{"1":"8.809851","2":"358.9472","_rn_":"M7_2"},{"1":"12.966881","2":"354.6205","_rn_":"M7_3"},{"1":"6.000071","2":"281.1279","_rn_":"M7_4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>なぜ説明変数に捕獲場所を加えるとsmootherが直線的になるのだろうか。第<a href="Chapter7.html#s7-3">7.3</a>節で見たように、捕獲場所と体長にはそこまで強い相関はなかったことから、多重共線性によるものではないと考えられる。</p>
+<p><code>M7_4</code>の結果を見ると、サン・マティアス湾の係数が-3.42と非常に小さな値になっていることが分かる。これは、サン・マティアス湾では寄生虫に感染した魚がほとんどいなかったためである(図<a href="Chapter7.html#fig:dataexplore-par2">7.2</a>)。</p>
+<p><code>M7_1</code>から推定された回帰曲線の結果(図<a href="Chapter7.html#fig:fig-fitted-M7-1-b">7.9</a>)を見ても、サン・マティアス湾のデータにかなり引っ張られていることが分かる。</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="Chapter7.html#cb327-1" tabindex="-1"></a><span class="fu">fitted_values</span>(M7_1, <span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">Length =</span> <span class="fu">seq</span>(<span class="fl">29.5</span>, <span class="dv">57</span>, <span class="at">length =</span> <span class="dv">100</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb327-2"><a href="Chapter7.html#cb327-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> fitted))<span class="sc">+</span></span>
+<span id="cb327-3"><a href="Chapter7.html#cb327-3" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb327-4"><a href="Chapter7.html#cb327-4" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> lower, <span class="at">ymax =</span> upper),</span>
+<span id="cb327-5"><a href="Chapter7.html#cb327-5" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>)<span class="sc">+</span></span>
+<span id="cb327-6"><a href="Chapter7.html#cb327-6" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">data =</span> Par,</span>
+<span id="cb327-7"><a href="Chapter7.html#cb327-7" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>, </span>
+<span id="cb327-8"><a href="Chapter7.html#cb327-8" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> Worms, <span class="at">fill =</span> Area),</span>
+<span id="cb327-9"><a href="Chapter7.html#cb327-9" tabindex="-1"></a>             <span class="at">height =</span> <span class="fl">0.05</span>,</span>
+<span id="cb327-10"><a href="Chapter7.html#cb327-10" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.4</span>)<span class="sc">+</span></span>
+<span id="cb327-11"><a href="Chapter7.html#cb327-11" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;white&quot;</span>,<span class="st">&quot;white&quot;</span>,<span class="st">&quot;black&quot;</span>))<span class="sc">+</span></span>
+<span id="cb327-12"><a href="Chapter7.html#cb327-12" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb327-13"><a href="Chapter7.html#cb327-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb327-14"><a href="Chapter7.html#cb327-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Probability of presence of worms&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fitted-M7-1-b"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fitted-M7-1-b-1.png" alt="Fitted values from model  M1. The filled circles are from the San Matias area." width="624" />
+<p class="caption">
+図7.9: Fitted values from model M1. The filled circles are from the San Matias area.
+</p>
+</div>
+<p><br/></p>
+<p><code>M7_4</code>では捕獲場所が説明変数に加わったことで、サン・マティアス湾のデータによって多くなっていた0が説明され、smootherがより直線的になったのである。</p>
+<p>よって、以下のようにsmootherを含まないGLMを考える。<br />
+<span class="math display">\[
+M_5: logit(\pi_i) = \alpha + \beta_1 \times Length_i + \beta_2 \times Sex_i + \beta_3 \times Length_i \times Sex_i + \beta_4 \times Area_i
+\]</span></p>
+<p>Rでは以下のように実行する。</p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="Chapter7.html#cb328-1" tabindex="-1"></a>M7_5 <span class="ot">&lt;-</span> <span class="fu">glm</span>(Worms <span class="sc">~</span> Length<span class="sc">*</span>Sex <span class="sc">+</span> Area,</span>
+<span id="cb328-2"><a href="Chapter7.html#cb328-2" tabindex="-1"></a>            <span class="at">data =</span> Par, <span class="at">family =</span> binomial)</span></code></pre></div>
+<p>AICを比べると、<code>M7_5</code>はその他のモデルよりも予測精度が高いことが分かる。<code>M7_4</code>とはほとんど同じモデルであることも分かる。</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="Chapter7.html#cb329-1" tabindex="-1"></a><span class="fu">AIC</span>(M7_1, M7_2, M7_3, M7_4, M7_5)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["AIC"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"7.814306","2":"357.2206","_rn_":"M7_1"},{"1":"8.809851","2":"358.9472","_rn_":"M7_2"},{"1":"12.966881","2":"354.6205","_rn_":"M7_3"},{"1":"6.000071","2":"281.1279","_rn_":"M7_4"},{"1":"6.000000","2":"281.1278","_rn_":"M7_5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>検定を行うと、交互作用項が有意であることが分かる。</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="Chapter7.html#cb330-1" tabindex="-1"></a><span class="fu">drop1</span>(M7_5, <span class="at">test =</span> <span class="st">&quot;Chisq&quot;</span>)</span></code></pre></div>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Df"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Deviance"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["AIC"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["LRT"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Pr(>Chi)"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"NA","2":"269.1278","3":"281.1278","4":"NA","5":"NA","_rn_":"<none>"},{"1":"2","2":"359.9191","3":"367.9191","4":"90.791292","5":"1.927176e-20","_rn_":"Area"},{"1":"1","2":"273.3390","3":"283.3390","4":"4.211177","5":"4.015846e-02","_rn_":"Length:Sex"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>モデルの結果を図示すると以下のようになる(図<a href="Chapter7.html#fig:fig-fitted-M7-5">7.10</a>)</p>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="Chapter7.html#cb331-1" tabindex="-1"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb331-2"><a href="Chapter7.html#cb331-2" tabindex="-1"></a></span>
+<span id="cb331-3"><a href="Chapter7.html#cb331-3" tabindex="-1"></a><span class="fu">ggpredict</span>(M7_5,</span>
+<span id="cb331-4"><a href="Chapter7.html#cb331-4" tabindex="-1"></a>          <span class="at">terms =</span> <span class="fu">c</span>(<span class="st">&quot;Length[29.5:57,by=0.2]&quot;</span>,<span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Area&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb331-5"><a href="Chapter7.html#cb331-5" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Length =</span> x, <span class="at">Sex =</span> group, <span class="at">Area =</span> facet) <span class="sc">%&gt;%</span> </span>
+<span id="cb331-6"><a href="Chapter7.html#cb331-6" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb331-7"><a href="Chapter7.html#cb331-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Length, <span class="at">y =</span> predicted))<span class="sc">+</span></span>
+<span id="cb331-8"><a href="Chapter7.html#cb331-8" tabindex="-1"></a>  <span class="fu">geom_line</span>()<span class="sc">+</span></span>
+<span id="cb331-9"><a href="Chapter7.html#cb331-9" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> conf.low, <span class="at">ymax=</span> conf.high),</span>
+<span id="cb331-10"><a href="Chapter7.html#cb331-10" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>)<span class="sc">+</span></span>
+<span id="cb331-11"><a href="Chapter7.html#cb331-11" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Par,</span>
+<span id="cb331-12"><a href="Chapter7.html#cb331-12" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> Worms),</span>
+<span id="cb331-13"><a href="Chapter7.html#cb331-13" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">1</span>,</span>
+<span id="cb331-14"><a href="Chapter7.html#cb331-14" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span>,</span>
+<span id="cb331-15"><a href="Chapter7.html#cb331-15" tabindex="-1"></a>             <span class="at">stroke =</span> <span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb331-16"><a href="Chapter7.html#cb331-16" tabindex="-1"></a>  <span class="fu">facet_rep_grid</span>(Sex<span class="sc">~</span>Area,</span>
+<span id="cb331-17"><a href="Chapter7.html#cb331-17" tabindex="-1"></a>                 <span class="at">repeat.tick.labels =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb331-18"><a href="Chapter7.html#cb331-18" tabindex="-1"></a>  <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb331-19"><a href="Chapter7.html#cb331-19" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">0.7</span>)<span class="sc">+</span></span>
+<span id="cb331-20"><a href="Chapter7.html#cb331-20" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Probability of presence of worms&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:fig-fitted-M7-5"></span>
+<img src="Introduction-to-GAM-using-R_files/figure-html/fig-fitted-M7-5-1.png" alt="Model fit fot M7_5" width="1248" />
+<p class="caption">
+図7.10: Model fit fot M7_5
+</p>
+</div>
+<p><br/></p>
+<p><code>DHARMa</code>パッケージによるモデルチェックを行っても、モデルに問題はなさそう。</p>
+<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="Chapter7.html#cb332-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">simulateResiduals</span>(M7_5))</span></code></pre></div>
+<p><img src="Introduction-to-GAM-using-R_files/figure-html/unnamed-chunk-159-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="discussion-2" class="section level2 hasAnchor" number="7.6">
+<h2><span class="header-section-number">7.6</span> Discussion<a href="Chapter7.html#discussion-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>ここまでの例では、入れるべき共変量が含まれていないと推定されるsmootherが大きく異なることが示された。生物学的な知識に基づき、結果が妥当であるかを常に検討することが重要である。</p>
+</div>
+<div id="what-to-present-in-a-paper-1" class="section level2 hasAnchor" number="7.7">
+<h2><span class="header-section-number">7.7</span> What to present in a paper<a href="Chapter7.html#what-to-present-in-a-paper-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>本章では26種いた寄生虫の内1種のみの結果を用いた。もし、すべての寄生虫について1つのGAMで分析するのであれば、多変量分布を用いた分析が妥当だろう。</p>
+<p>もし本章のように1種の寄生虫の結果の実を論文で報告するとすれば、以下のことに言及する必要がある。</p>
+<ol style="list-style-type: decimal">
+<li>序論で議論されている生物学的観点から見たリサーチクエスチョン<br />
+</li>
+<li>データ収集方法と分析に使用したモデルの詳細<br />
+</li>
+<li>データ探索のまとめとモデルの推定結果を示すグラフ<br />
+</li>
+<li>結果からどのような結論が導けるか<br />
+</li>
+<li>データの独立性の有無。例えば、同じトロール網によってとらえられた個体が同じ寄生虫を持つ確率が高いとすれば、GAMM(一般化加法混合モデル)を適用する必要があるかもしれない。</li>
+</ol>
 
 </div>
 </div>
